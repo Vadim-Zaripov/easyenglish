@@ -23,13 +23,13 @@
             android:id="@+id/textView3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
             android:text="@string/loading"
             android:textAlignment="center"
-            android:textSize="40sp" />
+            android:textSize="30sp" />
 
         <EditText
             android:id="@+id/editText"
@@ -51,17 +51,17 @@
             android:id="@+id/button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:backgroundTint="@color/buttonColor"
+            android:clickable="false"
             android:onClick="Answered"
             android:text="@string/submit"
-            android:backgroundTint="@color/buttonColor"
-            android:textSize="30sp"
-            android:textColor="@color/colorWhite"
             android:textAllCaps="false"
-            android:clickable="false"/>
+            android:textColor="@color/colorWhite"
+            android:textSize="27sp" />
 
         <TextView
             android:id="@+id/textView"
