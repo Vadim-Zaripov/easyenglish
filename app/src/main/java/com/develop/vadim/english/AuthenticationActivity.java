@@ -173,6 +173,7 @@ public class AuthenticationActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             TextView v = (TextView) view;
                             v.setText("Письмо для восстановления пароля отправлено на ваш Email");
+                            Log.d(TAG, "Password reset sent");
                         }else{
                             Toast.makeText(AuthenticationActivity.this, "Ошибка", Toast.LENGTH_SHORT).show();
                         }
