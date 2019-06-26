@@ -1,0 +1,73 @@
+{
+  "project_info": {
+    "project_number": "585528626928",
+    "firebase_url": "https://easyenglish-2c5af.firebaseio.com",
+    "project_id": "easyenglish-2c5af",
+    "storage_bucket": "easyenglish-2c5af.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:585528626928:android:8f433d754524fc79",
+        "android_client_info": {
+          "package_name": "com.develop.vadim.easyenglish"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "585528626928-d9m49pkk18nblkr1pn0d7em0fnpvhfek.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDK0RnFv9HsPmVk0pm2IQXYCGzTm6v_03Y"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:585528626928:android:dab136055d4fa3da",
+        "android_client_info": {
+          "package_name": "com.develop.vadim.english"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "585528626928-d9m49pkk18nblkr1pn0d7em0fnpvhfek.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDK0RnFv9HsPmVk0pm2IQXYCGzTm6v_03Y"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

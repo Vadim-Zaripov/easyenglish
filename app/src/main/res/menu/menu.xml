@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <item
+        android:id="@+id/navigation_new_word"
+        android:title="@string/new_word"
+        android:icon="@drawable/new_word"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/navigation_archive"
+        android:layout_width="wrap_content"
+        android:title="@string/archive"
+        android:icon="@drawable/archive"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/navigation_settings"
+        android:layout_width="wrap_content"
+        android:title="@string/log_out" />
+
+</menu>

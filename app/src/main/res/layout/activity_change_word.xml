@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.develop.vadim.english.ChangeWordActivity">
+    <LinearLayout
+        android:layout_width="334dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="10dp"
+            android:text="Слово на английском" />
+
+        <EditText
+            android:id="@+id/editTextEnglish"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="text"
+            />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="35dp" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="10dp"
+            android:text="Перевод" />
+
+        <EditText
+            android:id="@+id/editTextRussian"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="text" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="35dp" />
+
+        <Button
+            android:id="@+id/button7"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Сохранить"
+            android:onClick="Apply"
+            android:backgroundTint="@color/buttonColor"
+            android:textSize="25sp"
+            android:textColor="@color/colorWhite"
+            android:textAllCaps="false"
+            tools:ignore="OnClick" />
+        <Button
+            android:id="@+id/button8"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Удалить слово"
+            android:onClick="Delete"
+            android:backgroundTint="@color/buttonColor"
+            android:textSize="25sp"
+            android:textColor="@color/colorWhite"
+            android:textAllCaps="false"
+            tools:ignore="OnClick" />
+    </LinearLayout>
+</android.support.constraint.ConstraintLayout>
