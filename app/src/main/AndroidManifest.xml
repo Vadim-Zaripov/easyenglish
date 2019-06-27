@@ -21,31 +21,39 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+	    android:screenOrientation="portrait"
         </activity>
         <activity
             android:name=".AuthenticationActivity"
-            android:label="@string/auth" />
+            android:label="@string/auth" 
+	    android:screenOrientation="portrait"/>
         <activity
             android:name=".TutorialActivity"
-            android:label="@string/tutorial" />
+            android:label="@string/tutorial" 
+	    android:screenOrientation="portrait"/>
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+	    android:screenOrientation="portrait" />
         <activity
             android:name=".NewWordActivity"
             android:label="@string/new_word"
-            android:theme="@style/Base.Theme.AppCompat.Light.Dialog" />
+            android:theme="@style/Base.Theme.AppCompat.Light.Dialog" 
+	    android:screenOrientation="portrait"/>
         <activity
             android:name=".ArchiveActivity"
-            android:label="@string/archive" />
+            android:label="@string/archive"
+	    android:screenOrientation="portrait" />
         <activity
             android:name=".DoYouWantToSignOutActivity"
             android:label="@string/do_you_want_to_sign_out"
-            android:theme="@style/Base.Theme.AppCompat.Light.Dialog" />
+            android:theme="@style/Base.Theme.AppCompat.Light.Dialog"
+	    android:screenOrientation="portrait" />
         <activity android:name=".ChangeWordActivity"
             android:label="@string/changeWord"
             android:theme="@style/Base.Theme.AppCompat.Light.Dialog"
+	    android:screenOrientation="portrait"
             />
     </application>
 
