@@ -2,6 +2,7 @@ package com.develop.vadim.english;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -58,7 +59,16 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        //setSupportActionBar(toolbar);
+        toolbar.inflateMenu(R.menu.menu);
+
+        SharedPreferences prefs = getSharedPreferences("com.example.vadim.maintimetracker", MODE_PRIVATE);
+
+        if(prefs.getBoolean("firstrun_testing", true)){
+            prefs.edit().putBoolean("firstrun_testing", false).apply();
+            firstLaunch();
+        }
+
 
         incorrect = (TextView)findViewById(R.id.textView);
         change_word = (TextView)findViewById(R.id.textView4);
@@ -85,7 +95,6 @@ public class MainActivity extends AppCompatActivity {
         SIX_MONTH_DATE = format.format(calendar.getTime());
 
 
-        //tapTargetSequence.start();
 
         user = FirebaseAuth.getInstance().getCurrentUser();
         myRef = FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid());
@@ -303,37 +312,35 @@ public class MainActivity extends AppCompatActivity {
         startActivity(new Intent(MainActivity.this, ChangeWordActivity.class));
     }
 
+    public void firstLaunch(){
+        tapTargetSequence = new TapTargetSequence(this);
+        tapTargetSequence.targets(
+                TapTarget.forToolbarMenuItem(toolbar, R.id.navigation_new_word, "New word", "Tap to create new word").id(1),
+                TapTarget.forToolbarMenuItem(toolbar, R.id.navigation_archive, "Archive", "Find your learned words here").id(2));
+        tapTargetSequence.listener(new TapTargetSequence.Listener() {
+            @Override
+            public void onSequenceFinish() {
+                //Yay
+            }
+            @Override
+            public void onSequenceStep(TapTarget lastTarget, boolean targetClicked) {
+                //Action
+            }
+            @Override
+            public void onSequenceCanceled(TapTarget lastTarget) {
+                //Boo
+            }
+        });
+        tapTargetSequence.start();
+    }
+
     @Override
     public void onBackPressed(){}
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        toolbar.inflateMenu(R.menu.menu);
-        tapTargetSequence = new TapTargetSequence(this);
-        try {
-            tapTargetSequence.targets(
-                    TapTarget.forToolbarMenuItem(toolbar, R.id.navigation_new_word, "New word", "Tap to create new word"),
-                    TapTarget.forToolbarMenuItem(toolbar, R.id.navigation_archive, "Archive", "Find your learned words here"));
-        tapTargetSequence.listener(new TapTargetSequence.Listener() {
-            @Override
-            public void onSequenceFinish() {
-                //Yay
-            }
 
-            @Override
-            public void onSequenceStep(TapTarget lastTarget, boolean targetClicked) {
-                //Action
-            }
-
-            @Override
-            public void onSequenceCanceled(TapTarget lastTarget) {
-                //Boo
-            }
-        });
-        }catch (Exception e){
-            Log.d(TAG, e.toString());
-        }
         return true;
     }
 

@@ -11,7 +11,6 @@ import com.google.firebase.auth.FirebaseUser;
 
 public class EnterActivity extends AppCompatActivity {
 
-    SharedPreferences prefs = null;
     String TAG = "myLogs";
     public FirebaseUser user;
     private FirebaseAuth mAuth;
@@ -22,25 +21,19 @@ public class EnterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_register);
         Log.d(TAG, "started");
-        prefs = getSharedPreferences("com.example.vadim.maintimetracker", MODE_PRIVATE);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-
-        if (prefs.getBoolean("firstrun", true)) {
-            Log.d(TAG, "firstrun");
-            startActivity(new Intent(this, TutorialActivity.class));
-            prefs.edit().putBoolean("firstrun", false).apply();
-        }else {
-            Log.d(TAG, "not firstrun");
-            mAuth = FirebaseAuth.getInstance();
-            user = mAuth.getCurrentUser();
-            if (user == null || !user.isEmailVerified())
-                startActivity(new Intent(this, AuthenticationActivity.class));
-            else
-                startActivity(new Intent(this, MainActivity.class));
+        Log.d(TAG, "not firstrun");
+        mAuth = FirebaseAuth.getInstance();
+        user = mAuth.getCurrentUser();
+        if (user == null || !user.isEmailVerified()) {
+            mAuth.signOut();
+            startActivity(new Intent(this, AuthenticationActivity.class));
+        } else {
+            startActivity(new Intent(this, MainActivity.class));
         }
     }
 }
