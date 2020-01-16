@@ -14,7 +14,7 @@ public class EnterActivity extends AppCompatActivity {
     SharedPreferences prefs = null;
     String TAG = "myLogs";
     public FirebaseUser user;
-    private FirebaseAuth mAuth;
+    private FirebaseAuth firebaseAuth;
 
 
     @Override
@@ -35,8 +35,8 @@ public class EnterActivity extends AppCompatActivity {
             prefs.edit().putBoolean("firstrun", false).apply();
         }else {
             Log.d(TAG, "not firstrun");
-            mAuth = FirebaseAuth.getInstance();
-            user = mAuth.getCurrentUser();
+            firebaseAuth = FirebaseAuth.getInstance();
+            user = firebaseAuth.getCurrentUser();
             if (user == null || !user.isEmailVerified())
                 startActivity(new Intent(this, AuthenticationActivity.class));
             else

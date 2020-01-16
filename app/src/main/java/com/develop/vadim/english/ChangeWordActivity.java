@@ -23,8 +23,8 @@ public class ChangeWordActivity extends AppCompatActivity {
         setContentView(R.layout.activity_change_word);
 
 
-        editTextRussian = (EditText)findViewById(R.id.editTextRussian);
-        editTextEnglish = (EditText)findViewById(R.id.editTextEnglish);
+        editTextRussian = (EditText) findViewById(R.id.editTextRussian);
+        editTextEnglish = (EditText) findViewById(R.id.editTextEnglish);
 
         editTextRussian.setText(MainActivity.rus);
         editTextEnglish.setText(MainActivity.eng);

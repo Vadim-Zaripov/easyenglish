@@ -28,8 +28,8 @@ public class NewWordActivity extends AppCompatActivity {
         setContentView(R.layout.activity_new_word);
 
 
-        editTextRussian = (EditText)findViewById(R.id.editTextRussian);
-        editTextEnglish = (EditText)findViewById(R.id.editTextEnglish);
+        editTextRussian = (EditText) findViewById(R.id.editTextRussian);
+        editTextEnglish = (EditText) findViewById(R.id.editTextEnglish);
 
         MainActivity.myRef.child("words")
                 .child(MainActivity.NEXT_DATE)
