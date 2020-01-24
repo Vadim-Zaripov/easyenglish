@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">english</string>
+    <string name="app_name">PULP</string>
 
     <string name="settings">Настройки</string>
     <string name="end_of_words">Слов больше нет</string>
@@ -90,6 +90,12 @@
     <string name="pref_ringtone_silent">Silent</string>
     <string name="pref_title_vibrate">Vibrate</string>
     <string name="next">Дальше→</string>
+
+    <!-- Main -->
+    <string name="main_word_edittext_placeholder">Введите слово</string>
+    <string name="main_add_word">Добавить</string>
+    <string name="main_navigation_item_first">Добавить слово</string>
+    <string name="main_navigation_item_second">Кладбище</string>
 
 </resources>
 

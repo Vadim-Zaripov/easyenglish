@@ -5,4 +5,19 @@
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="app_bar_height">180dp</dimen>
     <dimen name="text_margin">16dp</dimen>
+
+    <!-- Main Layout -->
+    <dimen name="main_content_padding">24dp</dimen>
+    <dimen name="main_title_text_size">48sp</dimen>
+
+    <dimen name="main_word_edittext_text_size">24sp</dimen>
+    <dimen name="main_add_word_button_padding">16dp</dimen>
+    <dimen name="main_space_first_height">16dp</dimen>
+    <dimen name="main_space_second_height">32dp</dimen>
+
+    <dimen name="main_navigation_padding_side">16dp</dimen>
+    <dimen name="main_navigation_padding_top_and_bottom">8dp</dimen>
+    <dimen name="main_navigation_item_margin">8dp</dimen>
+    <dimen name="main_navigation_item_text_size">20sp</dimen>
+
 </resources>

@@ -21,7 +21,6 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-	    android:screenOrientation="portrait"
         </activity>
         <activity
             android:name=".AuthenticationActivity"
@@ -55,6 +54,10 @@
             android:theme="@style/Base.Theme.AppCompat.Light.Dialog"
 	    android:screenOrientation="portrait"
             />
+
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
     </application>
 
 </manifest>
