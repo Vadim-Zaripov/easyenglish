@@ -1,23 +1,17 @@
-package com.develop.vadim.english;
+package com.develop.vadim.english.Basic;
 
-import android.content.Intent;
-import android.nfc.Tag;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 
+import com.develop.vadim.english.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -34,8 +28,8 @@ public class ArchiveActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_archive);
 
-        MainActivity.myRef.child("words")
-                .child(MainActivity.NEXT_DATE)
+        OldMainActivity.myRef.child("words")
+                .child(OldMainActivity.NEXT_DATE)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
@@ -47,7 +41,7 @@ public class ArchiveActivity extends AppCompatActivity {
                     }
                 });
 
-        MainActivity.myRef.child("archive")
+        OldMainActivity.myRef.child("archive")
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -97,12 +91,12 @@ public class ArchiveActivity extends AppCompatActivity {
                                     int position, long id) {
                 String data_to_return = lvMain.getItemAtPosition(position).toString();
                 String[] word = data_to_return.split(" - ");
-                DatabaseReference ref = MainActivity.myRef.child("words").child(MainActivity.NEXT_DATE).child(String.valueOf(index));
+                DatabaseReference ref = OldMainActivity.myRef.child("words").child(OldMainActivity.NEXT_DATE).child(String.valueOf(index));
                 ref.child("Russian").setValue(word[0]);
                 ref.child("English").setValue(word[1]);
                 ref.child("category").setValue("every_day");
 
-                Query queryRef = MainActivity.myRef.child("archive").orderByKey().equalTo(data_to_return);
+                Query queryRef = OldMainActivity.myRef.child("archive").orderByKey().equalTo(data_to_return);
                 queryRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {

@@ -1,7 +1,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.develop.vadim.english.ArchiveActivity">
+    tools:context="com.develop.vadim.english.Basic.ArchiveActivity">
     <item
         android:id="@+id/action_back"
         android:orderInCategory="100"

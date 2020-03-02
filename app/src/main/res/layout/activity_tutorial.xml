@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.develop.vadim.english.TutorialActivity">
+    tools:context="com.develop.vadim.english.Basic.TutorialActivity">
 
     <TextView
         android:id="@+id/textView2"

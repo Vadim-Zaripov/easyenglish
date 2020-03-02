@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">PULP</string>
+    <string name="app_name">Lett</string>
 
     <string name="settings">Настройки</string>
     <string name="end_of_words">Слов больше нет</string>
@@ -40,6 +40,25 @@
     <string name="pref_title_display_name">Display name</string>
     <string name="pref_default_display_name">John Smith</string>
     <string name="pref_title_add_friends_to_messages">Add friends to messages</string>
+    <string name="pref_header_data_sync">Data &amp; sync</string>
+    <string name="pref_title_sync_frequency">Sync frequency</string>
+
+    <!-- Example settings for Data & Sync -->
+    <string name="pref_title_system_sync_settings">System sync settings</string>
+    <string name="pref_header_notifications">Notifications</string>
+    <string name="pref_title_new_message_notifications">New message notifications</string>
+    <string name="pref_title_ringtone">Ringtone</string>
+    <string name="pref_ringtone_silent">Silent</string>
+    <string name="pref_title_vibrate">Vibrate</string>
+    <string name="next">Дальше→</string>
+    <string name="main_word_edittext_placeholder">Введите слово</string>
+
+    <!-- Example settings for Notifications -->
+    <string name="main_add_word">Добавить</string>
+    <string name="main_navigation_item_first">Добавить слово</string>
+    <string name="main_navigation_item_second">Кладбище</string>
+    <string name="serviceFeedbackKey">SERVICE</string>
+    <string name="sendWordToSreviceTag">SENDSERVICE</string>
     <string-array name="pref_example_list_titles">
         <item>Always</item>
         <item>When possible</item>
@@ -50,10 +69,6 @@
         <item>0</item>
         <item>-1</item>
     </string-array>
-
-    <!-- Example settings for Data & Sync -->
-    <string name="pref_header_data_sync">Data &amp; sync</string>
-    <string name="pref_title_sync_frequency">Sync frequency</string>
     <string-array name="pref_sync_frequency_titles">
         <item>15 minutes</item>
         <item>30 minutes</item>
@@ -62,6 +77,9 @@
         <item>6 hours</item>
         <item>Never</item>
     </string-array>
+
+    <!-- Main -->
+    <string name="service_saved_indexes_key">service_to_word_check_fragment_key</string>
     <string-array name="pref_sync_frequency_values">
         <item>15</item>
         <item>30</item>
@@ -81,21 +99,15 @@
         <item>3</item>
     </string-array>
     <string-array name="multi_select_list_preference_default_value" />
-    <string name="pref_title_system_sync_settings">System sync settings</string>
 
-    <!-- Example settings for Notifications -->
-    <string name="pref_header_notifications">Notifications</string>
-    <string name="pref_title_new_message_notifications">New message notifications</string>
-    <string name="pref_title_ringtone">Ringtone</string>
-    <string name="pref_ringtone_silent">Silent</string>
-    <string name="pref_title_vibrate">Vibrate</string>
-    <string name="next">Дальше→</string>
-
-    <!-- Main -->
-    <string name="main_word_edittext_placeholder">Введите слово</string>
-    <string name="main_add_word">Добавить</string>
-    <string name="main_navigation_item_first">Добавить слово</string>
-    <string name="main_navigation_item_second">Кладбище</string>
-
+<!-- Tasks -->
+    <string name="from_russian_to_english_task">Переведите с русского на английский</string>
+    <string name="from_english_to_russian_task">Переведите с английского на русский</string>
+    <string name="continue_repeating_words">Продолжить</string>
+    <string name="finish_repeating_words">Закончить</string>
+    <string name="user_words_check_label">Проверить слова</string>
+    <string name="words_check_stage">stage</string>
+    <string name="words_check_category_name">category</string>
+    <string name="word_check_flag">flag</string>
 </resources>
 

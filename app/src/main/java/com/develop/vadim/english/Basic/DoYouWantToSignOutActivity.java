@@ -1,10 +1,11 @@
-package com.develop.vadim.english;
+package com.develop.vadim.english.Basic;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 
+import com.develop.vadim.english.R;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class DoYouWantToSignOutActivity extends AppCompatActivity {

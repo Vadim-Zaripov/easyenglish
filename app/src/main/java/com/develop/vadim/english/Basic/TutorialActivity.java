@@ -1,9 +1,12 @@
-package com.develop.vadim.english;
+package com.develop.vadim.english.Basic;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+
+import com.develop.vadim.english.Basic.AuthenticationActivity;
+import com.develop.vadim.english.R;
 
 public class TutorialActivity extends AppCompatActivity {
 

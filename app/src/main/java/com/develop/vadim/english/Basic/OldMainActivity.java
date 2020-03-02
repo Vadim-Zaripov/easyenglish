@@ -1,4 +1,4 @@
-package com.develop.vadim.english;
+package com.develop.vadim.english.Basic;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -16,6 +16,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.develop.vadim.english.R;
 import com.getkeepsafe.taptargetview.TapTarget;
 import com.getkeepsafe.taptargetview.TapTargetSequence;
 import com.google.firebase.auth.FirebaseAuth;
@@ -33,7 +34,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Objects;
 
-public class MainActivity extends AppCompatActivity {
+public class OldMainActivity extends AppCompatActivity {
 
     public final String TAG = "myLogs";
     public EditText editText;
@@ -57,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.old_main_layout);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         //setSupportActionBar(toolbar);
         toolbar.inflateMenu(R.menu.menu);
@@ -214,7 +215,7 @@ public class MainActivity extends AppCompatActivity {
                             // get total available quest
                             String russian = dataSnapshot.child("Russian").getValue().toString();
                             String english = dataSnapshot.child("English").getValue().toString();
-                            Toast.makeText(MainActivity.this, english, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(OldMainActivity.this, english, Toast.LENGTH_SHORT).show();
                             if(Objects.equals(dataSnapshot.child("category").getValue().toString(), "every_day_russian")){
                                 String temp = russian;
                                 russian = english;
@@ -309,7 +310,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void changeWord(View view){
-        startActivity(new Intent(MainActivity.this, ChangeWordActivity.class));
+        startActivity(new Intent(OldMainActivity.this, ChangeWordActivity.class));
     }
 
     public void firstLaunch(){
@@ -349,13 +350,13 @@ public class MainActivity extends AppCompatActivity {
 
         switch(item.getItemId()){
             case R.id.navigation_new_word:
-                startActivity(new Intent(MainActivity.this, NewWordActivity.class));
+                startActivity(new Intent(OldMainActivity.this, NewWordActivity.class));
                 break;
             case R.id.navigation_settings:
-                startActivity(new Intent(MainActivity.this, DoYouWantToSignOutActivity.class));
+                startActivity(new Intent(OldMainActivity.this, DoYouWantToSignOutActivity.class));
                 break;
             case R.id.navigation_archive:
-                startActivity(new Intent(MainActivity.this, ArchiveActivity.class));
+                startActivity(new Intent(OldMainActivity.this, ArchiveActivity.class));
                 break;
         }
 
