@@ -1,89 +1,118 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#252525"
-    android:padding="@dimen/main_content_padding">
+    android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/main_title_textview"
-        android:layout_width="wrap_content"
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/editTextEnglish"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:fontFamily="@font/roboto"
-        android:text="@string/app_name"
-        android:textColor="@color/colorWhite"
-        android:textSize="@dimen/main_title_text_size" />
+        android:layout_marginBottom="24dp"
+        android:backgroundTint="@android:color/white"
+        android:hint="Слово на английском"
+        android:textColor="#ffffff"
+        android:textColorHighlight="@android:color/white"
+        android:textColorLink="#ffffff"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/editTextRussian"
+        app:layout_constraintEnd_toEndOf="@+id/editTextRussian"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/editTextRussian"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.964" />
 
-    <LinearLayout
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/editTextRussian"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:gravity="center"
-        android:orientation="vertical">
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:backgroundTint="@android:color/white"
+        android:hint="Перевод"
+        android:textColor="#ffffff"
+        android:textColorHighlight="@android:color/white"
+        android:textColorLink="#ffffff"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.395" />
 
-        <EditText
-            android:id="@+id/main_word_first_edittext"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/colorWhite"
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/categoryChooseCardView"
+        android:layout_width="246dp"
+        android:layout_height="56dp"
+        app:cardBackgroundColor="@color/WHITE_TRANSPARENT"
+        app:cardCornerRadius="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/editTextRussian"
+        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintStart_toStartOf="@+id/editTextRussian"
+        app:layout_constraintTop_toTopOf="parent"
+        app:cardElevation="0dp"
+        app:layout_constraintVertical_bias="0.499">
 
-            android:ems="10"
-            android:fontFamily="@font/roboto"
-            android:hint="@string/main_word_edittext_placeholder"
-            android:inputType="textPersonName"
-            android:textColor="@color/colorWhite"
-            android:textColorHint="@color/colorWhite" />
-
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/main_space_first_height" />
-
-        <EditText
-            android:id="@+id/main_word_second_edittext"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/colorWhite"
-            android:ems="10"
-            android:fontFamily="@font/roboto"
-            android:hint="@string/main_word_edittext_placeholder"
-            android:inputType="textPersonName"
-            android:textColor="@color/colorWhite"
-            android:textColorHint="@color/colorWhite"
-            android:textSize="@dimen/main_word_edittext_text_size" />
-
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/main_space_second_height" />
-
-        <EditText
-            android:id="@+id/main_word_category_edittext"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/colorWhite"
-            android:ems="10"
-            android:fontFamily="@font/roboto"
-            android:hint="Категория (если нужно)"
-            android:inputType="textPersonName"
-            android:textColor="@color/colorWhite"
-            android:textColorHint="@color/colorWhite"
-            android:textSize="@dimen/main_word_edittext_text_size" />
-
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/main_space_second_height" />
-
-        <Button
-            android:id="@+id/main_add_word_button"
+        <TextView
+            android:id="@+id/addNewWordCategoryTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/bordered_transparent_rectangle"
-            android:fontFamily="@font/roboto"
-            android:padding="@dimen/main_add_word_button_padding"
-            android:text="@string/main_add_word"
-            android:textColor="@color/colorWhite" />
+            android:textSize="22sp"
+            android:tag="animatedTagOne"
+            android:text="xenous"
+            android:layout_gravity="center"
+            android:textColor="@android:color/white">
+        </TextView>
 
-    </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 
-</FrameLayout>
+    <Button
+        android:id="@+id/button7"
+        style="@style/Widget.MaterialComponents.Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="616dp"
+        android:text="Создать"
+        app:layout_constraintEnd_toEndOf="@+id/editTextRussian"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="@+id/editTextRussian"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/categoriesMaterialCardView"
+        android:layout_width="299dp"
+        android:layout_height="466dp"
+        android:visibility="invisible"
+        app:cardCornerRadius="20dp"
+        app:contentPadding="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.26999998">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/categoriesWhileAddingWordRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        </androidx.recyclerview.widget.RecyclerView>
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.github.ybq.android.spinkit.SpinKitView
+        android:id="@+id/spinKit"
+        style="@style/SpinKitView.DoubleBounce"
+        android:layout_width="114dp"
+        android:layout_height="148dp"
+        android:layout_gravity="center"
+        app:SpinKit_Color="@color/colorWhite"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

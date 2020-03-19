@@ -5,10 +5,9 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.os.IBinder;
-import android.support.annotation.NonNull;
-import android.support.v4.content.LocalBroadcastManager;
+import androidx.annotation.NonNull;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.develop.vadim.english.Basic.MainActivity;
@@ -97,6 +96,7 @@ public class WordCheckService extends Service {
                             Word word = new Word(childrenOnReferenceCurrentIndex);
                             word.setWordInEnglish(Objects.requireNonNull(dataSnapshot.child(String.valueOf(childrenOnReferenceCurrentIndex)).child(Word.englishDatabaseKey).getValue()).toString());
                             word.setWordInRussian(Objects.requireNonNull(dataSnapshot.child(String.valueOf(childrenOnReferenceCurrentIndex)).child(Word.russianDatabaseKey).getValue()).toString());
+                            word.setWordCategory(Objects.requireNonNull(dataSnapshot.child(String.valueOf(childrenOnReferenceCurrentIndex)).child(Word.categoryDatabaseKey).getValue()).toString());
 
                             neededWordsList.add(word);
                         }

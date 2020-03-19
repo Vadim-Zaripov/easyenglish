@@ -1,13 +1,20 @@
 package com.develop.vadim.english.Basic;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.Date;
 import java.util.HashMap;
 
-public class Word {
+public class Word implements Parcelable {
     private String wordInEnglish;
     private String wordInRussian;
     private int level = EVERY_DAY;
@@ -16,6 +23,7 @@ public class Word {
     private String wordCategory = "no category";
 
     private long index;
+    private long archiveIndex;
 
     public final static String WORD_TAG = "WordClass";
 
@@ -26,24 +34,36 @@ public class Word {
     public static final String levelDatabaseKey = "level";
 
     public static final byte
-            EVERY_DAY = 0,
-            EVERY_TWO_DAYS = 1,
-            EVERY_THREE_DAYS = 2,
-            EVERY_FOUR_DAYS = 3,
-            EVERY_FIVE_DAYS = 4,
-            EVERY_SIX_DAYS = 5,
-            EVERY_WEEK = 6,
-            EVERY_TWO_WEEKS = 7,
-            EVERY_MONTH = 8,
-            EVERY_TWO_MONTHS = 9,
-            EVERY_SIX_MONTHS = 10,
-            EVERY_YEAR = 11;
+            EVERY_DAY = 0;
 
     public Word(long ind) {
         this.index = ind;
         this.ind = String.valueOf(ind);
         Log.d(WORD_TAG, "Word : New word has been created");
     }
+
+    protected Word(Parcel in) {
+        wordInEnglish = in.readString();
+        wordInRussian = in.readString();
+        level = in.readInt();
+        date = in.readLong();
+        ind = in.readString();
+        wordCategory = in.readString();
+        index = in.readLong();
+        archiveIndex = in.readLong();
+    }
+
+    public static final Creator<Word> CREATOR = new Creator<Word>() {
+        @Override
+        public Word createFromParcel(Parcel in) {
+            return new Word(in);
+        }
+
+        @Override
+        public Word[] newArray(int size) {
+            return new Word[size];
+        }
+    };
 
     public void sentWordToService() {
         Log.d(WORD_TAG, "Word : starting writing data to database");
@@ -125,5 +145,20 @@ public class Word {
         if(level != EVERY_DAY) {
             level -= 1;
         }
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(wordInEnglish);
+        dest.writeString(wordInRussian);
+        dest.writeInt(level);
+        dest.writeLong(date);
+        dest.writeString(ind);
+        dest.writeString(wordCategory);
     }
 }

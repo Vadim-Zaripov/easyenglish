@@ -1,11 +1,13 @@
 package com.develop.vadim.english.Broadcasts;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import android.util.Log;
 
 import com.develop.vadim.english.R;
@@ -27,7 +29,7 @@ public class WordCheckBroadcast extends BroadcastReceiver {
         editor.apply();
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, notificationId)
-                .setSmallIcon(R.drawable.ic_launcher_background)
+                .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle("Lett")
                 .setContentText("Пора повторить слова!")
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
@@ -38,5 +40,18 @@ public class WordCheckBroadcast extends BroadcastReceiver {
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
 
         notificationManagerCompat.notify(200, builder.build());
+
+
+
+        //Set up alarm service
+        Intent alarmServiceIntent = new Intent(context, WordCheckBroadcast.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
+
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+
+        long rightNowTime = System.currentTimeMillis();
+
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, rightNowTime + 60000, pendingIntent);
+
     }
 }

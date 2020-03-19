@@ -1,12 +1,8 @@
 package com.develop.vadim.english.Fragments;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
-
-import com.develop.vadim.english.Fragments.AddNewWordFragment;
-import com.develop.vadim.english.Fragments.WordsArchiveFragment;
-import com.develop.vadim.english.Fragments.WordsUserCheckFragment;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentStatePagerAdapter;
 
 public class FragmentViewPagerAdapter extends FragmentStatePagerAdapter {
 

@@ -6,4 +6,7 @@
     <color name="buttonColor">#f55353</color>
     <color name="colorWhite">#ffffff</color>
     <color name="colorRed">#ff2020</color>
+    <color name="WHITE_TRANSPARENT">#70FFFFFF</color>
+    <color name="LIGHT_GREEN_TRANSPARENT">#7055efc4</color>
+    <color name="LIGHT_PURPLE_TRANSPARENT">#70a29bfe</color>
 </resources>

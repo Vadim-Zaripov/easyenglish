@@ -4,24 +4,21 @@ import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Build;
-import android.os.PersistableBundle;
-import android.support.annotation.NonNull;
-import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
+
+import androidx.annotation.NonNull;
+import androidx.viewpager.widget.ViewPager;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
 import com.develop.vadim.english.Broadcasts.WordCheckBroadcast;
 import com.develop.vadim.english.Fragments.FragmentViewPagerAdapter;
-import com.develop.vadim.english.Fragments.WordCheckFragment;
+import com.develop.vadim.english.Fragments.WordCheckDialogFragment;
 import com.develop.vadim.english.R;
+import com.google.android.material.card.MaterialCardView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -47,6 +44,8 @@ public class MainActivity extends AppCompatActivity {
     public static long index;
 
     public static String ind;
+
+
 
     public static final String PARCELABLE_EXTRA = "Parcelable";
 
@@ -79,6 +78,8 @@ public class MainActivity extends AppCompatActivity {
         initDate();
         createNotificationChannel();
         setUpService();
+
+        MaterialCardView materialCardView = new MaterialCardView(this);
 
         fragmentViewPagerAdapter = new FragmentViewPagerAdapter(getSupportFragmentManager());
         viewPager = findViewById(R.id.mainViewPagerId);
@@ -133,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
         long rightNowTime = System.currentTimeMillis();
 
         alarmManager.cancel(pendingIntent);
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, rightNowTime, 60000, pendingIntent);
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, rightNowTime + 60000, pendingIntent);
     }
 
     private void createNotificationChannel() {
@@ -153,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void initDefaultFiles() {
         user = FirebaseAuth.getInstance().getCurrentUser();
-//        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+    //       FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         reference = FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid());
         reference.keepSynced(true);
 
@@ -171,8 +172,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void callWordsCheck() {
-        WordCheckFragment wordCheckFragment = new WordCheckFragment();
-        wordCheckFragment.show(getFragmentManager(), "WordCheckFragment Tag");
+        Bundle bundle = new Bundle();
+        bundle.putBoolean(getString(R.string.parcelableWordKey), false);
+
+        WordCheckDialogFragment wordCheckDialogFragment = new WordCheckDialogFragment();
+        wordCheckDialogFragment.setArguments(bundle);
+        wordCheckDialogFragment.show(getFragmentManager(), "WordCheckDialogFragment Tag");
     }
 
     private void initDate() {
