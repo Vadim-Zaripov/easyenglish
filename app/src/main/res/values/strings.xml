@@ -12,10 +12,10 @@
     <string name="email">Email</string>
     <string name="password">Пароль</string>
     <string name="enter">Войти</string>
-    <string name="registration">Зарегистрироваться</string>
+    <string name="registration">Регистрация</string>
 
     <!-- Activity names-->
-    <string name="auth">Вход</string>
+    <string name="auth">Lett</string>
     <string name="title_activity_main">Слова</string>
     <string name="tutorial">Обучение</string>
     <string name="enter_act">Вход</string>
@@ -59,6 +59,38 @@
     <string name="main_navigation_item_second">Кладбище</string>
     <string name="serviceFeedbackKey">SERVICE</string>
     <string name="sendWordToSreviceTag">SENDSERVICE</string>
+    <string name="service_saved_indexes_key">service_to_word_check_fragment_key</string>
+    <string name="from_russian_to_english_task">Переведите с русского на английский</string>
+    <string name="from_english_to_russian_task">Переведите с английского на русский</string>
+
+    <!-- Main -->
+    <string name="continue_repeating_words">Продолжить</string>
+    <string name="finish_repeating_words">Закончить</string>
+    <string name="user_words_check_label">Проверить слова</string>
+    <string name="words_check_stage">stage</string>
+    <string name="words_check_category_name">category</string>
+
+    <!-- Tasks -->
+    <string name="word_check_flag">flag</string>
+    <string name="parcelableWordKey">parcelableWord</string>
+    <string name="login">Войти</string>
+    <string name="checkingWord">Проверить слова</string>
+    <string name="checkingWordHint">Перевод</string>
+    <string name="userAnswer">Ваш ответ:</string>
+    <string name="search">Поиск</string>
+    <string name="hourOfDay">hourOfDay</string>
+    <string name="minute">minutes</string>
+    <string name="firstRun">firstRun</string>
+    <string name="defaultCategory">defaultCategory</string>
+    <string name="checkWord">Проверить</string>
+    <string name="addWord">Добавить слово</string>
+    <string name="saveChanges">Сохранить изменения</string>
+    <string name="deleteWord">Удалить</string>
+    <string name="deleteWordMessage">Вы уверены, что хотите удалить слово</string>
+    <string name="repeatPassword">Повторите пароль</string>
+    <string name="createAccount">Создайте аккаунт Lett!</string>
+    <string name="enterAccount">или войдите в существующий</string>
+    <string name="lettsGo">Вперед!</string>
     <string-array name="pref_example_list_titles">
         <item>Always</item>
         <item>When possible</item>
@@ -77,9 +109,6 @@
         <item>6 hours</item>
         <item>Never</item>
     </string-array>
-
-    <!-- Main -->
-    <string name="service_saved_indexes_key">service_to_word_check_fragment_key</string>
     <string-array name="pref_sync_frequency_values">
         <item>15</item>
         <item>30</item>
@@ -99,16 +128,5 @@
         <item>3</item>
     </string-array>
     <string-array name="multi_select_list_preference_default_value" />
-
-<!-- Tasks -->
-    <string name="from_russian_to_english_task">Переведите с русского на английский</string>
-    <string name="from_english_to_russian_task">Переведите с английского на русский</string>
-    <string name="continue_repeating_words">Продолжить</string>
-    <string name="finish_repeating_words">Закончить</string>
-    <string name="user_words_check_label">Проверить слова</string>
-    <string name="words_check_stage">stage</string>
-    <string name="words_check_category_name">category</string>
-    <string name="word_check_flag">flag</string>
-    <string name="parcelableWordKey">parcelableWord</string>
 </resources>
 

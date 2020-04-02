@@ -17,10 +17,10 @@ import java.util.HashMap;
 public class Word implements Parcelable {
     private String wordInEnglish;
     private String wordInRussian;
-    private int level = EVERY_DAY;
+    private int level = 0;
     private long date;
     private String ind;
-    private String wordCategory = "no category";
+    private String wordCategory = "default";
 
     private long index;
     private long archiveIndex;
@@ -32,9 +32,6 @@ public class Word implements Parcelable {
     public static final String categoryDatabaseKey = "category";
     public static final String dateKey = "date";
     public static final String levelDatabaseKey = "level";
-
-    public static final byte
-            EVERY_DAY = 0;
 
     public Word(long ind) {
         this.index = ind;
@@ -51,6 +48,10 @@ public class Word implements Parcelable {
         wordCategory = in.readString();
         index = in.readLong();
         archiveIndex = in.readLong();
+    }
+
+    public String getInd() {
+        return ind;
     }
 
     public static final Creator<Word> CREATOR = new Creator<Word>() {
@@ -93,20 +94,42 @@ public class Word implements Parcelable {
         return dateKey;
     }
 
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
+    }
+
     public void removeWordFromService() {
         Log.d(WORD_TAG, "Word : starting deleting word from database");
 
-        MainActivity.reference.child("words").child(ind).removeValue();
+        MainActivity.reference.child("words").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
+                DatabaseReference reference = MainActivity.reference.child("words").child(ind);
+                reference.child(Word.englishDatabaseKey).setValue(dataSnapshot.child(String.valueOf(dataSnapshot.getChildrenCount() - 1)).child(Word.englishDatabaseKey).getValue());
+                reference.child(Word.russianDatabaseKey).setValue(dataSnapshot.child(String.valueOf(dataSnapshot.getChildrenCount() - 1)).child(Word.russianDatabaseKey).getValue());
+                reference.child(Word.dateKey).setValue(dataSnapshot.child(String.valueOf(dataSnapshot.getChildrenCount() - 1)).child(Word.dateKey).getValue());
+                reference.child(Word.categoryDatabaseKey).setValue(dataSnapshot.child(String.valueOf(dataSnapshot.getChildrenCount() - 1)).child(Word.categoryDatabaseKey).getValue());
+                reference.child(Word.levelDatabaseKey).setValue(dataSnapshot.child(String.valueOf(dataSnapshot.getChildrenCount() - 1)).child(Word.levelDatabaseKey).getValue());
+
+                reference.child(String.valueOf(dataSnapshot.getChildrenCount() - 1)).removeValue();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) { }
+        });
     }
 
-    public void changeWordInService() {
+    public void changeWordInService(Word word) {
         Log.d(WORD_TAG, "Word : starting changing word information in database");
 
         DatabaseReference databaseReference = MainActivity.reference.child("words").child(ind);
-        databaseReference.child(russianDatabaseKey).setValue(wordInRussian);
-        databaseReference.child(englishDatabaseKey).setValue(wordInEnglish);
-        databaseReference.child(categoryDatabaseKey).setValue(EVERY_DAY);
+        databaseReference.child(russianDatabaseKey).setValue(word.getWordInRussian());
+        databaseReference.child(categoryDatabaseKey).setValue(0);
     }
 
     public String getWordInEnglish() {
@@ -141,15 +164,13 @@ public class Word implements Parcelable {
         return newWord;
     }
 
-    public void downgradeLevel() {
-        if(level != EVERY_DAY) {
-            level -= 1;
-        }
-    }
-
     @Override
     public int describeContents() {
         return 0;
+    }
+
+    public long getIndex() {
+        return index;
     }
 
     @Override

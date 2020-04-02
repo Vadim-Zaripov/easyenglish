@@ -1,12 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#ff6547</color>
+    <color name="colorPrimary">#5f27cd</color>
     <color name="colorPrimaryDark">#fd5534</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorAccent">#a29bfe</color>
     <color name="buttonColor">#f55353</color>
     <color name="colorWhite">#ffffff</color>
     <color name="colorRed">#ff2020</color>
+    
     <color name="WHITE_TRANSPARENT">#70FFFFFF</color>
     <color name="LIGHT_GREEN_TRANSPARENT">#7055efc4</color>
     <color name="LIGHT_PURPLE_TRANSPARENT">#70a29bfe</color>
+    <color name="JADE_DUST_TRANSPARENT">#7000d2d3</color>
+    <color name="NASU_PURPLE_TRANSPARENT">#705f27cd</color>
+    <color name="CASSANDORA_YELLOW">#70feca57</color>
+    <color name="JELLYFISH">#70ff9ff3</color>
+    <color name="DOUBLE_DRAGON_SKIN">#70ff9f43</color>
+
+    <color name="wrongWordRed">#F84291</color>
+    <color name="rightWordGreen">#3BFFB6</color>
 </resources>

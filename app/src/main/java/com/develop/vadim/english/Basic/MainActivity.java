@@ -1,11 +1,14 @@
 package com.develop.vadim.english.Basic;
 
-import android.app.AlarmManager;
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Build;
 
 import androidx.annotation.NonNull;
@@ -13,12 +16,14 @@ import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.develop.vadim.english.Broadcasts.WordCheckBroadcast;
 import com.develop.vadim.english.Fragments.FragmentViewPagerAdapter;
-import com.develop.vadim.english.Fragments.WordCheckDialogFragment;
 import com.develop.vadim.english.R;
-import com.google.android.material.card.MaterialCardView;
+import com.develop.vadim.english.Services.WordCheckService;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -26,13 +31,19 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
+import com.google.firebase.dynamiclinks.PendingDynamicLinkData;
+import com.tbuonomo.viewpagerdotsindicator.DotsIndicator;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -45,15 +56,17 @@ public class MainActivity extends AppCompatActivity {
 
     public static String ind;
 
-
-
     public static final String PARCELABLE_EXTRA = "Parcelable";
+
+    private SharedPreferences wordsCheckSharedPreferences;
 
     public String NOW_DATE;
     public static String NEXT_DATE;
     public String WEEK_DATE, MONTH_DATE, THREE_MONTH_DATE, SIX_MONTH_DATE;
     public DateFormat format;
     public Date now;
+    public Calendar calendar = Calendar.getInstance();
+    public GregorianCalendar gregorianCalendar = new GregorianCalendar();
 
     public static FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     public static DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid());
@@ -61,13 +74,9 @@ public class MainActivity extends AppCompatActivity {
     public final static int STATUS_START = 100;
     public final static int STATUS_FINISH = 200;
 
-    public final static String PARAM_TIME = "time";
-    public final static String PARAM_TASK = "task";
-    public final static String PARAM_RESULT = "result";
-    public final static String PARAM_STATUS = "status";
+    public final static String PARAM_STATUS = "Status";
 
     public final static String BROADCAST_ACTION = "ru.lett.xenous.action.BROADCAST";
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,28 +86,43 @@ public class MainActivity extends AppCompatActivity {
         initDefaultFiles();
         initDate();
         createNotificationChannel();
-        setUpService();
 
-        MaterialCardView materialCardView = new MaterialCardView(this);
+        wordsCheckSharedPreferences = getSharedPreferences(getPackageName() + ".wordsCheckFlag", MODE_PRIVATE);
 
         fragmentViewPagerAdapter = new FragmentViewPagerAdapter(getSupportFragmentManager());
+
         viewPager = findViewById(R.id.mainViewPagerId);
         viewPager.setAdapter(fragmentViewPagerAdapter);
 
+        DotsIndicator dotsIndicator = findViewById(R.id.dots_indicator);
+        dotsIndicator.setViewPager(viewPager);
+
+        FirebaseDynamicLinks
+                .getInstance()
+                .getDynamicLink(getIntent())
+                .addOnSuccessListener(new OnSuccessListener<PendingDynamicLinkData>() {
+                    @Override
+                    public void onSuccess(PendingDynamicLinkData pendingDynamicLinkData) {
+                        Uri deepLink;
+                        if(pendingDynamicLinkData != null) {
+                            deepLink = pendingDynamicLinkData.getLink();
+                            String[] splitedLink = deepLink.toString().split("/");
+
+                            String category = splitedLink[splitedLink.length - 1];
+                            String sharingUserUid = splitedLink[splitedLink.length - 2];
+
+                            new Thread(new StartAddingCategoryFromLink(category, sharingUserUid)).start();
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d("TAG", "FAILED");
+                    }
+                });
+
         callCheck();
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        Log.d(MainActivity.MAIN_ACTIVITY_TAG
-                , "Start Result");
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-
     }
 
     @Override
@@ -108,49 +132,50 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-    }
+    public void onBackPressed() { }
+
 
     private void callCheck() {
-        SharedPreferences sharedPreferences = getSharedPreferences("Main Activity SP", MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
+            if(wordsCheckSharedPreferences.getInt(getPackageName() + ".wordsCheckFlag", -1) != Calendar.getInstance().get(Calendar.DAY_OF_YEAR)) {
+            Intent intent = new Intent(this, WordCheckService.class);
+            startService(intent);
 
-        boolean b = sharedPreferences.getBoolean(getString(R.string.word_check_flag), false);
-        if(b) {
-            callWordsCheck();
+            BroadcastReceiver wordsCheckBroadCastReceiver = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    switch(intent.getIntExtra(PARAM_STATUS, 0)) {
+                        case STATUS_START:
+                            Toast.makeText(context, "Загружаем слова", Toast.LENGTH_LONG).show();
+                            break;
+                        case STATUS_FINISH:
+                            callWordsCheck();
+                            break;
+                    }
+                }
+            };
 
-            editor.putBoolean(getString(R.string.word_check_flag), false);
-            editor.apply();
+            IntentFilter intentFilter = new IntentFilter(BROADCAST_ACTION);
+            registerReceiver(wordsCheckBroadCastReceiver, intentFilter);
+
+            wordsCheckSharedPreferences.edit().putInt(getPackageName() + ".wordsCheckFlag", Calendar.getInstance().get(Calendar.DAY_OF_YEAR)).apply();
         }
-    }
-
-    public void setUpService() {
-        Intent intent = new Intent(this, WordCheckBroadcast.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
-
-        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-
-        long rightNowTime = System.currentTimeMillis();
-
-        alarmManager.cancel(pendingIntent);
-        alarmManager.setExact(AlarmManager.RTC_WAKEUP, rightNowTime + 60000, pendingIntent);
     }
 
     private void createNotificationChannel() {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = "LettReminderChannel";
             String description = "Notification channel for Lett Reminder";
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            int importance = NotificationManager.IMPORTANCE_HIGH;
             NotificationChannel channel = new NotificationChannel(WordCheckBroadcast.notificationId, name, importance);
+            channel.enableLights(true);
+            channel.enableVibration(true);
+            channel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
             channel.setDescription(description);
 
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
         }
     }
-
-
 
     private void initDefaultFiles() {
         user = FirebaseAuth.getInstance().getCurrentUser();
@@ -172,12 +197,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void callWordsCheck() {
-        Bundle bundle = new Bundle();
-        bundle.putBoolean(getString(R.string.parcelableWordKey), false);
+        Intent wordCheckIntent = new Intent(this, WordCheckActivity.class);
+        wordCheckIntent.putExtra(getString(R.string.parcelableWordKey), false);
 
-        WordCheckDialogFragment wordCheckDialogFragment = new WordCheckDialogFragment();
-        wordCheckDialogFragment.setArguments(bundle);
-        wordCheckDialogFragment.show(getFragmentManager(), "WordCheckDialogFragment Tag");
+        startActivity(wordCheckIntent);
     }
 
     private void initDate() {
@@ -196,5 +219,59 @@ public class MainActivity extends AppCompatActivity {
         THREE_MONTH_DATE = format.format(calendar.getTime());
         calendar.add(Calendar.MONTH, 3);
         SIX_MONTH_DATE = format.format(calendar.getTime());
+    }
+
+    private class StartAddingCategoryFromLink implements Runnable {
+        private String category;
+        private String sharingUserUid;
+        private List<Word> sharingWordList = new ArrayList<>();
+
+        private StartAddingCategoryFromLink(String category, String sharingUserUid) {
+            this.category = category;
+            this.sharingUserUid = sharingUserUid;
+        }
+
+        @Override
+        public void run() {
+            final DatabaseReference sharingUserReference  = FirebaseDatabase.getInstance().getReference().child("users").child(sharingUserUid).child("words");
+            sharingUserReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    for(int wordsCounter = 0; wordsCounter < dataSnapshot.getChildrenCount(); wordsCounter++) {
+                        if(Objects.equals(dataSnapshot.child(String.valueOf(wordsCounter)).child(Word.categoryDatabaseKey).getValue(), category)) {
+                            Log.d("HUY", "bib");
+                            Word newWord = new Word(wordsCounter);
+                            newWord.setWordInRussian(Objects.requireNonNull(dataSnapshot.child(String.valueOf(wordsCounter)).child(Word.russianDatabaseKey).getValue()).toString());
+                            newWord.setWordInEnglish(Objects.requireNonNull(dataSnapshot.child(String.valueOf(wordsCounter)).child(Word.englishDatabaseKey).getValue()).toString());
+                            newWord.setWordCategory(category);
+
+                            sharingWordList.add(newWord);
+                        }
+                    }
+
+                    for(int wordsCounter = 0; wordsCounter < sharingWordList.size(); wordsCounter++) {
+                        Log.d("BIBKA", String.valueOf(sharingWordList.size()));
+                        sharingWordList.get(wordsCounter).sentWordToService();
+                    }
+
+                    FirebaseDatabase.getInstance().getReference().child("users").child(sharingUserUid).child("categories").addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            FirebaseDatabase.getInstance().getReference().child("users").child(sharingUserUid).child("categories").child(String.valueOf(dataSnapshot.getChildrenCount())).setValue(category);
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+        }
     }
 }

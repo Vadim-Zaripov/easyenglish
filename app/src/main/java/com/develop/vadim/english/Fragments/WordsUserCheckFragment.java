@@ -1,6 +1,8 @@
 package com.develop.vadim.english.Fragments;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import androidx.annotation.NonNull;
@@ -15,28 +17,50 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.inputmethod.EditorInfo;
+import android.widget.Filter;
+import android.widget.Filterable;
+import android.widget.SearchView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.develop.vadim.english.Basic.MainActivity;
+import com.develop.vadim.english.Basic.WordCheckActivity;
 import com.develop.vadim.english.R;
 import com.develop.vadim.english.Basic.Word;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.card.MaterialCardView;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.dynamiclinks.DynamicLink;
+import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
+import com.google.firebase.dynamiclinks.ShortDynamicLink;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class WordsUserCheckFragment extends Fragment {
 
     private RecyclerView wordsCategoriesRecyclerView;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private SearchView categorySearchView;
+    private MaterialCardView shareMaterialCardView;
+    private MaterialCardView deleteMaterialCardView;
 
     private DatabaseReference databaseReference;
     private DatabaseReference categoryReference;
 
     private static ArrayList<String> categoryNames;
+
+    private WordsCategoriesRecyclerViewAdapter wordsCategoriesRecyclerViewAdapter;
 
     @Nullable
     @Override
@@ -50,10 +74,10 @@ public class WordsUserCheckFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         new Thread(new InitCategoriesThread()).start();
 
         wordsCategoriesRecyclerView = view.findViewById(R.id.userWordsCheckRecyclerView);
-
         swipeRefreshLayout = view.findViewById(R.id.userWordsCheckSwipeToRefreshLayout);
         swipeRefreshLayout.setRefreshing(true);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -62,23 +86,75 @@ public class WordsUserCheckFragment extends Fragment {
                 new Handler().post(new Runnable() {
                     @Override
                     public void run() {
+                        swipeRefreshLayout.setRefreshing(true);
                         new Thread(new InitCategoriesThread()).start();
                     }
                 });
             }
         });
 
-        wordsCategoriesRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
+        categorySearchView = view.findViewById(R.id.categorySearchView);
+        categorySearchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        categorySearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
 
-        super.onViewCreated(view, savedInstanceState);
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                wordsCategoriesRecyclerViewAdapter.getFilter().filter(newText);
+
+                return false;
+            }
+        });
+
+        wordsCategoriesRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
     }
 
-    private class WordsCategoriesRecyclerViewAdapter extends RecyclerView.Adapter<WordsCategoriesRecyclerViewAdapter.WordsCategoriesRecyclerViewHolder> {
+    private class WordsCategoriesRecyclerViewAdapter extends RecyclerView.Adapter<WordsCategoriesRecyclerViewAdapter.WordsCategoriesRecyclerViewHolder> implements Filterable {
 
+        ArrayList<String> categoryNamesListFull;
         ArrayList<String> categoryNamesList;
+
+        Handler removeCategoryHandler;
+
+        Filter categoryFilter = new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence constraint) {
+                List<String> filteredCategoriesList = new ArrayList<>();
+
+                if(constraint == null || constraint.length() == 0) {
+                    filteredCategoriesList.addAll(categoryNamesListFull);
+                }
+                else {
+                    String filterPattern = constraint.toString().toLowerCase().trim();
+
+                    for(String categoryName : categoryNamesListFull) {
+                        if(categoryName.toLowerCase().contains(filterPattern)) {
+                            filteredCategoriesList.add(categoryName);
+                        }
+                    }
+                }
+
+                FilterResults results = new FilterResults();
+                results.values = filteredCategoriesList;
+
+                return results;
+            }
+
+            @Override
+            protected void publishResults(CharSequence constraint, FilterResults results) {
+                categoryNamesList.clear();
+                categoryNamesList.addAll((ArrayList) results.values);
+
+                notifyDataSetChanged();
+            }
+        };
 
         WordsCategoriesRecyclerViewAdapter(ArrayList<String> categoryNamesList) {
             this.categoryNamesList = categoryNamesList;
+            this.categoryNamesListFull = new ArrayList<>(categoryNamesList);
         }
 
         @NonNull
@@ -90,7 +166,11 @@ public class WordsUserCheckFragment extends Fragment {
         @Override
         public void onBindViewHolder(WordsCategoriesRecyclerViewHolder holder, int position) {
             holder.category = categoryNamesList.get(position);
-            holder.categoryName.setText(categoryNamesList.get(position));
+            holder.categoryTextView.setText(categoryNamesList.get(position));
+            holder.position = position;
+
+            Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.appear);
+            holder.materialCardView.startAnimation(animation);
         }
 
         @Override
@@ -98,12 +178,20 @@ public class WordsUserCheckFragment extends Fragment {
             return categoryNamesList.size();
         }
 
+        @Override
+        public Filter getFilter() {
+            return categoryFilter;
+        }
+
         class WordsCategoriesRecyclerViewHolder extends RecyclerView.ViewHolder {
-            TextView categoryName;
+            MaterialCardView materialCardView;
+            TextView categoryTextView;
             String category;
+            int position;
 
             WordsCategoriesRecyclerViewHolder(final View itemView) {
                 super(itemView);
+
                 itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -112,7 +200,82 @@ public class WordsUserCheckFragment extends Fragment {
                         new Thread(startCheckingThread).start();
                     }
                 });
-                categoryName = itemView.findViewById(R.id.archiveWordInEnglishTextView);
+
+                itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        final BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(v.getContext());
+                        bottomSheetDialog.setContentView(R.layout.categories_bottom_sheet_dialog);
+                        bottomSheetDialog.show();
+
+                        shareMaterialCardView = bottomSheetDialog.findViewById(R.id.bottomSheetShareCardView);
+                        deleteMaterialCardView  = bottomSheetDialog.findViewById(R.id.bottomSheetDeleteCardView);
+
+                        shareMaterialCardView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                FirebaseDynamicLinks
+                                        .getInstance()
+                                        .createDynamicLink()
+                                        .setLink(Uri.parse("https://xenous.ru/lett" + "/" + FirebaseAuth.getInstance().getUid() + "/" + category))
+                                        .setDomainUriPrefix("https://easyenglish.page.link")
+                                        .setAndroidParameters(
+                                                new DynamicLink.AndroidParameters.Builder("com.develop.vadim.english").build()
+                                        )
+                                        .buildShortDynamicLink()
+                                        .addOnSuccessListener(new OnSuccessListener<ShortDynamicLink>() {
+                                            @Override
+                                            public void onSuccess(ShortDynamicLink shortDynamicLink) {
+                                                Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                                                shareIntent.setType("text/plain");
+                                                String shareBody = shortDynamicLink.getShortLink().toString();
+                                                shareIntent.putExtra(Intent.EXTRA_TEXT, shareBody);
+
+                                                startActivity(Intent.createChooser(shareIntent, "Поделиться"));
+                                            }
+                                        })
+                                        .addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                Log.d("TAG", e.toString());
+                                            }
+                                        });
+
+
+                            }
+                        });
+
+                        deleteMaterialCardView.setOnClickListener(new View.OnClickListener() {
+                            @SuppressLint("HandlerLeak")
+                            @Override
+                            public void onClick(View v) {
+                                if(position != 0) {
+                                    removeCategoryHandler = new Handler() {
+                                        @Override
+                                        public void handleMessage(Message msg) {
+                                            super.handleMessage(msg);
+
+                                            swipeRefreshLayout.setRefreshing(false);
+                                            categoryNamesList.remove(position);
+                                            notifyDataSetChanged();
+                                        }
+                                    };
+
+                                    new Thread(new RemoveCategoryThread(categoryTextView.getText().toString())).start();
+                                }
+                                else {
+                                    Toast.makeText(v.getContext(), "Данная категория не может быть удалена", Toast.LENGTH_SHORT).show();
+                                }
+
+                                bottomSheetDialog.cancel();
+                            }
+                        });
+
+                        return false;
+                    }
+                });
+                materialCardView = itemView.findViewById(R.id.bob);
+                categoryTextView = itemView.findViewById(R.id.archiveWordInEnglishTextView);
             }
         }
     }
@@ -172,26 +335,20 @@ public class WordsUserCheckFragment extends Fragment {
         }
 
         private void callCheckService() {
-            WordCheckDialogFragment wordCheckDialogFragment = new WordCheckDialogFragment();
+            Intent wordCheckIntent = new Intent(getContext(), WordCheckActivity.class);
 
-            wordCheckDialogFragment.setArguments(createBundle());
-            wordCheckDialogFragment.show(Objects.requireNonNull(getActivity()).getFragmentManager(), "WordCheckDialogFragment Tag");
+            wordCheckIntent.putExtra(getString(R.string.word_check_flag), true);
+            wordCheckIntent.putExtra(getString(R.string.parcelableWordKey), neededWordList);
 
-        }
-
-        private Bundle createBundle() {
-            Bundle bundle = new Bundle();
-            bundle.putParcelableArrayList(getString(R.string.parcelableWordKey), neededWordList);
-            bundle.putBoolean(getString(R.string.word_check_flag), true);
-
-            return bundle;
+            startActivity(wordCheckIntent);
         }
     }
 
     private class InitCategoriesThread implements Runnable {
-        InitCategoriesThread() {
-            categoryNames = new ArrayList<>();
-            categoryNames.add("Все слова");
+
+            private InitCategoriesThread() {
+                categoryNames = new ArrayList<>();
+                categoryNames.add("Все слова");
         }
 
         @SuppressLint("HandlerLeak")
@@ -199,23 +356,22 @@ public class WordsUserCheckFragment extends Fragment {
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
-
+                wordsCategoriesRecyclerViewAdapter = new WordsCategoriesRecyclerViewAdapter(categoryNames);
                 swipeRefreshLayout.setRefreshing(false);
-                updateRecyclerView();
+                wordsCategoriesRecyclerView.setAdapter(wordsCategoriesRecyclerViewAdapter);
             }
         };
 
         @Override
         public void run() {
-
             categoryReference.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    for(int categoryReferenceChildrenCounter = 0 ; categoryReferenceChildrenCounter < dataSnapshot.getChildrenCount(); categoryReferenceChildrenCounter++) {
+                    for(int categoryReferenceChildrenCounter = 0; categoryReferenceChildrenCounter < dataSnapshot.getChildrenCount(); categoryReferenceChildrenCounter++) {
                         categoryNames.add(String.valueOf(dataSnapshot.child(String.valueOf(categoryReferenceChildrenCounter)).getValue()));
                     }
 
-                    handler.sendMessage(handler.obtainMessage());
+                    handler.sendMessage(handler.obtainMessage()); //Отправка уникального объекта класса Message handler'у
                 }
 
                 @Override
@@ -223,13 +379,68 @@ public class WordsUserCheckFragment extends Fragment {
             });
         }
 
-        private void updateRecyclerView() {
-            wordsCategoriesRecyclerView.setAdapter(new WordsCategoriesRecyclerViewAdapter(categoryNames));
-        }
     }
 
-    public static ArrayList<String> getCategoryNames() {
+    private class RemoveCategoryThread implements  Runnable {
+        String category;
+        boolean isCategoryDeleted = false;
 
-        return categoryNames;
+        @SuppressLint("HandlerLeak")
+        Handler handler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        };
+
+        RemoveCategoryThread(String categoryName) {
+            this.category = categoryName;
+
+            swipeRefreshLayout.setRefreshing(true);
+        }
+
+        @Override
+        public void run() {
+            categoryReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    for(int categoriesCounter = 0; categoriesCounter < dataSnapshot.getChildrenCount(); categoriesCounter++) {
+
+                        //Removing category from categories list
+                        if(Objects.equals(category, dataSnapshot.child(String.valueOf(categoriesCounter)).getValue())) {
+                            categoryReference.child(String.valueOf(categoriesCounter)).setValue(dataSnapshot.child(String.valueOf(dataSnapshot.getChildrenCount() - 1)).getValue());
+                            categoryReference.child(String.valueOf(dataSnapshot.getChildrenCount() - 1)).removeValue();
+
+                            isCategoryDeleted = true;
+                        }
+                    }
+
+                    //Replacing removing category
+                    if(isCategoryDeleted) {
+                        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                for(int wordsCounter = 0; wordsCounter < dataSnapshot.getChildrenCount(); wordsCounter++) {
+                                    if(Objects.requireNonNull(dataSnapshot.child(String.valueOf(wordsCounter)).child(Word.categoryDatabaseKey).getValue()).toString().equals(category)) {
+                                        databaseReference.child(String.valueOf(wordsCounter)).child(Word.categoryDatabaseKey).setValue("default");
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) { }
+                        });
+                    }
+
+                    wordsCategoriesRecyclerViewAdapter.removeCategoryHandler.sendMessage(wordsCategoriesRecyclerViewAdapter.removeCategoryHandler.obtainMessage());
+                }
+
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) { }
+            });
+        }
     }
 }

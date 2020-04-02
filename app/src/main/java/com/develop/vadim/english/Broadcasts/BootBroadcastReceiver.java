@@ -13,8 +13,9 @@ public class BootBroadcastReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        if(intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED) || intent.getAction().equals(Intent.ACTION_REBOOT))
-        startServiceByAlarm(context);
+        if(intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED) || intent.getAction().equals(Intent.ACTION_REBOOT)) {
+            startServiceByAlarm(context);
+        }
     }
 
     private void startServiceByAlarm(Context context) {
@@ -26,11 +27,8 @@ public class BootBroadcastReceiver extends BroadcastReceiver {
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
 
 
-        long startTime = System.currentTimeMillis();
-
         Log.d(TAG_BOOT_BROADCAST_RECEIVER, "Start service use repeat alarm");
-        
-        alarmManager.cancel(pendingIntent);
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, startTime, 60000, pendingIntent); //TODO: Set Day Interval
+
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + AlarmManager.INTERVAL_HALF_DAY, pendingIntent);
     }
 }

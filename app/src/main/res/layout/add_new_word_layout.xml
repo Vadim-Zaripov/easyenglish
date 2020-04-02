@@ -11,9 +11,10 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="24dp"
         android:backgroundTint="@android:color/white"
-        android:hint="Слово на английском"
+        android:hint="Слово"
         android:textColor="#ffffff"
         android:textColorHighlight="@android:color/white"
+        android:textColorHint="@color/WHITE_TRANSPARENT"
         android:textColorLink="#ffffff"
         android:textSize="20sp"
         app:layout_constraintBottom_toTopOf="@+id/editTextRussian"
@@ -21,7 +22,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/editTextRussian"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.964" />
+        app:layout_constraintVertical_bias="1.0" />
 
     <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/editTextRussian"
@@ -33,6 +34,7 @@
         android:hint="Перевод"
         android:textColor="#ffffff"
         android:textColorHighlight="@android:color/white"
+        android:textColorHint="@color/WHITE_TRANSPARENT"
         android:textColorLink="#ffffff"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -40,51 +42,147 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.395" />
+        app:layout_constraintVertical_bias="0.32999998" />
 
     <com.google.android.material.card.MaterialCardView
-        android:id="@+id/categoryChooseCardView"
-        android:layout_width="246dp"
-        android:layout_height="56dp"
+        android:id="@+id/categoryChooseCardViewHolder"
+        android:layout_width="300dp"
+        android:layout_height="60dp"
+        android:tag="animation"
+        android:visibility="invisible"
         app:cardBackgroundColor="@color/WHITE_TRANSPARENT"
         app:cardCornerRadius="20dp"
+        app:cardElevation="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/editTextRussian"
         app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="@+id/editTextRussian"
-        app:layout_constraintTop_toTopOf="parent"
-        app:cardElevation="0dp"
-        app:layout_constraintVertical_bias="0.499">
+        app:layout_constraintTop_toTopOf="@+id/categoriesTextViewLinearLayout"
+        app:layout_constraintVertical_bias="0.19">
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:tag="animation4"
+            android:textColor="@color/colorWhite"
+            android:textColorHint="@color/colorWhite">
+        </EditText>
 
         <TextView
-            android:id="@+id/addNewWordCategoryTextView"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="22sp"
-            android:tag="animatedTagOne"
-            android:text="xenous"
             android:layout_gravity="center"
-            android:textColor="@android:color/white">
+            android:tag="animation3"
+            android:text="xenous"
+            android:textColor="@android:color/white"
+            android:textSize="18sp">
         </TextView>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:tag="animation2">
+        </androidx.recyclerview.widget.RecyclerView>
 
     </com.google.android.material.card.MaterialCardView>
 
-    <Button
-        android:id="@+id/button7"
-        style="@style/Widget.MaterialComponents.Button"
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/categoryChooseCardView"
+        android:layout_width="300dp"
+        android:layout_height="60dp"
+        android:tag="animation"
+        app:cardBackgroundColor="@color/WHITE_TRANSPARENT"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/editTextRussian"
+        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintStart_toStartOf="@+id/editTextRussian"
+        app:layout_constraintTop_toTopOf="@+id/categoriesTextViewLinearLayout"
+        app:layout_constraintVertical_bias="0.19">
+
+        <EditText
+            android:id="@+id/categoryEditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:backgroundTint="@color/colorWhite"
+            android:tag="animation4"
+            android:hint="Категория"
+            android:layout_gravity="center_vertical"
+            android:textColorHint="@color/WHITE_TRANSPARENT"
+            android:textColor="@color/colorWhite"
+            android:visibility="invisible">
+        </EditText>
+
+        <TextView
+            android:id="@+id/addNewWordCategoryTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:tag="animation3"
+            android:text="xenous"
+            android:textColor="@android:color/white"
+            android:textSize="18sp"
+            android:visibility="visible">
+        </TextView>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/categoriesWhileAddingWordRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:tag="animation2">
+        </androidx.recyclerview.widget.RecyclerView>
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="616dp"
-        android:text="Создать"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/editTextRussian"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="@+id/editTextRussian"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/categoryChooseCardView"
+        app:layout_constraintVertical_bias="0.48000002">
+
+
+        <ImageView
+            android:id="@+id/addWordToServiceImageView"
+            android:layout_width="200dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/button_background"
+            android:src="@drawable/add_word"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.74">
+        </ImageView>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="Добавить новое слово"
+            android:textColor="@color/WHITE_TRANSPARENT"
+            android:textSize="14sp">
+        </TextView>
+    </LinearLayout>
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/categoriesMaterialCardView"
-        android:layout_width="299dp"
-        android:layout_height="466dp"
+        android:layout_width="330dp"
+        android:layout_height="350dp"
+        android:tag="animation"
         android:visibility="invisible"
         app:cardCornerRadius="20dp"
         app:contentPadding="10dp"
@@ -92,12 +190,25 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.26999998">
+        app:layout_constraintVertical_bias="0.94">
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:tag="animation4">
+        </EditText>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:tag="animation3"
+            android:text="xenous">
+        </TextView>
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/categoriesWhileAddingWordRecyclerView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:tag="animation2">
         </androidx.recyclerview.widget.RecyclerView>
 
     </com.google.android.material.card.MaterialCardView>
@@ -108,11 +219,65 @@
         android:layout_width="114dp"
         android:layout_height="148dp"
         android:layout_gravity="center"
-        app:SpinKit_Color="@color/colorWhite"
         android:visibility="invisible"
+        app:SpinKit_Color="@color/colorWhite"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.36" />
+
+    <ImageView
+        android:id="@+id/timeImageView"
+        android:layout_width="41dp"
+        android:layout_height="37dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.022"
+        app:srcCompat="@drawable/time_icon" />
+
+    <LinearLayout
+        android:id="@+id/categoriesTextViewLinearLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="@+id/spinKit"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editTextRussian">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Выберите категорию"
+            android:textColor="@color/colorWhite"
+            android:textSize="24sp">
+        </TextView>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="или создайте новую"
+            android:textColor="@color/colorWhite"
+            android:textSize="18sp">
+        </TextView>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/headerTextView"
+        android:textColor="@color/colorWhite"
+        android:textSize="30sp"
+        android:gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/addWord"
+        app:layout_constraintBottom_toTopOf="@+id/editTextEnglish"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.69" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

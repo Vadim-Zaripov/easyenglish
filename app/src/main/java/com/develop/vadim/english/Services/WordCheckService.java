@@ -25,13 +25,7 @@ import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 
 public class WordCheckService extends Service {
-
-
     public final static String SERVICE_TAG = "WordService";
-
-    NotificationManager notificationManager;
-
-    ExecutorService executorService;
 
     public static final String wordsFromServiceIntentKey = "WORDSFROMSERVICE";
 
@@ -47,15 +41,12 @@ public class WordCheckService extends Service {
         databaseReference = MainActivity.reference.child("words");
         sharedPreferences = getSharedPreferences("Shared preferences for Words Service", MODE_PRIVATE);
 
-        notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-
         Log.d(SERVICE_TAG, "Service has been started");
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        PendingIntent pendingIntent = intent.getParcelableExtra(MainActivity.PARCELABLE_EXTRA);
-        new Thread(new WordCheckRunnable(pendingIntent)).start();
+        new Thread(new WordCheckRunnable()).start();
 
 
         return START_NOT_STICKY;
@@ -73,17 +64,18 @@ public class WordCheckService extends Service {
     }
 
     class WordCheckRunnable implements Runnable {
-        PendingIntent pendingIntent;
         Intent intent;
         List<Word> neededWordsList = new ArrayList<>();
 
-        WordCheckRunnable(PendingIntent pendingIntent) {
-            this.pendingIntent = pendingIntent;
+        WordCheckRunnable() {
             intent = new Intent(MainActivity.BROADCAST_ACTION);
         }
 
         @Override
         public void run() {
+            intent.putExtra(MainActivity.PARAM_STATUS, MainActivity.STATUS_START);
+            sendBroadcast(intent);
+
             neededWordsList.clear();
             databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -105,16 +97,17 @@ public class WordCheckService extends Service {
                     saveData();
 
                     Log.d(MainActivity.MAIN_ACTIVITY_TAG, MainActivity.BROADCAST_ACTION);
-
                     intent.putExtra(MainActivity.PARAM_STATUS, MainActivity.STATUS_FINISH);
                     LocalBroadcastManager.getInstance(WordCheckService.this).sendBroadcast(intent);
+
+                    intent.putExtra(MainActivity.PARAM_STATUS, MainActivity.STATUS_FINISH);
+                    sendBroadcast(intent);
 
                     stopSelf();
                 }
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
-
                 }
             });
         }

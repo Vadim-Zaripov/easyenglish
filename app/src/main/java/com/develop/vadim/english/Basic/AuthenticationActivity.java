@@ -1,12 +1,16 @@
 package com.develop.vadim.english.Basic;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.util.Log;
 import android.view.View;
+import android.view.animation.AnimationUtils;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,108 +23,132 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.util.Objects;
+import java.util.Calendar;
 
 public class AuthenticationActivity extends AppCompatActivity {
 
-    private FirebaseAuth mAuth;
-    private FirebaseAuth.AuthStateListener mAuthListener;
+    private FirebaseAuth auth;
+    private FirebaseAuth.AuthStateListener authListener;
 
-    private DatabaseReference myRef;
+    private DatabaseReference reference;
 
-    private final String TAG = "myLogs";
+    private final String TAG = "Authentication";
     private boolean state;
-     //####################################################
 
     public FirebaseUser user;
 
-    //####################################################
+    private EditText email;
+    private EditText password;
+    private EditText confrimPassword;
+    private TextView registrationTextView;
+    private TextView loginTextView;
+    private ImageView registerImageView;
 
-    private EditText _email;
-    private EditText _password;
-    private EditText _confirm_password;
+    private SharedPreferences sharedPreferences;
+    private SharedPreferences wordsCheckSharedPreferences;
 
-    public void signIn(String email , String password) {
-        Log.d(TAG, "signing " + email + " " + password);
-        mAuth.signInWithEmailAndPassword(email,password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main_register);
+
+        wordsCheckSharedPreferences = getSharedPreferences(getPackageName() + ".wordsCheckFlag", MODE_PRIVATE);
+
+        sharedPreferences = getSharedPreferences(getPackageName() + ".firstrun", MODE_PRIVATE);
+        email = findViewById(R.id.emailEditView);
+        password = findViewById(R.id.passwordEditText);
+        confrimPassword = findViewById(R.id.confrimEditText);
+        registrationTextView = findViewById(R.id.registrationTextView);
+        loginTextView = findViewById(R.id.loginTextView);
+        registerImageView = findViewById(R.id.registerImageView);
+
+        auth = FirebaseAuth.getInstance();
+        Log.d(TAG, "--started RegistrationActivity--");
+
+        if(sharedPreferences.getBoolean(getPackageName() + ".firstrun", false)) {
+            startActivity(new Intent(this, MainActivity.class));
+        }
+        else {
+            wordsCheckSharedPreferences.edit().putInt(getPackageName()  + ".wordsCheckFlag", Calendar.getInstance().get(Calendar.DAY_OF_YEAR)).apply();
+        }
+
+        reference = FirebaseDatabase.getInstance().getReference();
+        state = true;
+
+        loginTextView.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if(task.isSuccessful()) {
-                    user = mAuth.getCurrentUser();
-                    if(!user.isEmailVerified()){
-                        Toast.makeText(AuthenticationActivity.this, "Email is not verified. Check verification email", Toast.LENGTH_SHORT).show();
-                    }else{
-                        doAfter(true);
-                    }
-                }else {
-                    Toast.makeText(AuthenticationActivity.this, "Ошибка авторизации", Toast.LENGTH_SHORT).show();
-                    TextView textView = (TextView) findViewById(R.id.textView8);
-                    textView.setVisibility(View.VISIBLE);
-                    textView.setClickable(true);
-                    doAfter(false);
-                }
-
+            public void onClick(View v) {
+                confrimPassword.setVisibility(View.INVISIBLE);
+                registerImageView.setOnClickListener(loginClickListener);
             }
         });
+
+        registrationTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                confrimPassword.setVisibility(View.VISIBLE);
+                confrimPassword.startAnimation(AnimationUtils.loadAnimation(v.getContext(), R.anim.appear));
+                registerImageView.setOnClickListener(registerClickListener);
+            }
+        });
+
+        Log.d(TAG, "--started RegistrationActivity--");
     }
 
-    public void register (String email , String password){
-        mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if(task.isSuccessful())
-                {
-                    mAuth.getCurrentUser().sendEmailVerification().addOnCompleteListener(AuthenticationActivity.this, new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if(task.isSuccessful()){
-                                Toast.makeText(AuthenticationActivity.this, "Verification email sent", Toast.LENGTH_SHORT).show();
-                                onClickSignIn(_email);
-                            }else{
-                                Toast.makeText(AuthenticationActivity.this, "Failed to send verification email", Toast.LENGTH_SHORT).show();
+    private View.OnClickListener registerClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            auth.createUserWithEmailAndPassword(email.getText().toString(), password.getText().toString()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                @Override
+                public void onComplete(@NonNull Task<AuthResult> task) {
+                    if(task.isSuccessful()) {
+                        auth.getCurrentUser().sendEmailVerification().addOnCompleteListener(AuthenticationActivity.this, new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if(task.isSuccessful()){
+                                    Toast.makeText(AuthenticationActivity.this, "Verification email sent", Toast.LENGTH_SHORT).show();
+
+                                    state = false;
+                                }else{
+                                    Toast.makeText(AuthenticationActivity.this, "Failed to send verification email", Toast.LENGTH_SHORT).show();
+                                }
                             }
+                        });
+                    }
+                    else {
+                        Toast.makeText(AuthenticationActivity.this, "Ошибка регистрации", Toast.LENGTH_SHORT).show();
+                        doAfter(false);
+                    }
+                }
+            });
+        }
+    };
+
+    private View.OnClickListener loginClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            auth.signInWithEmailAndPassword(email.getText().toString(), password.getText().toString()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                @Override
+                public void onComplete(@NonNull Task<AuthResult> task) {
+                    if(task.isSuccessful()) {
+                        user = auth.getCurrentUser();
+                        if(!user.isEmailVerified()) {
+                            Toast.makeText(AuthenticationActivity.this, "Email не подтвержден!", Toast.LENGTH_SHORT).show();
                         }
-                    });
+                        else {
+                            doAfter(true);
+                        }
+                    }
+                    else {
+                        Toast.makeText(AuthenticationActivity.this, "Ошибка авторизации", Toast.LENGTH_SHORT).show();
+                        doAfter(false);
+                    }
                 }
-                else {
-                    Toast.makeText(AuthenticationActivity.this, "Ошибка регистрации", Toast.LENGTH_SHORT).show();
-                    doAfter(false);
-                }
-            }
-        });
-    }
+            });
+        }
+    };
 
     //####################################################
-
-    public void onClickSignIn(View v){
-        setContentView(R.layout.activity_sign_in);
-        state = false;
-
-        _email = (EditText) findViewById(R.id.edTextEmail);
-        _password = (EditText) findViewById(R.id.edTextPassword);
-    }
-
-    public void onClickRegister(View v){
-        setContentView(R.layout.activity_register);
-        state = false;
-
-        _email = (EditText) findViewById(R.id.edTextEmail1);
-        _password = (EditText) findViewById(R.id.edTextPassword1);
-        _confirm_password = (EditText) findViewById(R.id.edTextPasswordConf);
-    }
-
-    public void goSignIn(View v){
-        //v.setClickable(false);
-        signIn(_email.getText().toString(), _password.getText().toString());
-    }
-
-    public void goRegister(View v){
-        if(Objects.equals(_confirm_password.getText().toString(), _password.getText().toString())) {
-            v.setClickable(false);
-            register(_email.getText().toString(), _password.getText().toString());
-        }else
-            Toast.makeText(AuthenticationActivity.this, "Пароли не совпадают", Toast.LENGTH_SHORT).show();
-    }
 
     //####################################################
     public void doAfter(boolean res){
@@ -128,35 +156,8 @@ public class AuthenticationActivity extends AppCompatActivity {
             //startActivity(new Intent(this, Main2Activity.class));
             Log.d(TAG, "--finished RegistrationActivity--");
             startActivity(new Intent(this, MainActivity.class));
+            controlFirstRun();
         }
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_register);
-
-        mAuth = FirebaseAuth.getInstance();
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
-        Log.d(TAG, "--started RegistrationActivity--");
-
-        mAuthListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                user = firebaseAuth.getCurrentUser();
-                if (user != null) {
-                    // User is signed in
-                } else {
-                    // User is signed out
-                }
-
-            }
-        };
-
-        myRef = FirebaseDatabase.getInstance().getReference();
-        state = true;
-
-        Log.d(TAG, "--started RegistrationActivity--");
     }
 
     public void onBackPressed(){
@@ -168,19 +169,7 @@ public class AuthenticationActivity extends AppCompatActivity {
         }
     }
 
-    public void Reset(final View view) {
-        FirebaseAuth.getInstance().sendPasswordResetEmail(_email.getText().toString())
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            TextView v = (TextView) view;
-                            v.setText("Письмо для восстановления пароля отправлено на ваш Email");
-                            Log.d(TAG, "Password reset sent");
-                        }else{
-                            Toast.makeText(AuthenticationActivity.this, "Ошибка", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
+    private void controlFirstRun() {
+        sharedPreferences.edit().putBoolean(getPackageName() + ".firstrun", true).apply();
     }
 }

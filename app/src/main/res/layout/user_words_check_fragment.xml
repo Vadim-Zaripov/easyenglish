@@ -1,33 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/userWordsCheckLabel"
-        android:layout_gravity="center"
-        android:textColor="@android:color/white"
-        android:text="@string/user_words_check_label"
-        android:gravity="center"
-        android:textSize="25sp">
-    </TextView>
-
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/userWordsCheckSwipeToRefreshLayout">
+        android:orientation="vertical"  >
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/userWordsCheckRecyclerView"
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/userWordsCheckLabel"
+            android:layout_gravity="center"
+            android:textColor="@android:color/white"
+            android:text="@string/user_words_check_label"
+            android:gravity="center"
+            android:textSize="25sp">
+        </TextView>
+
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content"
+            app:contentPadding="8dp"
+            app:cardCornerRadius="12dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginBottom="4dp"
+            app:cardBackgroundColor="@color/colorWhite">
 
-        </androidx.recyclerview.widget.RecyclerView>
+            <SearchView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/categorySearchView">
+            </SearchView>
+        </com.google.android.material.card.MaterialCardView>
 
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/userWordsCheckSwipeToRefreshLayout">
 
-</LinearLayout>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/userWordsCheckRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+            </androidx.recyclerview.widget.RecyclerView>
+
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+    </LinearLayout>
+
+</FrameLayout>

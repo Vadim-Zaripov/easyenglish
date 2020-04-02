@@ -1,11 +1,19 @@
 package com.develop.vadim.english.Fragments;
 
 import android.annotation.SuppressLint;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.app.TimePickerDialog;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.media.Image;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Handler;
@@ -13,15 +21,19 @@ import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.develop.vadim.english.Basic.MainActivity;
+import com.develop.vadim.english.Broadcasts.WordCheckBroadcast;
 import com.develop.vadim.english.R;
 import com.develop.vadim.english.Basic.Word;
 import com.github.ybq.android.spinkit.style.DoubleBounce;
@@ -32,26 +44,39 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Objects;
+import java.util.Random;
 
 import bg.devlabs.transitioner.Transitioner;
+
+import static android.content.Context.ALARM_SERVICE;
 
 public class AddNewWordFragment extends Fragment {
 
     private EditText englishWordEditText;
     private EditText russianWordEditText;
     private EditText categoryEditText;
-    private Button addWordToServiceButton;
+    private ImageView addWordToServiceImageView;
     private MaterialCardView categoryMaterialCardView;
-    private MaterialCardView categoriesChoosingMAterialMaterialCardView;
+    private MaterialCardView categoriesChoosingMaterialMaterialCardView;
     private TextView categoryTextView;
     private ProgressBar wordSendingProgressBar;
+    private RecyclerView choosingCategoryRecyclerView;
+    private MaterialCardView categoryMaterialCardViewHolder;
+    private ImageView timePickerImageView;
+
+    private boolean isCategoryNew;
 
     private Transitioner transitioner;
+
+    private Calendar timePickerCalendar = Calendar.getInstance();
 
     private long ind;
 
     private DatabaseReference reference;
+
+    private SharedPreferences timeSharedPreferences;
 
     @SuppressLint("HandlerLeak")
     private Handler wordSendingHandler = new Handler() {
@@ -71,6 +96,8 @@ public class AddNewWordFragment extends Fragment {
         reference = MainActivity.reference.child("words");
         reference.keepSynced(true);
 
+        timeSharedPreferences = getActivity().getSharedPreferences("Time Picker", Context.MODE_PRIVATE);
+
         return inflater.inflate(R.layout.add_new_word_layout, container, false);
     }
 
@@ -82,32 +109,77 @@ public class AddNewWordFragment extends Fragment {
         russianWordEditText = view.findViewById(R.id.editTextRussian);
         categoryMaterialCardView = view.findViewById(R.id.categoryChooseCardView);
         categoryTextView = categoryMaterialCardView.findViewById(R.id.addNewWordCategoryTextView);
-        categoriesChoosingMAterialMaterialCardView = view.findViewById(R.id.categoriesMaterialCardView);
-        addWordToServiceButton = view.findViewById(R.id.button7);
+        categoriesChoosingMaterialMaterialCardView = view.findViewById(R.id.categoriesMaterialCardView);
+        addWordToServiceImageView = view.findViewById(R.id.addWordToServiceImageView);
         wordSendingProgressBar = view.findViewById(R.id.spinKit);
         wordSendingProgressBar.setIndeterminateDrawable(new DoubleBounce());
+        categoryMaterialCardViewHolder = view.findViewById(R.id.categoryChooseCardViewHolder);
+        categoryEditText = view.findViewById(R.id.categoryEditText);
+        timePickerImageView = view.findViewById(R.id.timeImageView);
 
-        categoryMaterialCardView.setOnClickListener(new View.OnClickListener() {
-
-            private View newView;
-            private RecyclerView choosingCategoryRecyclerView;
-            private ArrayList<String> categories = WordsUserCheckFragment.getCategoryNames();
-
+        timePickerImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                categories.remove(0);
+                Toast.makeText(view.getContext(), "Выберите время, в которое вас удобно повторить  слова", Toast.LENGTH_LONG).show();
+                TimePickerDialog timePickerDialog = new TimePickerDialog(v.getContext(), timePickerDialogTimeSetListener,
+                        timePickerCalendar.get(Calendar.HOUR_OF_DAY),
+                        timePickerCalendar.get(Calendar.MINUTE), true);
 
-                categoriesChoosingMAterialMaterialCardView.setVisibility(View.VISIBLE);
+                timePickerDialog.show();
+            }
+        });
 
-                choosingCategoryRecyclerView = categoriesChoosingMAterialMaterialCardView.findViewById(R.id.categoriesWhileAddingWordRecyclerView);
-                choosingCategoryRecyclerView.setAdapter(new CategoriesRecyclerViewAdapter(categories));
-                choosingCategoryRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        categoryMaterialCardView.setOnClickListener(new View.OnClickListener() {
+            private Handler handler;
+
+            private ArrayList<String> categories = new ArrayList<>();
+
+            @SuppressLint("HandlerLeak")
+            @Override
+            public void onClick(View v) {
+                transitioner = new Transitioner(categoryMaterialCardView, categoriesChoosingMaterialMaterialCardView);
+                transitioner.animateTo(1f, (long) 400, new AccelerateDecelerateInterpolator());
+
+                isCategoryNew = false;
+
+                categoryMaterialCardView.setCardBackgroundColor(Color.WHITE);
+                categoryTextView.setText("XENOUS");
+                categoryTextView.setVisibility(View.INVISIBLE);
+                categoryEditText.setVisibility(View.INVISIBLE);
+                categoryMaterialCardView.setClickable(false);
+
+                addWordToServiceImageView.animate().alphaBy(1).alpha(0).setDuration(300).start();
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Thread.sleep(410);
+                        }
+                        catch(InterruptedException e) {
+                            e.printStackTrace();
+                        }
+
+                        handler.sendMessage(handler.obtainMessage());
+                    }
+                }).start();
+
+                handler = new Handler() {
+                    @Override
+                    public void handleMessage(Message msg) {
+                        super.handleMessage(msg);
+                        choosingCategoryRecyclerView = categoryMaterialCardView.findViewById(R.id.categoriesWhileAddingWordRecyclerView);
+                        choosingCategoryRecyclerView.setVisibility(View.VISIBLE);
+                        choosingCategoryRecyclerView.setAdapter(new CategoriesRecyclerViewAdapter(categories));
+                        choosingCategoryRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
+                    }
+                };
             }
         });
        // categoryEditText = view.findViewById(R.id.editTextCategory);
 
-        addWordToServiceButton.setOnClickListener(new View.OnClickListener() {
-            private Word newWord;
+        addWordToServiceImageView.setOnClickListener(new View.OnClickListener() {
+            Word newWord;
 
             @Override
             public void onClick(View v) {
@@ -121,40 +193,34 @@ public class AddNewWordFragment extends Fragment {
                             newWord.setWordInEnglish(englishWordEditText.getText().toString());
                             newWord.setWordInRussian(russianWordEditText.getText().toString());
 
-                            //if(!categoryEditText.getText().toString().equals("")) {
-                               // newWord.setWordCategory(categoryEditText.getText().toString());
-
-                                ////Check and create categories
-                                //CategoriesCheck categoriesCheck = new CategoriesCheck(categoryEditText.getText().toString());
-                               // new Thread(categoriesCheck).start();
-                            //}
-
-                            startDissapearingAnimation(newWord);
+                            startDisappearingAnimation(newWord);
 
                             englishWordEditText.setText("");
                             russianWordEditText.setText("");
-                            //categoryEditText.setText("");
-
-
+                            categoryTextView.setText("");
+                            categoryEditText.setVisibility(View.INVISIBLE);
                         }
 
                         @Override
                         public void onCancelled(@NonNull DatabaseError databaseError) { }
                     });
+
+                   if(timeSharedPreferences.getBoolean(getString(R.string.firstRun), true)) {
+                       setUpService();
+                       timeSharedPreferences.edit().putBoolean(getString(R.string.firstRun), false).apply();
+                   }
                 }
                 else {
                     Toast.makeText(v.getContext(), "Заполни все поля", Toast.LENGTH_LONG).show();
                 }
-
-
             }
 
-            private void startDissapearingAnimation(final Word word) {
+            private void startDisappearingAnimation(final Word word) {
                 Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.dissapear);
                 categoryMaterialCardView.startAnimation(animation);
                 russianWordEditText.startAnimation(animation);
                 englishWordEditText.startAnimation(animation);
-                addWordToServiceButton.startAnimation(animation);
+                addWordToServiceImageView.startAnimation(animation);
 
                 animation.setAnimationListener(new Animation.AnimationListener() {
                     @Override
@@ -166,7 +232,7 @@ public class AddNewWordFragment extends Fragment {
                         categoryMaterialCardView.setVisibility(View.INVISIBLE);
                         russianWordEditText.setVisibility(View.INVISIBLE);
                         englishWordEditText.setVisibility(View.INVISIBLE);
-                        addWordToServiceButton.setVisibility(View.INVISIBLE);
+                        addWordToServiceImageView.setVisibility(View.INVISIBLE);
 
                         wordSendingProgressBar.setVisibility(View.VISIBLE);
 
@@ -177,24 +243,42 @@ public class AddNewWordFragment extends Fragment {
                     public void onAnimationRepeat(Animation animation) { }
                 });
             }
-
-
         });
+    }
+
+    private void setUpService() {
+        Intent intent = new Intent(getContext(), WordCheckBroadcast.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(), 0, intent, 0);
+
+        AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(ALARM_SERVICE);
+
+        Calendar wakeUpTimeCalendar = Calendar.getInstance();
+        wakeUpTimeCalendar.set(Calendar.HOUR_OF_DAY, timeSharedPreferences.getInt(getString(R.string.hourOfDay), 12));
+        wakeUpTimeCalendar.set(Calendar.MINUTE, timeSharedPreferences.getInt(getString(R.string.minute), 0));
+        wakeUpTimeCalendar.set(Calendar.SECOND, 0);
+
+        alarmManager.cancel(pendingIntent);
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, wakeUpTimeCalendar.getTimeInMillis(), pendingIntent);
     }
 
     private void startAppearAnimation() {
         categoryMaterialCardView.setVisibility(View.VISIBLE);
         englishWordEditText.setVisibility(View.VISIBLE);
         russianWordEditText.setVisibility(View.VISIBLE);
-        addWordToServiceButton.setVisibility(View.VISIBLE);
+        addWordToServiceImageView.setVisibility(View.VISIBLE);
 
         Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.appear);
         categoryMaterialCardView.startAnimation(animation);
         russianWordEditText.startAnimation(animation);
         englishWordEditText.startAnimation(animation);
-        addWordToServiceButton.startAnimation(animation);
+        addWordToServiceImageView.startAnimation(animation);
     }
 
+    private TimePickerDialog.OnTimeSetListener timePickerDialogTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
+        public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+            timeSharedPreferences.edit().putInt(getString(R.string.hourOfDay), hourOfDay).putInt(getString(R.string.minute), minute).apply();
+        }
+    };
 
     private class CategoriesCheck implements Runnable {
 
@@ -234,14 +318,19 @@ public class AddNewWordFragment extends Fragment {
     private class CategoriesRecyclerViewAdapter extends RecyclerView.Adapter<CategoriesRecyclerViewAdapter.CategoriesRecyclerViewHolder> {
         private ArrayList<String> categories;
 
+        private Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.appear);
+
         private int[] materialCardsColors = new int[] {
             R.color.LIGHT_GREEN_TRANSPARENT,
-            R.color.LIGHT_PURPLE_TRANSPARENT
+            R.color.LIGHT_PURPLE_TRANSPARENT,
+            R.color.CASSANDORA_YELLOW,
+            R.color.JADE_DUST_TRANSPARENT,
+            R.color.JELLYFISH,
         };
 
         private CategoriesRecyclerViewAdapter(ArrayList<String> categories) {
             this.categories = categories;
-            categories.add("Добавить новое");
+            categories.add("Добавить");
         }
 
         @NonNull
@@ -255,8 +344,14 @@ public class AddNewWordFragment extends Fragment {
         @Override
         public void onBindViewHolder(@NonNull CategoriesRecyclerViewHolder holder, int position) {
             holder.categoryNameTextView.setText(categories.get(position));
-            holder.materialCardView.setCardBackgroundColor(getResources().getColor(R.color.LIGHT_GREEN_TRANSPARENT));
+            holder.materialCardView.setCardBackgroundColor(getResources().getColor(materialCardsColors[new Random().nextInt(materialCardsColors.length)]));
             holder.position = position;
+
+            holder.materialCardView.startAnimation(animation);
+
+            if(position == getItemCount() - 1) {
+                holder.materialCardView.setCardBackgroundColor(getResources().getColor(R.color.DOUBLE_DRAGON_SKIN));
+            }
         }
 
         @Override
@@ -275,29 +370,35 @@ public class AddNewWordFragment extends Fragment {
                 materialCardView = itemView.findViewById(R.id.categoriesChoosingCellCardView);
                 categoryNameTextView = itemView.findViewById(R.id.categoriesChoosingCellTextView);
 
-                if(position == getItemCount() - 1) {
-                    itemView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
+                itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Transitioner transitioner = new Transitioner(categoryMaterialCardView, categoryMaterialCardViewHolder);
+                        transitioner.animateTo(1f, (long) 400, new AccelerateDecelerateInterpolator());
+                        categoryMaterialCardView.setClickable(true);
+                        categoryMaterialCardView.setCardBackgroundColor(getResources().getColor(R.color.WHITE_TRANSPARENT));
+                        choosingCategoryRecyclerView.setVisibility(View.INVISIBLE);
 
+                        if(position == getItemCount() - 1) {
+                            categoryEditText.setVisibility(View.VISIBLE);
+
+                            isCategoryNew = true;
                         }
-                    });
-                }
-                else {
-                    itemView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            categoriesChoosingMAterialMaterialCardView.setVisibility(View.INVISIBLE);
+                        else {
+                            categoryTextView.setVisibility(View.VISIBLE);
                             categoryTextView.setText(categoryNameTextView.getText());
+                            categoryTextView.startAnimation(animation);
                         }
-                    });
-                }
+
+                        addWordToServiceImageView.animate().alphaBy(0).alpha(1).setDuration(420).start();
+                    }
+                });
             }
         }
     }
 
     private class StartWordSendingThread implements Runnable {
-        private Word word;
+        Word word;
 
         StartWordSendingThread(Word word) {
             this.word = word;

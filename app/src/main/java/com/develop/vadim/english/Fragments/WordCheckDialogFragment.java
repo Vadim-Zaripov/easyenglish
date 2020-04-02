@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import static android.content.Context.MODE_PRIVATE;
+
 public class WordCheckDialogFragment extends DialogFragment {
 
     private Button exitButton;
@@ -49,6 +51,11 @@ public class WordCheckDialogFragment extends DialogFragment {
         }
         else {
             checkingWordsList = loadData();
+
+            SharedPreferences sharedPreferences = getActivity().getSharedPreferences("Shared preferences for Words Service", MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+
+            editor.clear();
         }
 
         return inflater.inflate(R.layout.activity_word_check, container);
@@ -85,7 +92,7 @@ public class WordCheckDialogFragment extends DialogFragment {
     }
 
     private List<Word> loadData() {
-        SharedPreferences sharedPreferences = this.getActivity().getSharedPreferences("Shared preferences for Words Service", Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = this.getActivity().getSharedPreferences("Shared preferences for Words Service", MODE_PRIVATE);
         Gson gson = new Gson();
         String json = sharedPreferences.getString(getString(R.string.service_saved_indexes_key), null);
         Type type = new TypeToken<List<Word>>() {}.getType();
