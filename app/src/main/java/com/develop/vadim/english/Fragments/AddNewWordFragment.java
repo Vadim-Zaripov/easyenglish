@@ -2,6 +2,7 @@ package com.develop.vadim.english.Fragments;
 
 import android.annotation.SuppressLint;
 import android.app.AlarmManager;
+import android.app.Dialog;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Context;
@@ -65,6 +66,8 @@ public class AddNewWordFragment extends Fragment {
     private RecyclerView choosingCategoryRecyclerView;
     private MaterialCardView categoryMaterialCardViewHolder;
     private ImageView timePickerImageView;
+
+    private Dialog dialog;
 
     private boolean isCategoryNew;
 
@@ -274,6 +277,12 @@ public class AddNewWordFragment extends Fragment {
         addWordToServiceImageView.startAnimation(animation);
     }
 
+    private void callChooseCategoryDialog() {
+        Dialog dialog = new Dialog(getContext());
+        dialog.setContentView(R.layout.add_new_category_layout);
+        dialog.show();
+    }
+
     private TimePickerDialog.OnTimeSetListener timePickerDialogTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
             timeSharedPreferences.edit().putInt(getString(R.string.hourOfDay), hourOfDay).putInt(getString(R.string.minute), minute).apply();
@@ -380,7 +389,7 @@ public class AddNewWordFragment extends Fragment {
                         choosingCategoryRecyclerView.setVisibility(View.INVISIBLE);
 
                         if(position == getItemCount() - 1) {
-                            categoryEditText.setVisibility(View.VISIBLE);
+                            callChooseCategoryDialog();
 
                             isCategoryNew = true;
                         }

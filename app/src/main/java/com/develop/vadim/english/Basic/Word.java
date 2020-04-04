@@ -116,7 +116,7 @@ public class Word implements Parcelable {
                 reference.child(Word.categoryDatabaseKey).setValue(dataSnapshot.child(String.valueOf(dataSnapshot.getChildrenCount() - 1)).child(Word.categoryDatabaseKey).getValue());
                 reference.child(Word.levelDatabaseKey).setValue(dataSnapshot.child(String.valueOf(dataSnapshot.getChildrenCount() - 1)).child(Word.levelDatabaseKey).getValue());
 
-                reference.child(String.valueOf(dataSnapshot.getChildrenCount() - 1)).removeValue();
+                MainActivity.reference.child("words").child(String.valueOf(dataSnapshot.getChildrenCount() - 1)).removeValue();
             }
 
             @Override

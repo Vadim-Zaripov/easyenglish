@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.util.Log;
@@ -15,13 +16,25 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.develop.vadim.english.R;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.GoogleApi;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.internal.GoogleApiAvailabilityCache;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.shobhitpuri.custombuttons.GoogleSignInButton;
 
 import java.util.Calendar;
 
@@ -98,29 +111,33 @@ public class AuthenticationActivity extends AppCompatActivity {
     private View.OnClickListener registerClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            auth.createUserWithEmailAndPassword(email.getText().toString(), password.getText().toString()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                @Override
-                public void onComplete(@NonNull Task<AuthResult> task) {
-                    if(task.isSuccessful()) {
-                        auth.getCurrentUser().sendEmailVerification().addOnCompleteListener(AuthenticationActivity.this, new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if(task.isSuccessful()){
-                                    Toast.makeText(AuthenticationActivity.this, "Verification email sent", Toast.LENGTH_SHORT).show();
+            if (password.getText().toString().equals(confrimPassword.getText().toString())) {
+                auth.createUserWithEmailAndPassword(email.getText().toString(), password.getText().toString()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            auth.getCurrentUser().sendEmailVerification().addOnCompleteListener(AuthenticationActivity.this, new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) {
+                                        Toast.makeText(AuthenticationActivity.this, "Письмо поттверждения отправлено на ваш E-mail", Toast.LENGTH_SHORT).show();
 
-                                    state = false;
-                                }else{
-                                    Toast.makeText(AuthenticationActivity.this, "Failed to send verification email", Toast.LENGTH_SHORT).show();
+                                        state = false;
+                                    } else {
+                                        Toast.makeText(AuthenticationActivity.this, "Произошла ошибка при отправки письма на введнный E-mail", Toast.LENGTH_SHORT).show();
+                                    }
                                 }
-                            }
-                        });
+                            });
+                        } else {
+                            Toast.makeText(AuthenticationActivity.this, "Произошла неизвестная ошибка", Toast.LENGTH_SHORT).show();
+                            doAfter(false);
+                        }
                     }
-                    else {
-                        Toast.makeText(AuthenticationActivity.this, "Ошибка регистрации", Toast.LENGTH_SHORT).show();
-                        doAfter(false);
-                    }
-                }
-            });
+                });
+            }
+            else {
+                Toast.makeText(getApplicationContext(), "Пароли не совпадают", Toast.LENGTH_LONG).show();
+            }
         }
     };
 
@@ -149,6 +166,30 @@ public class AuthenticationActivity extends AppCompatActivity {
     };
 
     //####################################################
+
+    private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
+        Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
+
+        AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
+        auth.signInWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d(TAG, "signInWithCredential:success");
+                            user = auth.getCurrentUser();
+                            doAfter(true);
+
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w(TAG, "signInWithCredential:failure", task.getException());
+                            Toast.makeText(getApplicationContext(), "Ошибка решистрации", Toast.LENGTH_LONG).show();
+                        }
+
+                    }
+                });
+    }
 
     //####################################################
     public void doAfter(boolean res){

@@ -1,7 +1,5 @@
 package com.develop.vadim.english.Services;
 
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -22,7 +20,6 @@ import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.ExecutorService;
 
 public class WordCheckService extends Service {
     public final static String SERVICE_TAG = "WordService";
@@ -48,7 +45,6 @@ public class WordCheckService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         new Thread(new WordCheckRunnable()).start();
 
-
         return START_NOT_STICKY;
     }
 
@@ -63,7 +59,7 @@ public class WordCheckService extends Service {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
-    class WordCheckRunnable implements Runnable {
+    private class WordCheckRunnable implements Runnable {
         Intent intent;
         List<Word> neededWordsList = new ArrayList<>();
 
@@ -124,6 +120,4 @@ public class WordCheckService extends Service {
             return true;
         }
     }
-
-
 }

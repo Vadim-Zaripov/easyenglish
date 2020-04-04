@@ -62,32 +62,60 @@ public class WordsUserCheckFragment extends Fragment {
 
     private WordsCategoriesRecyclerViewAdapter wordsCategoriesRecyclerViewAdapter;
 
+    private Handler initCategoriesHandler;
+    private Handler loadingCategoriesHandler;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         databaseReference = MainActivity.reference.child("words");
         categoryReference = MainActivity.reference.child("categories");
         databaseReference.keepSynced(true);
+        categoryNames = getCategories();
+        Log.d("TAG", categoryNames.toString());
 
         return inflater.inflate(R.layout.user_words_check_fragment, container, false);
     }
 
+
+    @SuppressLint("HandlerLeak")
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        new Thread(new InitCategoriesThread()).start();
+
+        initCategoriesHandler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+
+                wordsCategoriesRecyclerViewAdapter = new WordsCategoriesRecyclerViewAdapter(categoryNames);
+                swipeRefreshLayout.setRefreshing(false);
+                wordsCategoriesRecyclerView.setAdapter(wordsCategoriesRecyclerViewAdapter);
+            }
+        };
+
+        loadingCategoriesHandler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+
+                categoryNames = getCategories();
+                initCategoriesHandler.sendEmptyMessage(1);
+            }
+        };
+
+        initCategoriesHandler.sendMessage(initCategoriesHandler.obtainMessage());
 
         wordsCategoriesRecyclerView = view.findViewById(R.id.userWordsCheckRecyclerView);
         swipeRefreshLayout = view.findViewById(R.id.userWordsCheckSwipeToRefreshLayout);
-        swipeRefreshLayout.setRefreshing(true);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 new Handler().post(new Runnable() {
                     @Override
                     public void run() {
+                        ((MainActivity)getActivity()).updateCategories(loadingCategoriesHandler);
                         swipeRefreshLayout.setRefreshing(true);
-                        new Thread(new InitCategoriesThread()).start();
                     }
                 });
             }
@@ -110,6 +138,14 @@ public class WordsUserCheckFragment extends Fragment {
         });
 
         wordsCategoriesRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
+    }
+
+    private ArrayList<String> getCategories() {
+        ArrayList<String> categories = new ArrayList<>();
+        categories.add("Все слова");
+        categories.addAll(((MainActivity)getActivity()).getCategoryNamesList());
+
+        return categories;
     }
 
     private class WordsCategoriesRecyclerViewAdapter extends RecyclerView.Adapter<WordsCategoriesRecyclerViewAdapter.WordsCategoriesRecyclerViewHolder> implements Filterable {
@@ -344,44 +380,7 @@ public class WordsUserCheckFragment extends Fragment {
         }
     }
 
-    private class InitCategoriesThread implements Runnable {
-
-            private InitCategoriesThread() {
-                categoryNames = new ArrayList<>();
-                categoryNames.add("Все слова");
-        }
-
-        @SuppressLint("HandlerLeak")
-        private Handler handler = new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-                super.handleMessage(msg);
-                wordsCategoriesRecyclerViewAdapter = new WordsCategoriesRecyclerViewAdapter(categoryNames);
-                swipeRefreshLayout.setRefreshing(false);
-                wordsCategoriesRecyclerView.setAdapter(wordsCategoriesRecyclerViewAdapter);
-            }
-        };
-
-        @Override
-        public void run() {
-            categoryReference.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    for(int categoryReferenceChildrenCounter = 0; categoryReferenceChildrenCounter < dataSnapshot.getChildrenCount(); categoryReferenceChildrenCounter++) {
-                        categoryNames.add(String.valueOf(dataSnapshot.child(String.valueOf(categoryReferenceChildrenCounter)).getValue()));
-                    }
-
-                    handler.sendMessage(handler.obtainMessage()); //Отправка уникального объекта класса Message handler'у
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) { }
-            });
-        }
-
-    }
-
-    private class RemoveCategoryThread implements  Runnable {
+    private class RemoveCategoryThread implements Runnable {
         String category;
         boolean isCategoryDeleted = false;
 

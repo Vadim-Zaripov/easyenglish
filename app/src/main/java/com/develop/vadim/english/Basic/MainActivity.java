@@ -1,5 +1,6 @@
 package com.develop.vadim.english.Basic;
 
+import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -15,11 +16,16 @@ import androidx.annotation.NonNull;
 import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.develop.vadim.english.Broadcasts.WordCheckBroadcast;
+import com.develop.vadim.english.Fragments.AddNewWordFragment;
 import com.develop.vadim.english.Fragments.FragmentViewPagerAdapter;
+import com.develop.vadim.english.Fragments.WordsArchiveFragment;
+import com.develop.vadim.english.Fragments.WordsUserCheckFragment;
 import com.develop.vadim.english.R;
 import com.develop.vadim.english.Services.WordCheckService;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -70,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     public static DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid());
+    private DatabaseReference categoryReference = reference.child("categories");
 
     public final static int STATUS_START = 100;
     public final static int STATUS_FINISH = 200;
@@ -78,6 +85,24 @@ public class MainActivity extends AppCompatActivity {
 
     public final static String BROADCAST_ACTION = "ru.lett.xenous.action.BROADCAST";
 
+    public ArrayList<String> categoriesList = new ArrayList<>();
+
+    private WordsUserCheckFragment wordsUserCheckFragment;
+    private AddNewWordFragment addNewWordFragment;
+    private WordsArchiveFragment wordsArchiveFragment;
+
+    private ArrayList<String> categoryNames = null;
+    private ArrayList<Word> wordArrayList = new ArrayList<>();
+
+    private boolean isCategoriesLoaded = false;
+
+    private Handler categoriesHandler;
+
+    public static final int CATEGORIES_LOAD_END = 0;
+    public static final int WORDS_LOAD_END = 1;
+    public static final int WORDS_ANALYNG_WND = 3;
+
+    @SuppressLint("HandlerLeak")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,11 +116,36 @@ public class MainActivity extends AppCompatActivity {
 
         fragmentViewPagerAdapter = new FragmentViewPagerAdapter(getSupportFragmentManager());
 
-        viewPager = findViewById(R.id.mainViewPagerId);
-        viewPager.setAdapter(fragmentViewPagerAdapter);
+        wordsUserCheckFragment = (WordsUserCheckFragment) fragmentViewPagerAdapter.getItem(0);
+        addNewWordFragment = (AddNewWordFragment) fragmentViewPagerAdapter.getItem(1);
+        wordsArchiveFragment = (WordsArchiveFragment) fragmentViewPagerAdapter.getItem(2);
 
-        DotsIndicator dotsIndicator = findViewById(R.id.dots_indicator);
-        dotsIndicator.setViewPager(viewPager);
+        viewPager = findViewById(R.id.mainViewPagerId);
+        final DotsIndicator dotsIndicator = findViewById(R.id.dots_indicator);
+
+        categoriesHandler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+
+                switch(msg.what) {
+                    case CATEGORIES_LOAD_END:
+                        Log.d(MAIN_ACTIVITY_TAG, "Categories has been loaded complete");
+                        break;
+                    case WORDS_LOAD_END:
+                        Log.d(MAIN_ACTIVITY_TAG, "All words has been loaded successfully");
+                        break;
+                    case WORDS_ANALYNG_WND:
+                        Log.d(MAIN_ACTIVITY_TAG, "Words has been analized successfully");
+                        callWordsCheck();
+
+                        viewPager.setAdapter(fragmentViewPagerAdapter);
+                        dotsIndicator.setViewPager(viewPager);
+                        break;
+                }
+
+            }
+        };
 
         FirebaseDynamicLinks
                 .getInstance()
@@ -122,6 +172,8 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
+        new Thread(new InitCategoriesThread(categoriesHandler)).start();
+
         callCheck();
     }
 
@@ -134,30 +186,30 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() { }
 
-
     private void callCheck() {
-            if(wordsCheckSharedPreferences.getInt(getPackageName() + ".wordsCheckFlag", -1) != Calendar.getInstance().get(Calendar.DAY_OF_YEAR)) {
+        if(wordsCheckSharedPreferences.getInt(getPackageName() + ".wordsCheckFlag", -1) != Calendar.getInstance().get(Calendar.DAY_OF_YEAR)) {
             Intent intent = new Intent(this, WordCheckService.class);
+            intent.putParcelableArrayListExtra()
             startService(intent);
 
             BroadcastReceiver wordsCheckBroadCastReceiver = new BroadcastReceiver() {
-                @Override
-                public void onReceive(Context context, Intent intent) {
-                    switch(intent.getIntExtra(PARAM_STATUS, 0)) {
-                        case STATUS_START:
-                            Toast.makeText(context, "Загружаем слова", Toast.LENGTH_LONG).show();
-                            break;
-                        case STATUS_FINISH:
-                            callWordsCheck();
-                            break;
+                    @Override
+                    public void onReceive(Context context, Intent intent) {
+                        switch(intent.getIntExtra(PARAM_STATUS, 0)) {
+                            case STATUS_START:
+                                Toast.makeText(context, "Загружаем слова", Toast.LENGTH_LONG).show();
+                                break;
+                            case STATUS_FINISH:
+                                categoriesHandler.sendEmptyMessage(WORDS_ANALYNG_WND);
+                                break;
+                        }
                     }
-                }
-            };
+                };
 
-            IntentFilter intentFilter = new IntentFilter(BROADCAST_ACTION);
-            registerReceiver(wordsCheckBroadCastReceiver, intentFilter);
+                IntentFilter intentFilter = new IntentFilter(BROADCAST_ACTION);
+                registerReceiver(wordsCheckBroadCastReceiver, intentFilter);
 
-            wordsCheckSharedPreferences.edit().putInt(getPackageName() + ".wordsCheckFlag", Calendar.getInstance().get(Calendar.DAY_OF_YEAR)).apply();
+                wordsCheckSharedPreferences.edit().putInt(getPackageName() + ".wordsCheckFlag", Calendar.getInstance().get(Calendar.DAY_OF_YEAR)).apply();
         }
     }
 
@@ -222,9 +274,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private class StartAddingCategoryFromLink implements Runnable {
-        private String category;
-        private String sharingUserUid;
-        private List<Word> sharingWordList = new ArrayList<>();
+        String category;
+        String sharingUserUid;
+        List<Word> sharingWordList = new ArrayList<>();
+        boolean isCategoryReal = false;
 
         private StartAddingCategoryFromLink(String category, String sharingUserUid) {
             this.category = category;
@@ -237,40 +290,42 @@ public class MainActivity extends AppCompatActivity {
             sharingUserReference.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    int newWordsCounter = 0;
+
                     for(int wordsCounter = 0; wordsCounter < dataSnapshot.getChildrenCount(); wordsCounter++) {
                         if(Objects.equals(dataSnapshot.child(String.valueOf(wordsCounter)).child(Word.categoryDatabaseKey).getValue(), category)) {
                             Log.d("HUY", "bib");
-                            Word newWord = new Word(wordsCounter);
+                            Word newWord = new Word(dataSnapshot.getChildrenCount() + newWordsCounter);
                             newWord.setWordInRussian(Objects.requireNonNull(dataSnapshot.child(String.valueOf(wordsCounter)).child(Word.russianDatabaseKey).getValue()).toString());
                             newWord.setWordInEnglish(Objects.requireNonNull(dataSnapshot.child(String.valueOf(wordsCounter)).child(Word.englishDatabaseKey).getValue()).toString());
                             newWord.setWordCategory(category);
 
+                            newWordsCounter += 1;
                             sharingWordList.add(newWord);
                         }
                     }
 
                     for(int wordsCounter = 0; wordsCounter < sharingWordList.size(); wordsCounter++) {
-                        Log.d("BIBKA", String.valueOf(sharingWordList.size()));
-                        sharingWordList.get(wordsCounter).sentWordToService();
+                        Word word = sharingWordList.get(wordsCounter);
+                        Log.d("BIBKA", String.valueOf(word.getIndex()));
+                        word.sentWordToService();
                     }
 
                     FirebaseDatabase.getInstance().getReference().child("users").child(sharingUserUid).child("categories").addListenerForSingleValueEvent(new ValueEventListener() {
+
+
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             FirebaseDatabase.getInstance().getReference().child("users").child(sharingUserUid).child("categories").child(String.valueOf(dataSnapshot.getChildrenCount())).setValue(category);
                         }
 
                         @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                        }
+                        public void onCancelled(@NonNull DatabaseError databaseError) { }
                     });
                 }
 
                 @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
+                public void onCancelled(@NonNull DatabaseError databaseError) { }
             });
         }
     }

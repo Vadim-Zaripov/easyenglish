@@ -62,7 +62,7 @@
             android:layout_height="wrap_content"
             android:text="Выберите категорию"
             android:textColor="@color/colorWhite"
-            android:textSize="24sp"></TextView>
+            android:textSize="24sp"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -70,7 +70,7 @@
             android:layout_gravity="center"
             android:text="или создайте новую"
             android:textColor="@color/colorWhite"
-            android:textSize="18sp"></TextView>
+            android:textSize="18sp"/>
     </LinearLayout>
 
     <com.google.android.material.card.MaterialCardView
@@ -96,7 +96,7 @@
             android:layout_marginRight="8dp"
             android:tag="animation4"
             android:textColor="@color/colorWhite"
-            android:textColorHint="@color/colorWhite"></EditText>
+            android:textColorHint="@color/colorWhite"/>
 
         <TextView
             android:layout_width="match_parent"
@@ -105,12 +105,12 @@
             android:tag="animation3"
             android:text="xenous"
             android:textColor="@android:color/white"
-            android:textSize="18sp"></TextView>
+            android:textSize="18sp"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:tag="animation2"></androidx.recyclerview.widget.RecyclerView>
+            android:tag="animation2"/>
 
     </com.google.android.material.card.MaterialCardView>
 
@@ -139,7 +139,7 @@
             android:gravity="center"
             android:text="@string/deleteWord"
             android:textColor="@color/WHITE_TRANSPARENT"
-            android:textSize="14sp"></TextView>
+            android:textSize="14sp"/>
     </LinearLayout>
 
     <com.google.android.material.card.MaterialCardView
@@ -166,7 +166,7 @@
             android:backgroundTint="@color/colorWhite"
             android:tag="animation4"
             android:textColor="@color/colorWhite"
-            android:visibility="invisible"></EditText>
+            android:visibility="invisible"/>
 
         <TextView
             android:id="@+id/addNewWordCategoryTextView"
@@ -178,13 +178,13 @@
             android:text="xenous"
             android:textColor="@android:color/white"
             android:textSize="18sp"
-            android:visibility="visible"></TextView>
+            android:visibility="visible"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/categoriesWhileAddingWordRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:tag="animation2"></androidx.recyclerview.widget.RecyclerView>
+            android:tag="animation2"/>
 
     </com.google.android.material.card.MaterialCardView>
 
@@ -200,7 +200,7 @@
         app:layout_constraintVertical_bias="0.75">
 
         <ImageView
-            android:id="@+id/button7"
+            android:id="@+id/saveChangesImageView"
             android:layout_width="195dp"
             android:layout_height="50dp"
             android:layout_gravity="center_horizontal"
@@ -235,18 +235,18 @@
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:tag="animation4"></EditText>
+            android:tag="animation4"/>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:tag="animation3"
-            android:text="xenous"></TextView>
+            android:text="xenous"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:tag="animation2"></androidx.recyclerview.widget.RecyclerView>
+            android:tag="animation2"/>
 
     </com.google.android.material.card.MaterialCardView>
 

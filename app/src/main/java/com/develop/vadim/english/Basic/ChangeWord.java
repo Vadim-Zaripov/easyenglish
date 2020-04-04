@@ -3,14 +3,11 @@ package com.develop.vadim.english.Basic;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.develop.vadim.english.R;
-import com.google.android.material.textfield.TextInputEditText;
 import com.varunjohn1990.iosdialogs4android.IOSDialog;
 
 public class ChangeWord extends AppCompatActivity {
@@ -18,6 +15,7 @@ public class ChangeWord extends AppCompatActivity {
     private EditText originalWordEditText;
     private EditText translatedWordEditText;
     private ImageView deleteWordImageView;
+    private ImageView saveChangesImageView;
 
     private Word changingWord;
 
@@ -28,6 +26,7 @@ public class ChangeWord extends AppCompatActivity {
 
         changingWord = getIntent().getParcelableExtra(getString(R.string.changeWord));
 
+        saveChangesImageView = findViewById(R.id.saveChangesImageView);
         originalWordEditText = findViewById(R.id.editTextRussian);
         translatedWordEditText = findViewById(R.id.editTextEnglish);
         deleteWordImageView = findViewById(R.id.deleteWordImageView);
@@ -47,6 +46,8 @@ public class ChangeWord extends AppCompatActivity {
                         .positiveClickListener(new IOSDialog.Listener() {
                             @Override
                             public void onClick(IOSDialog iosDialog) {
+                                changingWord.removeWordFromService();
+                                onBackPressed();
                                 iosDialog.dismiss();
                             }
                         })
@@ -55,16 +56,21 @@ public class ChangeWord extends AppCompatActivity {
             }
         });
 
+        saveChangesImageView.setOnClickListener(new ImageView.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBackPressed();
+                saveChanges();
+            }
+        });
+
         originalWordEditText.setText(changingWord.getWordInEnglish());
         translatedWordEditText.setText(changingWord.getWordInRussian());
-
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-
-        saveChanges();
     }
 
     private void saveChanges() {

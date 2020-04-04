@@ -16,6 +16,8 @@
     <color name="JELLYFISH">#70ff9ff3</color>
     <color name="DOUBLE_DRAGON_SKIN">#70ff9f43</color>
 
+    <color name="purple">#a29bfe</color>
+
     <color name="wrongWordRed">#F84291</color>
     <color name="rightWordGreen">#3BFFB6</color>
 </resources>

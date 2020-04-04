@@ -91,6 +91,13 @@
     <string name="createAccount">Создайте аккаунт Lett!</string>
     <string name="enterAccount">или войдите в существующий</string>
     <string name="lettsGo">Вперед!</string>
+    <string name="or">или</string>
+    <string name="googleSignUp">Войти через Google</string>
+    <string name="undefinedError">Произошла неизвестная ошибка</string>
+    <string name="isCategoryTheSame">Такая категория уже существует у вас, новые слова пополнили её!</string>
+    <string name="newWords">Новые категория добавлена!</string>
+    <string name="category">Категория</string>
+    <string name="addNewCategory">Добавить кстегорию</string>
     <string-array name="pref_example_list_titles">
         <item>Always</item>
         <item>When possible</item>

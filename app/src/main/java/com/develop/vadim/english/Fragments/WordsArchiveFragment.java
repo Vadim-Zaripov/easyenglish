@@ -18,15 +18,19 @@ import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.SearchView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.develop.vadim.english.Basic.ChangeWord;
 import com.develop.vadim.english.Basic.MainActivity;
 import com.develop.vadim.english.R;
 import com.develop.vadim.english.Basic.Word;
+import com.google.android.material.card.MaterialCardView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -59,7 +63,6 @@ public class WordsArchiveFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        new Thread(new InitArchivedWordsThread()).start();
 
         Log.d(ARCHIVE_ACTIVITY_TAG, "starts");
 
@@ -89,6 +92,14 @@ public class WordsArchiveFragment extends Fragment {
                 new Thread(new InitArchivedWordsThread()).start();
             }
         });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        swipeRefreshLayout.setRefreshing(true);
+        new Thread(new InitArchivedWordsThread()).start();
     }
 
     private class ArchiveFragmentRecyclerViewAdapter extends RecyclerView.Adapter<ArchiveFragmentRecyclerViewAdapter.ArchiveFragmentViewHolder> implements Filterable {
@@ -149,6 +160,9 @@ public class WordsArchiveFragment extends Fragment {
             Word word = archivedWordsList.get(position);
             holder.wordInEnglishTextView.setText(word.getWordInEnglish());
             holder.position = position;
+
+            holder.wordMaterialCardView.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.appear));
+
         }
 
         @Override
@@ -162,12 +176,14 @@ public class WordsArchiveFragment extends Fragment {
         }
 
         class ArchiveFragmentViewHolder extends RecyclerView.ViewHolder {
+            MaterialCardView wordMaterialCardView;
             TextView wordInEnglishTextView;
             int position;
 
             ArchiveFragmentViewHolder(View itemView) {
                 super(itemView);
                 wordInEnglishTextView = itemView.findViewById(R.id.archiveWordInEnglishTextView);
+                wordMaterialCardView = itemView.findViewById(R.id.bob);
 
                 itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
