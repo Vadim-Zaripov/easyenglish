@@ -2,7 +2,15 @@ package com.develop.vadim.english.Basic;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -17,12 +25,34 @@ public class ChangeWord extends AppCompatActivity {
     private ImageView deleteWordImageView;
     private ImageView saveChangesImageView;
 
+    private BroadcastReceiver updateHasBeenDoneBroadcastReceiver;
+
     private Word changingWord;
 
+    @SuppressLint("HandlerLeak")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_change_word);
+
+        updateHasBeenDoneBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Log.d("Close Activity", "Bye!");
+                onBackPressed();
+            }
+        };
+
+
+
+        final Handler removingWordHandler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+
+                sendBroadcast(new Intent(MainActivity.BROADCAST_ACTION));
+            }
+        };
 
         changingWord = getIntent().getParcelableExtra(getString(R.string.changeWord));
 
@@ -40,15 +70,15 @@ public class ChangeWord extends AppCompatActivity {
                         .negativeClickListener(new IOSDialog.Listener() {
                             @Override
                             public void onClick(IOSDialog iosDialog) {
-                                iosDialog.dismiss();
+                                startActivity(new Intent(ChangeWord.this, WordCheckActivity.class));
                             }
                         })
                         .positiveClickListener(new IOSDialog.Listener() {
                             @Override
                             public void onClick(IOSDialog iosDialog) {
-                                changingWord.removeWordFromService();
-                                onBackPressed();
+                                changingWord.removeWordFromService(removingWordHandler);
                                 iosDialog.dismiss();
+
                             }
                         })
                         .build()
@@ -69,8 +99,35 @@ public class ChangeWord extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+
+        registerReceiver(updateHasBeenDoneBroadcastReceiver, new IntentFilter(MainActivity.BROADCAST_UPDATE_HAS_BEEN_DONE_ACTION));
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        try {
+            unregisterReceiver(updateHasBeenDoneBroadcastReceiver);
+        }
+        catch(IllegalArgumentException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    @Override
     public void onBackPressed() {
         super.onBackPressed();
+
+        try {
+            unregisterReceiver(updateHasBeenDoneBroadcastReceiver);
+        }
+        catch(IllegalArgumentException e) {
+            e.printStackTrace();
+        }
     }
 
     private void saveChanges() {

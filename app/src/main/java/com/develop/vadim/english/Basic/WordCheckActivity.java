@@ -1,26 +1,21 @@
 package com.develop.vadim.english.Basic;
 
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
+import android.annotation.SuppressLint;
 import android.app.ActivityOptions;
-import android.content.DialogInterface;
+import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.view.animation.LinearInterpolator;
-import android.view.animation.RotateAnimation;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -52,8 +47,11 @@ public class WordCheckActivity extends AppCompatActivity {
 
     private DatabaseReference databaseReference;
 
-    private List<Word> checkingWordsList;
+    private ArrayList<Word> checkingWordsList;
 
+    private Handler removingWordHandler;
+
+    @SuppressLint("HandlerLeak")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,12 +69,12 @@ public class WordCheckActivity extends AppCompatActivity {
         helpImageButtonsLinearLayout = findViewById(R.id.linearLayout3);
 
         if(getIntent().getBooleanExtra(getString(R.string.word_check_flag), false)) {
-            this.checkingWordsList = getIntent().getParcelableArrayListExtra(getString(R.string.parcelableWordKey));
+            checkingWordsList = getIntent().getParcelableArrayListExtra(getString(R.string.parcelableWordKey));
         }
         else {
             checkingWordsList = loadData();
 
-            SharedPreferences sharedPreferences = getSharedPreferences("Shared preferences for Words Service", MODE_PRIVATE);
+            SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.archivedWordsSharedPreferences), MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPreferences.edit();
 
             editor.clear().apply();
@@ -150,10 +148,20 @@ public class WordCheckActivity extends AppCompatActivity {
         //editData();
     }
 
+    @SuppressLint("HandlerLeak")
     private void callUserHelp(final int stage) {
         userQuestionTextView.setVisibility(View.VISIBLE);
         userQuestionTextView.setTextColor(getResources().getColor(R.color.wrongWordRed));
         userQuestionTextView.animate().alphaBy(0).alpha(1).setDuration(600).start();
+
+        removingWordHandler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+
+                setUpLesson(stage + 1);
+            }
+        };
 
         helpImageButtonsLinearLayout.setVisibility(View.VISIBLE);
         helpImageButtonsLinearLayout.animate().alphaBy(0).alpha(1).setDuration(animationDuration).start();
@@ -202,7 +210,7 @@ public class WordCheckActivity extends AppCompatActivity {
                         .positiveClickListener(new IOSDialog.Listener() {
                             @Override
                             public void onClick(IOSDialog iosDialog) {
-                                checkingWordsList.get(stage).removeWordFromService();
+                                checkingWordsList.get(stage).removeWordFromService(removingWordHandler);
                                 iosDialog.dismiss();
                             }
                         })
@@ -226,7 +234,7 @@ public class WordCheckActivity extends AppCompatActivity {
         });
     }
 
-    private List<Word> loadData() {
+    private ArrayList<Word> loadData() {
         SharedPreferences sharedPreferences = getSharedPreferences("Shared preferences for Words Service", MODE_PRIVATE);
         Gson gson = new Gson();
         String json = sharedPreferences.getString(getString(R.string.service_saved_indexes_key), null);

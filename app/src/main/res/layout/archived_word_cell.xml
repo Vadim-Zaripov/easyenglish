@@ -1,26 +1,167 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
     android:layout_height="wrap_content"
     android:layout_width="match_parent"
-    android:minHeight="60dp"
-    app:cardBackgroundColor="@color/WHITE_TRANSPARENT"
-    app:cardCornerRadius="20dp"
-    app:cardElevation="0dp"
-    android:id="@+id/bob"
-    android:layout_marginTop="10dp"
-    android:layout_marginLeft="10dp"
-    android:layout_marginRight="10dp">
+    android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <TextView
-        android:id="@+id/archiveWordInEnglishTextView"
+    <com.github.florent37.expansionpanel.ExpansionHeader
+        android:id="@+id/categoryCellExpansionHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.card.MaterialCardView
+        android:layout_height="60dp"
+        android:layout_width="match_parent"
+        android:minHeight="60dp"
+        app:cardBackgroundColor="@color/WHITE_TRANSPARENT"
+        app:cardCornerRadius="40dp"
+        app:cardElevation="0dp"
+        android:tag="animation"
+        android:id="@+id/bob"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        app:strokeColor="@color/colorWhite"
+        app:strokeWidth="3dp">
+
+            <LinearLayout
+                android:id="@+id/bob2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_gravity="center_vertical">
+
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="5dp"/>
+
+                <TextView
+                    android:paddingStart="16dp"
+                    android:id="@+id/archiveWordInEnglishTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+
+                    android:gravity="start"
+                    android:tag="animation3"
+                    android:textColor="@color/colorWhite"
+                    android:textSize="30sp" />
+                
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp"/>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:paddingEnd="20dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/learnWordsTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/learnWords"
+                        android:textColor="@color/colorWhite"
+                        android:textSize="20sp"/>
+
+                    <Space
+                        android:layout_width="20dp"
+                        android:layout_height="match_parent"/>
+
+                    <TextView
+                        android:id="@+id/shareWordsTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/shareCategory"
+                        android:textColor="@color/colorWhite"
+                        android:textSize="20sp"/>
+                </LinearLayout>
+            </LinearLayout>
+                
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:minHeight="60dp"
+            app:cardBackgroundColor="@color/WHITE_TRANSPARENT"
+            app:cardCornerRadius="40dp"
+            app:cardElevation="0dp"
+            android:tag="animation"
+            android:id="@+id/categoryCellMaterialCardViewPlaceHolder"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"
+            android:visibility="invisible"
+            android:layout_marginRight="10dp"
+            app:strokeColor="@color/colorWhite"
+            app:strokeWidth="3dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_gravity="center">
+
+                <TextView
+                    android:paddingStart="16dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:tag="animation3"
+                    android:textColor="@color/colorWhite"
+                    android:textSize="30sp" />
+
+                <LinearLayout
+                    android:id="@+id/bob3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_gravity="end"
+                    android:paddingEnd="30dp"
+                    android:tag="animation2">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/colorWhite"
+                        android:text="@string/learnWords"
+                        android:textSize="20sp"/>
+
+                    <Space
+                        android:layout_width="10dp"
+                        android:layout_height="match_parent"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/shareCategory"
+                        android:textSize="20sp"
+                        android:textColor="@color/colorWhite"/>
+                </LinearLayout>
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+    </com.github.florent37.expansionpanel.ExpansionHeader>
+
+    <com.github.florent37.expansionpanel.ExpansionLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:gravity="center"
-        android:textColor="@color/colorWhite"
-        android:textSize="30sp"
-        android:textStyle="bold"></TextView>
+        android:id="@+id/categoryCellExpansionLayout">
 
-</com.google.android.material.card.MaterialCardView>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:id="@+id/expandableRecyclerView"
+            android:paddingStart="30dp"
+            android:paddingEnd="30dp"
+            android:paddingTop="10dp" />
+
+    </com.github.florent37.expansionpanel.ExpansionLayout>
+
+</LinearLayout>

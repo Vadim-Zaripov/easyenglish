@@ -50,56 +50,66 @@ public class WordsArchiveFragment extends Fragment {
     private SwipeRefreshLayout swipeRefreshLayout;
     private SearchView archivedWordsSearchView;
 
+    private ArrayList<Word> archivedWord = new ArrayList<>();
+
     private ArchiveFragmentRecyclerViewAdapter archiveFragmentRecyclerViewAdapter;
+
+    private Handler initArchivedWordsHandler;
+
+    private View viewLayout;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         reference.keepSynced(true);
 
-        return inflater.inflate(R.layout.words_archive_fragment, container, false);
+        viewLayout = inflater.inflate(R.layout.words_archive_fragment, container, false);
+        return viewLayout;
     }
 
+    @SuppressLint("HandlerLeak")
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+
         Log.d(ARCHIVE_ACTIVITY_TAG, "starts");
+
+        initArchivedWordsHandler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+
+                archiveFragmentRecyclerViewAdapter = new ArchiveFragmentRecyclerViewAdapter(((MainActivity)getActivity()).getWordArrayList()); //TODO: Replace to ArchivedWordsArrayList
+                archivedWordsRecyclerView.setAdapter(archiveFragmentRecyclerViewAdapter);
+                archivedWordsSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                    @Override
+                    public boolean onQueryTextSubmit(String query) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onQueryTextChange(String newText) {
+                        archiveFragmentRecyclerViewAdapter.getFilter().filter(newText);
+
+                        return false;
+                    }
+                });
+            }
+        };
+
+        initArchivedWordsHandler.sendMessage(initArchivedWordsHandler.obtainMessage());
 
         archivedWordsRecyclerView = view.findViewById(R.id.archivedWordsRecyclerView);
         archivedWordsRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
-
         archivedWordsSearchView = view.findViewById(R.id.archivedWordsSearchView);
-        archivedWordsSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
-            }
 
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                archiveFragmentRecyclerViewAdapter.getFilter().filter(newText);
-
-                return false;
-            }
-        });
-
-        swipeRefreshLayout = view.findViewById(R.id.archivedWordsSwipeToRefreshLayout);
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                swipeRefreshLayout.setRefreshing(true);
-                new Thread(new InitArchivedWordsThread()).start();
-            }
-        });
     }
 
     @Override
     public void onResume() {
         super.onResume();
-
-        swipeRefreshLayout.setRefreshing(true);
-        new Thread(new InitArchivedWordsThread()).start();
+        initArchivedWordsHandler.sendMessage(initArchivedWordsHandler.obtainMessage());
     }
 
     private class ArchiveFragmentRecyclerViewAdapter extends RecyclerView.Adapter<ArchiveFragmentRecyclerViewAdapter.ArchiveFragmentViewHolder> implements Filterable {
@@ -179,6 +189,7 @@ public class WordsArchiveFragment extends Fragment {
             MaterialCardView wordMaterialCardView;
             TextView wordInEnglishTextView;
             int position;
+
 
             ArchiveFragmentViewHolder(View itemView) {
                 super(itemView);

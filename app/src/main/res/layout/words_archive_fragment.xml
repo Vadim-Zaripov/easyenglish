@@ -33,17 +33,13 @@
         </SearchView>
     </com.google.android.material.card.MaterialCardView>
 
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+
+    <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/archivedWordsSwipeToRefreshLayout">
+        android:id="@+id/archivedWordsRecyclerView">
+    </androidx.recyclerview.widget.RecyclerView>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/archivedWordsRecyclerView">
-        </androidx.recyclerview.widget.RecyclerView>
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 </LinearLayout>
 

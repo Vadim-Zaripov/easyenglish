@@ -20,4 +20,6 @@
     <dimen name="main_navigation_item_margin">8dp</dimen>
     <dimen name="main_navigation_item_text_size">20sp</dimen>
 
+    <dimen name="categories_not_open_card_view_height">60dp</dimen>
+
 </resources>

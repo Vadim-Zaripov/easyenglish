@@ -1,11 +1,16 @@
 package com.develop.vadim.english.Basic;
 
+import android.os.Handler;
+import android.os.Message;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -15,6 +20,8 @@ import java.util.Date;
 import java.util.HashMap;
 
 public class Word implements Parcelable {
+    private static final int REMOVING_COMPLETE_KEY = 567;
+
     private String wordInEnglish;
     private String wordInRussian;
     private int level = 0;
@@ -102,7 +109,7 @@ public class Word implements Parcelable {
         this.level = level;
     }
 
-    public void removeWordFromService() {
+    public void removeWordFromService(final Handler handler) {
         Log.d(WORD_TAG, "Word : starting deleting word from database");
 
         MainActivity.reference.child("words").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -116,7 +123,13 @@ public class Word implements Parcelable {
                 reference.child(Word.categoryDatabaseKey).setValue(dataSnapshot.child(String.valueOf(dataSnapshot.getChildrenCount() - 1)).child(Word.categoryDatabaseKey).getValue());
                 reference.child(Word.levelDatabaseKey).setValue(dataSnapshot.child(String.valueOf(dataSnapshot.getChildrenCount() - 1)).child(Word.levelDatabaseKey).getValue());
 
-                MainActivity.reference.child("words").child(String.valueOf(dataSnapshot.getChildrenCount() - 1)).removeValue();
+                MainActivity.reference.child("words").child(String.valueOf(dataSnapshot.getChildrenCount() - 1)).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d("TAG", "bib");
+                        handler.sendEmptyMessage(Word.REMOVING_COMPLETE_KEY);
+                    }
+                });
             }
 
             @Override

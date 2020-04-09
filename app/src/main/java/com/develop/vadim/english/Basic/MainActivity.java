@@ -19,6 +19,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.View;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.Toast;
 
 import com.develop.vadim.english.Broadcasts.WordCheckBroadcast;
@@ -27,7 +30,8 @@ import com.develop.vadim.english.Fragments.FragmentViewPagerAdapter;
 import com.develop.vadim.english.Fragments.WordsArchiveFragment;
 import com.develop.vadim.english.Fragments.WordsUserCheckFragment;
 import com.develop.vadim.english.R;
-import com.develop.vadim.english.Services.WordCheckService;
+import com.github.ybq.android.spinkit.SpinKitView;
+import com.github.ybq.android.spinkit.style.DoubleBounce;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -39,6 +43,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import com.google.firebase.dynamiclinks.PendingDynamicLinkData;
+import com.google.gson.Gson;
 import com.tbuonomo.viewpagerdotsindicator.DotsIndicator;
 
 import java.text.DateFormat;
@@ -53,8 +58,10 @@ import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
-    FragmentViewPagerAdapter fragmentViewPagerAdapter;
-    ViewPager viewPager;
+    private FragmentViewPagerAdapter fragmentViewPagerAdapter;
+    private ViewPager viewPager;
+    private DotsIndicator dotsIndicator;
+    private SpinKitView spinKitView;
 
     public static final String MAIN_ACTIVITY_TAG = "MainActivity";
 
@@ -84,23 +91,29 @@ public class MainActivity extends AppCompatActivity {
     public final static String PARAM_STATUS = "Status";
 
     public final static String BROADCAST_ACTION = "ru.lett.xenous.action.BROADCAST";
-
-    public ArrayList<String> categoriesList = new ArrayList<>();
+    public final static String BROADCAST_UPDATE_HAS_BEEN_DONE_ACTION = "ru.lett.xenous.action.UPDATE";
 
     private WordsUserCheckFragment wordsUserCheckFragment;
     private AddNewWordFragment addNewWordFragment;
     private WordsArchiveFragment wordsArchiveFragment;
 
-    private ArrayList<String> categoryNames = null;
+    private ArrayList<String> categoryNames = new ArrayList<>();
     private ArrayList<Word> wordArrayList = new ArrayList<>();
+    private ArrayList<Word> archivedWordsArrayList = new ArrayList<>();
 
     private boolean isCategoriesLoaded = false;
 
-    private Handler categoriesHandler;
+    private Handler loadingHandler;
 
     public static final int CATEGORIES_LOAD_END = 0;
     public static final int WORDS_LOAD_END = 1;
     public static final int WORDS_ANALYNG_WND = 3;
+    public static final int CHECKING_WORDS_LOAD_END = 4;
+
+    private SharedPreferences archivedWordsSharedPreferences;
+
+    private BroadcastReceiver updateDataBroadcastReceiver;
+
 
     @SuppressLint("HandlerLeak")
     @Override
@@ -112,6 +125,26 @@ public class MainActivity extends AppCompatActivity {
         initDate();
         createNotificationChannel();
 
+
+        updateDataBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Handler handler = new Handler() {
+                    @Override
+                    public void handleMessage(Message msg) {
+                        super.handleMessage(msg);
+
+                        if(msg.what == MainActivity.WORDS_LOAD_END) {
+                            sendBroadcast(new Intent(MainActivity.BROADCAST_UPDATE_HAS_BEEN_DONE_ACTION));
+                        }
+                    }
+                };
+
+                updateData(handler);
+            }
+        };
+
+        archivedWordsSharedPreferences = getSharedPreferences(getString(R.string.archivedWordsSharedPreferences), MODE_PRIVATE);
         wordsCheckSharedPreferences = getSharedPreferences(getPackageName() + ".wordsCheckFlag", MODE_PRIVATE);
 
         fragmentViewPagerAdapter = new FragmentViewPagerAdapter(getSupportFragmentManager());
@@ -121,31 +154,65 @@ public class MainActivity extends AppCompatActivity {
         wordsArchiveFragment = (WordsArchiveFragment) fragmentViewPagerAdapter.getItem(2);
 
         viewPager = findViewById(R.id.mainViewPagerId);
-        final DotsIndicator dotsIndicator = findViewById(R.id.dots_indicator);
+        dotsIndicator = findViewById(R.id.dots_indicator);
+        spinKitView = findViewById(R.id.spinKit);
+        spinKitView.setIndeterminateDrawable(new DoubleBounce());
 
-        categoriesHandler = new Handler() {
+        loadingHandler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
-
+                Log.d(MAIN_ACTIVITY_TAG, "HandleMessage" );
                 switch(msg.what) {
-                    case CATEGORIES_LOAD_END:
-                        Log.d(MAIN_ACTIVITY_TAG, "Categories has been loaded complete");
-                        break;
                     case WORDS_LOAD_END:
                         Log.d(MAIN_ACTIVITY_TAG, "All words has been loaded successfully");
+
+                        break;
+                    case CATEGORIES_LOAD_END:
+                        Log.d(MAIN_ACTIVITY_TAG, "Categories has been loaded successfully");
+
+                        Animation animation = new AlphaAnimation(1f, 0f);
+                        animation.setDuration(300);
+                        animation.setAnimationListener(new Animation.AnimationListener() {
+                            @Override
+                            public void onAnimationStart(Animation animation) {
+
+                            }
+
+                            @Override
+                            public void onAnimationEnd(Animation animation) {
+                                spinKitView.setVisibility(View.INVISIBLE);
+                                viewPager.setAdapter(fragmentViewPagerAdapter);
+                                dotsIndicator.setViewPager(viewPager);
+                            }
+
+                            @Override
+                            public void onAnimationRepeat(Animation animation) {
+
+                            }
+                        });
+
+                        spinKitView.startAnimation(animation);
+
+
                         break;
                     case WORDS_ANALYNG_WND:
                         Log.d(MAIN_ACTIVITY_TAG, "Words has been analized successfully");
+                        callCheck();
+
+                        break;
+                    case CHECKING_WORDS_LOAD_END:
+                        Log.d(MAIN_ACTIVITY_TAG, "Words has been sorted");
                         callWordsCheck();
 
-                        viewPager.setAdapter(fragmentViewPagerAdapter);
-                        dotsIndicator.setViewPager(viewPager);
                         break;
                 }
 
             }
         };
+
+        Log.d(MAIN_ACTIVITY_TAG, "OnCreate");
+        updateData(loadingHandler);
 
         FirebaseDynamicLinks
                 .getInstance()
@@ -158,8 +225,8 @@ public class MainActivity extends AppCompatActivity {
                             deepLink = pendingDynamicLinkData.getLink();
                             String[] splitedLink = deepLink.toString().split("/");
 
-                            String category = splitedLink[splitedLink.length - 1];
-                            String sharingUserUid = splitedLink[splitedLink.length - 2];
+                            String category = splitedLink[splitedLink.length - 2];
+                            String sharingUserUid = splitedLink[splitedLink.length - 1];
 
                             new Thread(new StartAddingCategoryFromLink(category, sharingUserUid)).start();
                         }
@@ -172,45 +239,50 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
-        new Thread(new InitCategoriesThread(categoriesHandler)).start();
-
         callCheck();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+
+
+        //here we check if out update broadcast receiver is registered
+        try {
+            unregisterReceiver(updateDataBroadcastReceiver);
+        }
+        catch(IllegalArgumentException e) {
+            e.printStackTrace();
+        }
+
+
         callCheck();
     }
 
     @Override
     public void onBackPressed() { }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        registerReceiver(updateDataBroadcastReceiver, new IntentFilter(MainActivity.BROADCAST_ACTION));
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
     private void callCheck() {
         if(wordsCheckSharedPreferences.getInt(getPackageName() + ".wordsCheckFlag", -1) != Calendar.getInstance().get(Calendar.DAY_OF_YEAR)) {
-            Intent intent = new Intent(this, WordCheckService.class);
-            intent.putParcelableArrayListExtra()
-            startService(intent);
+            new Thread(new LoadWordsToCheckingThread(loadingHandler)).start();
 
-            BroadcastReceiver wordsCheckBroadCastReceiver = new BroadcastReceiver() {
-                    @Override
-                    public void onReceive(Context context, Intent intent) {
-                        switch(intent.getIntExtra(PARAM_STATUS, 0)) {
-                            case STATUS_START:
-                                Toast.makeText(context, "Загружаем слова", Toast.LENGTH_LONG).show();
-                                break;
-                            case STATUS_FINISH:
-                                categoriesHandler.sendEmptyMessage(WORDS_ANALYNG_WND);
-                                break;
-                        }
-                    }
-                };
-
-                IntentFilter intentFilter = new IntentFilter(BROADCAST_ACTION);
-                registerReceiver(wordsCheckBroadCastReceiver, intentFilter);
-
-                wordsCheckSharedPreferences.edit().putInt(getPackageName() + ".wordsCheckFlag", Calendar.getInstance().get(Calendar.DAY_OF_YEAR)).apply();
+            wordsCheckSharedPreferences.edit().putInt(getPackageName() + ".wordsCheckFlag", Calendar.getInstance().get(Calendar.DAY_OF_YEAR)).apply();
         }
+
+
+
     }
 
     private void createNotificationChannel() {
@@ -250,7 +322,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void callWordsCheck() {
         Intent wordCheckIntent = new Intent(this, WordCheckActivity.class);
-        wordCheckIntent.putExtra(getString(R.string.parcelableWordKey), false);
+        wordCheckIntent.putExtra(getString(R.string.word_check_flag), 1);
 
         startActivity(wordCheckIntent);
     }
@@ -319,14 +391,57 @@ public class MainActivity extends AppCompatActivity {
                             FirebaseDatabase.getInstance().getReference().child("users").child(sharingUserUid).child("categories").child(String.valueOf(dataSnapshot.getChildrenCount())).setValue(category);
                         }
 
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) { }
-                    });
-                }
-
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) { }
             });
+        }
+    }
+
+    private class FilterWordsThread implements Runnable {
+        Handler handler;
+
+        FilterWordsThread(Handler handler) {
+            this.handler = handler;
+        }
+
+        @Override
+        public void run() {
+            for(Word word : wordArrayList) {
+                //TODO: Add logic to filtrate words, which have been learnt and have been moved to archive
+                //But now I have made archived page as a all words page
+                archivedWordsArrayList.add(word);
+            }
+
+            handler.sendEmptyMessage(MainActivity.WORDS_ANALYNG_WND);
+        }
+    }
+
+    private class LoadWordsToCheckingThread implements Runnable {
+
+        Handler handler;
+        ArrayList<Word> checkingWordsList = new ArrayList<>();
+
+        LoadWordsToCheckingThread(Handler handler) {
+            this.handler = handler;
+        }
+
+        @Override
+        public void run() {
+            //TODO: This thread should choose words from all words and call check
+            for(Word word : wordArrayList) {
+                checkingWordsList.add(word);
+            }
+
+            handler.sendEmptyMessage(CHECKING_WORDS_LOAD_END);
+            saveData();
+        }
+
+        synchronized void saveData() {
+            SharedPreferences.Editor editor = archivedWordsSharedPreferences.edit();
+            Gson gson = new Gson();
+            String json = gson.toJson(archivedWordsArrayList);
+            editor.putString(getString(R.string.service_saved_indexes_key), json);
+            editor.apply();
         }
     }
 }

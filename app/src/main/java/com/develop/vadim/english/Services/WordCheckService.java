@@ -79,12 +79,11 @@ public class WordCheckService extends Service {
                     WordCheckService.this.databaseReferenceChildrenCount = dataSnapshot.getChildrenCount();
 
                     for(int childrenOnReference = 0; childrenOnReference < databaseReferenceChildrenCount; childrenOnReference++) {
-                        final long childrenOnReferenceCurrentIndex = childrenOnReference;
-                        if(isNeedChecking(childrenOnReferenceCurrentIndex)) {
-                            Word word = new Word(childrenOnReferenceCurrentIndex);
-                            word.setWordInEnglish(Objects.requireNonNull(dataSnapshot.child(String.valueOf(childrenOnReferenceCurrentIndex)).child(Word.englishDatabaseKey).getValue()).toString());
-                            word.setWordInRussian(Objects.requireNonNull(dataSnapshot.child(String.valueOf(childrenOnReferenceCurrentIndex)).child(Word.russianDatabaseKey).getValue()).toString());
-                            word.setWordCategory(Objects.requireNonNull(dataSnapshot.child(String.valueOf(childrenOnReferenceCurrentIndex)).child(Word.categoryDatabaseKey).getValue()).toString());
+                        if(isNeedChecking(childrenOnReference)) {
+                            Word word = new Word(childrenOnReference);
+                            word.setWordInEnglish(Objects.requireNonNull(dataSnapshot.child(String.valueOf((long) childrenOnReference)).child(Word.englishDatabaseKey).getValue()).toString());
+                            word.setWordInRussian(Objects.requireNonNull(dataSnapshot.child(String.valueOf((long) childrenOnReference)).child(Word.russianDatabaseKey).getValue()).toString());
+                            word.setWordCategory(Objects.requireNonNull(dataSnapshot.child(String.valueOf((long) childrenOnReference)).child(Word.categoryDatabaseKey).getValue()).toString());
 
                             neededWordsList.add(word);
                         }

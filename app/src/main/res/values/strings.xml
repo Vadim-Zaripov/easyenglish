@@ -98,6 +98,10 @@
     <string name="newWords">Новые категория добавлена!</string>
     <string name="category">Категория</string>
     <string name="addNewCategory">Добавить кстегорию</string>
+    <string name="archivedWordsSharedPreferences">archive</string>
+    <string name="learnWords">Изучить</string>
+    <string name="shareCategory">Поделиться</string>
+    <string name="thisCategoryIsEmpty">Данная категория пуста</string>
     <string-array name="pref_example_list_titles">
         <item>Always</item>
         <item>When possible</item>

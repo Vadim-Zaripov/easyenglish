@@ -6,10 +6,10 @@ import android.app.Dialog;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.media.Image;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,13 +19,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -67,9 +67,7 @@ public class AddNewWordFragment extends Fragment {
     private MaterialCardView categoryMaterialCardViewHolder;
     private ImageView timePickerImageView;
 
-    private Dialog dialog;
-
-    private boolean isCategoryNew;
+    public final static int NEW_CATEGORY_HAS_BEEN_ADDED = 5;
 
     private Transitioner transitioner;
 
@@ -81,12 +79,24 @@ public class AddNewWordFragment extends Fragment {
 
     private SharedPreferences timeSharedPreferences;
 
+    private boolean isCategoryNew = false;
+
     @SuppressLint("HandlerLeak")
     private Handler wordSendingHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
 
+            switch(msg.what) {
+                case NEW_CATEGORY_HAS_BEEN_ADDED:
+                    Log.d("BOB", "not new word");
+                    ((MainActivity)getActivity()).updateData(wordSendingHandler);
+                    break;
+                case 12:
+                    Log.d("BOB", "new category");
+
+                    break;
+            }
             wordSendingProgressBar.setVisibility(View.INVISIBLE);
 
             startAppearAnimation();
@@ -171,9 +181,10 @@ public class AddNewWordFragment extends Fragment {
                     @Override
                     public void handleMessage(Message msg) {
                         super.handleMessage(msg);
+
                         choosingCategoryRecyclerView = categoryMaterialCardView.findViewById(R.id.categoriesWhileAddingWordRecyclerView);
                         choosingCategoryRecyclerView.setVisibility(View.VISIBLE);
-                        choosingCategoryRecyclerView.setAdapter(new CategoriesRecyclerViewAdapter(categories));
+                        choosingCategoryRecyclerView.setAdapter(new CategoriesRecyclerViewAdapter(getCategories()));
                         choosingCategoryRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
                     }
                 };
@@ -196,7 +207,8 @@ public class AddNewWordFragment extends Fragment {
                             newWord.setWordInEnglish(englishWordEditText.getText().toString());
                             newWord.setWordInRussian(russianWordEditText.getText().toString());
 
-                            startDisappearingAnimation(newWord);
+                            startDisappearingAnimation(newWord, categoryTextView.getText().toString());
+
 
                             englishWordEditText.setText("");
                             russianWordEditText.setText("");
@@ -218,7 +230,7 @@ public class AddNewWordFragment extends Fragment {
                 }
             }
 
-            private void startDisappearingAnimation(final Word word) {
+            private void startDisappearingAnimation(final Word word, final String category) {
                 Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.dissapear);
                 categoryMaterialCardView.startAnimation(animation);
                 russianWordEditText.startAnimation(animation);
@@ -239,7 +251,12 @@ public class AddNewWordFragment extends Fragment {
 
                         wordSendingProgressBar.setVisibility(View.VISIBLE);
 
-                        new Thread(new StartWordSendingThread(word)).start();
+                        if(isCategoryNew) {
+                            new Thread(new StartWordSendingThread(word, category)).start();
+                        }
+                        else {
+                            new Thread(new StartWordSendingThread(word)).start();
+                        }
                     }
 
                     @Override
@@ -247,6 +264,15 @@ public class AddNewWordFragment extends Fragment {
                 });
             }
         });
+    }
+
+    private ArrayList getCategories() {
+        ArrayList<String> categoriesList = new ArrayList<>();
+        categoriesList.add("Без категории");
+        categoriesList.addAll(((MainActivity)getActivity()).getCategoryNamesList());
+        categoriesList.add("Добавить");
+
+        return categoriesList;
     }
 
     private void setUpService() {
@@ -275,12 +301,6 @@ public class AddNewWordFragment extends Fragment {
         russianWordEditText.startAnimation(animation);
         englishWordEditText.startAnimation(animation);
         addWordToServiceImageView.startAnimation(animation);
-    }
-
-    private void callChooseCategoryDialog() {
-        Dialog dialog = new Dialog(getContext());
-        dialog.setContentView(R.layout.add_new_category_layout);
-        dialog.show();
     }
 
     private TimePickerDialog.OnTimeSetListener timePickerDialogTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
@@ -339,7 +359,6 @@ public class AddNewWordFragment extends Fragment {
 
         private CategoriesRecyclerViewAdapter(ArrayList<String> categories) {
             this.categories = categories;
-            categories.add("Добавить");
         }
 
         @NonNull
@@ -390,17 +409,41 @@ public class AddNewWordFragment extends Fragment {
 
                         if(position == getItemCount() - 1) {
                             callChooseCategoryDialog();
-
-                            isCategoryNew = true;
                         }
                         else {
-                            categoryTextView.setVisibility(View.VISIBLE);
                             categoryTextView.setText(categoryNameTextView.getText());
-                            categoryTextView.startAnimation(animation);
+                            isCategoryNew = false;
                         }
+
+                        categoryTextView.setVisibility(View.VISIBLE);
+                        categoryTextView.setText(categoryNameTextView.getText());
+                        categoryTextView.startAnimation(animation);
 
                         addWordToServiceImageView.animate().alphaBy(0).alpha(1).setDuration(420).start();
                     }
+                });
+            }
+
+            private void callChooseCategoryDialog() {
+                final Dialog dialog = new Dialog(getContext());
+                dialog.setContentView(R.layout.add_new_category_layout);
+                final EditText editText = dialog.findViewById(R.id.addNewCategoryEditText);
+                final ImageView continueEditText = dialog.findViewById(R.id.addNewCategoryImageView);
+                dialog.show();
+
+                categoryTextView.setText(categories.get(0));
+
+                continueEditText.setOnClickListener(new ImageView.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if(!editText.getText().toString().equals("")) {
+                            categoryTextView.setText(editText.getText());
+                            isCategoryNew = true;
+                        }
+
+                        dialog.dismiss();
+                    }
+
                 });
             }
         }
@@ -408,15 +451,21 @@ public class AddNewWordFragment extends Fragment {
 
     private class StartWordSendingThread implements Runnable {
         Word word;
+        String category = "default";
 
         StartWordSendingThread(Word word) {
             this.word = word;
         }
 
+        StartWordSendingThread(Word word, String category) {
+            this.word = word;
+            this.category = category;
+        }
+
         @Override
         public void run() {
-            word.sentWordToService();
 
+            //Imitate loading
             try {
                 Thread.sleep(2500);
             }
@@ -424,7 +473,29 @@ public class AddNewWordFragment extends Fragment {
                 e.printStackTrace();
             }
 
-            wordSendingHandler.sendMessage(wordSendingHandler.obtainMessage());
+            Log.d("BOB", category);
+
+            if(getCategories().contains(category) || category.equals("default")) {
+               word.setWordCategory("default");
+               word.sentWordToService();
+               wordSendingHandler.sendEmptyMessage(MainActivity.CATEGORIES_LOAD_END);
+
+            }
+            else {
+                MainActivity.reference.child("categories").addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        MainActivity.reference.child("categories").child(String.valueOf(dataSnapshot.getChildrenCount())).setValue(category);
+
+                        word.setWordCategory(category);
+                        word.sentWordToService();
+                        wordSendingHandler.sendEmptyMessage(NEW_CATEGORY_HAS_BEEN_ADDED);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) { }
+                });
+            }
         }
     }
 }
