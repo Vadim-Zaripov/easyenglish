@@ -39,8 +39,10 @@ import com.develop.vadim.english.R;
 import com.develop.vadim.english.Basic.Word;
 import com.github.florent37.expansionpanel.ExpansionHeader;
 import com.github.florent37.expansionpanel.ExpansionLayout;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.card.MaterialCardView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -48,10 +50,14 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.database.core.view.QueryParams;
 import com.google.firebase.dynamiclinks.DynamicLink;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import com.google.firebase.dynamiclinks.ShortDynamicLink;
+import com.pitt.library.fresh.FreshDownloadView;
+import com.varunjohn1990.iosdialogs4android.IOSDialog;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -221,7 +227,7 @@ public class WordsUserCheckFragment extends Fragment {
         }
 
         @Override
-        public void onBindViewHolder(WordsCategoriesRecyclerViewHolder holder, int position) {
+        public void onBindViewHolder(WordsCategoriesRecyclerViewHolder holder, final int position) {
 
             Log.d("SASHA", String.valueOf(position));
             holder.category = categoryNamesList.get(position);
@@ -237,6 +243,67 @@ public class WordsUserCheckFragment extends Fragment {
                     final int currentWordIndex = wordsInCategoriesCounter;
                     View view = LayoutInflater.from(getContext()).inflate(R.layout.word_in_category_cell, null, false);
                     final TextView wordInCategoryTextView = view.findViewById(R.id.wordInCategoryTextView);
+
+                    view.setOnLongClickListener(new View.OnLongClickListener() {
+                        Word word;
+                        @Override
+                        public boolean onLongClick(View view) {
+                            word =  wordsInCategoriesArrayList.get(localPosition).get(currentWordIndex);
+                            switch((int) word.getLevel()) {
+
+                                case -2:
+                                    {
+                                    new IOSDialog.Builder(getContext())
+                                            .message(getString(R.string.add_word_from_categoty))
+                                            .positiveButtonText(getString(R.string.yes))
+                                            .positiveClickListener(new IOSDialog.Listener() {
+                                                @Override
+                                                public void onClick(final IOSDialog iosDialog) {
+                                                    word.setLevel(0);
+
+                                                    MainActivity.reference.child("words")
+                                                            .child(wordsInCategoriesArrayList.get(localPosition).get(currentWordIndex).getInd()).child(Word.levelDatabaseKey).setValue(0)
+                                                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                @Override
+                                                                public void onComplete(@NonNull Task<Void> task) {
+                                                                    if(task.isSuccessful()) {
+                                                                        Toast.makeText(getContext(), "Слово успешно добавлено в цикл изучения", Toast.LENGTH_LONG).show();
+
+                                                                        ((MainActivity)getActivity()).wordArrayList.set((int) word.getIndex(), word);
+                                                                        initCategoriesHandler.sendMessage(initCategoriesHandler.obtainMessage());
+                                                                    }
+                                                                    else if(task.isCanceled()) {
+                                                                        Toast.makeText(getContext(), "Произошла неизвестная ошибка, провнрьте подключение к сети", Toast.LENGTH_LONG).show();
+                                                                    }
+
+                                                                    iosDialog.dismiss();
+                                                                }
+                                                            });
+                                                }
+                                            })
+                                            .negativeButtonText(getString(R.string.no))
+                                            .negativeClickListener(new IOSDialog.Listener() {
+                                                @Override
+                                                public void onClick(IOSDialog iosDialog) {
+                                                    iosDialog.dismiss();
+                                                }
+                                            })
+                                            .build()
+                                            .show();
+                                    }
+                                    break;
+                                case -1:
+                                    Toast.makeText(getContext(), "Вы уже изучили это слово", Toast.LENGTH_LONG).show();
+                                    break;
+                                default:
+                                    Log.d("BIB", String.valueOf(wordsInCategoriesArrayList.get(localPosition).get(currentWordIndex).getLevel()));
+                                    Toast.makeText(getContext(), "Вы уже изучаете это слово на данный момент", Toast.LENGTH_LONG).show();
+                                    break;
+                            }
+
+                            return true; //It must return true just because if it returns true it will not call OnClick method after dropping view
+                        }
+                    });
 
                     wordInCategoryTextView.setText(wordsInCategoriesArrayList.get(position).get(wordsInCategoriesCounter).getWordInEnglish());
 
@@ -312,6 +379,86 @@ public class WordsUserCheckFragment extends Fragment {
 
             }
 
+            holder.learnTextView.setOnClickListener(new TextView.OnClickListener() {
+                ArrayList<Word> changingWordsArrayList = new ArrayList<>();
+
+                @Override
+                public void onClick(View view) {
+
+                    for(int wordsInThisCategoryCounter = 0; wordsInThisCategoryCounter < wordsInCategoriesArrayList.get(position).size(); wordsInThisCategoryCounter++) {
+                        Word word = wordsInCategoriesArrayList.get(position).get(wordsInThisCategoryCounter);
+
+                        if(word.getLevel() == -2) {
+                            changingWordsArrayList.add(word);
+                        }
+                    }
+
+                    if(changingWordsArrayList.size() == 0) {
+                        Toast.makeText(getContext(), "В данной категории все слова уже в вашем цикле изучения", Toast.LENGTH_LONG).show();
+                    }
+                    else {
+                        new IOSDialog.Builder(getContext())
+                                .message("В данной категории " + String.valueOf(changingWordsArrayList.size()) + " слов для добавления. Добавить?")
+                                .positiveButtonText(getString(R.string.yes))
+                                .positiveClickListener(new IOSDialog.Listener() {
+                                    boolean isSuccessful = true;
+                                    @Override
+                                    public void onClick(IOSDialog iosDialog) {
+                                        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                                            boolean isSuccessful = true;
+
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                                                for(final Word word : changingWordsArrayList) {
+                                                    word.setLevel(0);
+
+                                                    if(!isSuccessful) {
+                                                        break;
+                                                    }
+
+                                                    databaseReference.child(word.getInd()).child(Word.levelDatabaseKey).setValue(0).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                        @Override
+                                                        public void onComplete(@NonNull Task<Void> task) {
+                                                            if(task.isSuccessful()) {
+                                                                ((MainActivity)getActivity()).wordArrayList.set((int) word.getIndex(), word);
+                                                            }
+                                                            if(task.isCanceled()) {
+                                                                Toast.makeText(getContext(), "Произошла ошибка, проверьте поделючение к сети", Toast.LENGTH_LONG).show();
+                                                                isSuccessful = false;
+                                                            }
+                                                        }
+                                                    });
+                                                }
+
+                                                if(isSuccessful) {
+                                                    Toast.makeText(getContext(), "Слова добавлены успешно", Toast.LENGTH_LONG).show();
+                                                    initCategoriesHandler.sendMessage(initCategoriesHandler.obtainMessage());
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                                                Toast.makeText(getContext(), "Произошла ошибка, проверьте поделючение к сети", Toast.LENGTH_LONG).show();
+                                            }
+                                        });
+
+                                        iosDialog.dismiss();
+                                    }
+                                })
+                                .negativeButtonText(getString(R.string.no))
+                                .negativeClickListener(new IOSDialog.Listener() {
+                                    @Override
+                                    public void onClick(IOSDialog iosDialog) {
+                                        iosDialog.dismiss();
+                                    }
+                                })
+                                .build()
+                                .show();
+                    }
+                }
+            });
+
 
             Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.appear);
             holder.materialCardView.startAnimation(animation);
@@ -386,8 +533,8 @@ public class WordsUserCheckFragment extends Fragment {
                         FirebaseDynamicLinks
                                 .getInstance()
                                 .createDynamicLink()
-                                .setLink(Uri.parse("https://xenous.ru/lett" + "/" + FirebaseAuth.getInstance().getUid() + "/" + category))
-                                .setDomainUriPrefix("https://easyenglish.page.link")
+
+                                .setDomainUriPrefix("https://sharelett.page.link")
                                 .setAndroidParameters(
                                         new DynamicLink.AndroidParameters.Builder("com.develop.vadim.english").build()
                                 )
@@ -417,7 +564,7 @@ public class WordsUserCheckFragment extends Fragment {
                     public void onClick(View view) {
                         if(expansionLayout.isExpanded()) {
                             expansionLayout.toggle(true);
-                            ValueAnimator valueAnimator = ValueAnimator.ofInt(255, height);
+                            ValueAnimator valueAnimator = ValueAnimator.ofInt(275, height);
                             valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                                 @Override
                                 public void onAnimationUpdate(ValueAnimator animation) {
@@ -432,7 +579,7 @@ public class WordsUserCheckFragment extends Fragment {
                         }
                         else {
                             expansionLayout.expand(true);
-                            ValueAnimator valueAnimator = ValueAnimator.ofInt(materialCardView.getMeasuredHeight(), 255);
+                            ValueAnimator valueAnimator = ValueAnimator.ofInt(materialCardView.getMeasuredHeight(), 275);
                             valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                                 @Override
                                 public void onAnimationUpdate(ValueAnimator animation) {
@@ -454,54 +601,10 @@ public class WordsUserCheckFragment extends Fragment {
                     }
                 });
 
-                itemView.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View v) {
-                        final BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(v.getContext());
-                        bottomSheetDialog.setContentView(R.layout.categories_bottom_sheet_dialog);
-                        bottomSheetDialog.show();
-
-                        shareMaterialCardView = bottomSheetDialog.findViewById(R.id.bottomSheetShareCardView);
-                        deleteMaterialCardView  = bottomSheetDialog.findViewById(R.id.bottomSheetDeleteCardView);
-
-                        shareMaterialCardView.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                            }
-                        });
-
-                        deleteMaterialCardView.setOnClickListener(new View.OnClickListener() {
-                            @SuppressLint("HandlerLeak")
-                            @Override
-                            public void onClick(View v) {
-                                if(position != 0) {
-                                    removeCategoryHandler = new Handler() {
-                                        @Override
-                                        public void handleMessage(Message msg) {
-                                            super.handleMessage(msg);
-
-                                            swipeRefreshLayout.setRefreshing(false);
-                                            categoryNamesList.remove(position);
-                                            notifyDataSetChanged();
-                                        }
-                                    };
-
-                                    new Thread(new RemoveCategoryThread(categoryTextView.getText().toString())).start();
-                                }
-                                else {
-                                    Toast.makeText(v.getContext(), "Данная категория не может быть удалена", Toast.LENGTH_SHORT).show();
-                                }
-
-                                bottomSheetDialog.cancel();
-                            }
-                        });
-
-                        return false;
-                    }
-                });
             }
 
             private void learnCategory(Handler handler) {
+
             }
 
             private void setPosition(int position) {
@@ -572,5 +675,5 @@ public class WordsUserCheckFragment extends Fragment {
                 public void onCancelled(@NonNull DatabaseError databaseError) { }
             });
         }
-    }
+    } //
 }

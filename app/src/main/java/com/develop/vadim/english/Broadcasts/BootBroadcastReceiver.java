@@ -7,28 +7,35 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import com.develop.vadim.english.Basic.MainActivity;
+
+import java.util.Calendar;
+import java.util.Objects;
+
+import static android.content.Context.ALARM_SERVICE;
+
 public class BootBroadcastReceiver extends BroadcastReceiver {
 
     public static final String TAG_BOOT_BROADCAST_RECEIVER = "BOOT_BROADCAST_RECEIVER";
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        if(intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED) || intent.getAction().equals(Intent.ACTION_REBOOT)) {
+        if(Objects.equals(intent.getAction(), Intent.ACTION_BOOT_COMPLETED)) {
+            Log.d("TAAG", "WORKS");
+
             startServiceByAlarm(context);
         }
     }
 
     private void startServiceByAlarm(Context context) {
-        // Get alarm manager.
-        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 12);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        Intent intent = new Intent(context, NotificationBroadcast.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0,intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        AlarmManager am = (AlarmManager) context.getSystemService(ALARM_SERVICE);
 
-        // Create intent to invoke the background service.
-        Intent intent = new Intent(context, WordCheckBroadcast.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
-
-
-        Log.d(TAG_BOOT_BROADCAST_RECEIVER, "Start service use repeat alarm");
-
-        alarmManager.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + AlarmManager.INTERVAL_HALF_DAY, pendingIntent);
+        am.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
     }
 }

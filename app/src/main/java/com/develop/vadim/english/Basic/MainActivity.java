@@ -1,9 +1,11 @@
 package com.develop.vadim.english.Basic;
 
 import android.annotation.SuppressLint;
+import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -24,7 +26,7 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.Toast;
 
-import com.develop.vadim.english.Broadcasts.WordCheckBroadcast;
+import com.develop.vadim.english.Broadcasts.NotificationBroadcast;
 import com.develop.vadim.english.Fragments.AddNewWordFragment;
 import com.develop.vadim.english.Fragments.FragmentViewPagerAdapter;
 import com.develop.vadim.english.Fragments.WordsArchiveFragment;
@@ -61,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
     private FragmentViewPagerAdapter fragmentViewPagerAdapter;
     private ViewPager viewPager;
     private DotsIndicator dotsIndicator;
-    private SpinKitView spinKitView;
+    public SpinKitView spinKitView;
 
     public static final String MAIN_ACTIVITY_TAG = "MainActivity";
 
@@ -97,8 +99,8 @@ public class MainActivity extends AppCompatActivity {
     private AddNewWordFragment addNewWordFragment;
     private WordsArchiveFragment wordsArchiveFragment;
 
-    private ArrayList<String> categoryNames = new ArrayList<>();
-    private ArrayList<Word> wordArrayList = new ArrayList<>();
+    public ArrayList<String> categoryNames = new ArrayList<>();
+    public ArrayList<Word> wordArrayList = new ArrayList<>();
     private ArrayList<Word> archivedWordsArrayList = new ArrayList<>();
 
     private boolean isCategoriesLoaded = false;
@@ -124,23 +126,18 @@ public class MainActivity extends AppCompatActivity {
         initDefaultFiles();
         initDate();
         createNotificationChannel();
-
+        createNotification();
 
         updateDataBroadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                Handler handler = new Handler() {
-                    @Override
-                    public void handleMessage(Message msg) {
-                        super.handleMessage(msg);
+                Word word = intent.getParcelableExtra(getString(R.string.changingWord));
+                Log.d("AB", word.getInd());
 
-                        if(msg.what == MainActivity.WORDS_LOAD_END) {
-                            sendBroadcast(new Intent(MainActivity.BROADCAST_UPDATE_HAS_BEEN_DONE_ACTION));
-                        }
-                    }
-                };
 
-                updateData(handler);
+                wordArrayList.set((int) word.getIndex(), word);
+
+                sendBroadcast(new Intent(MainActivity.BROADCAST_UPDATE_HAS_BEEN_DONE_ACTION));
             }
         };
 
@@ -187,13 +184,10 @@ public class MainActivity extends AppCompatActivity {
                             }
 
                             @Override
-                            public void onAnimationRepeat(Animation animation) {
-
-                            }
+                            public void onAnimationRepeat(Animation animation) { }
                         });
 
                         spinKitView.startAnimation(animation);
-
 
                         break;
                     case WORDS_ANALYNG_WND:
@@ -290,7 +284,7 @@ public class MainActivity extends AppCompatActivity {
             CharSequence name = "LettReminderChannel";
             String description = "Notification channel for Lett Reminder";
             int importance = NotificationManager.IMPORTANCE_HIGH;
-            NotificationChannel channel = new NotificationChannel(WordCheckBroadcast.notificationId, name, importance);
+            NotificationChannel channel = new NotificationChannel(NotificationBroadcast.notificationId, name, importance);
             channel.enableLights(true);
             channel.enableVibration(true);
             channel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
@@ -299,6 +293,18 @@ public class MainActivity extends AppCompatActivity {
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
         }
+    }
+
+    private void createNotification() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 12);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        Intent intent = new Intent(MainActivity.this, NotificationBroadcast.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this, 0,intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        AlarmManager am = (AlarmManager) MainActivity.this.getSystemService(ALARM_SERVICE);
+
+        am.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
     }
 
     private void initDefaultFiles() {

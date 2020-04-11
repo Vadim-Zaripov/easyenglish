@@ -6,7 +6,6 @@ import android.app.Dialog;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -34,7 +33,7 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.develop.vadim.english.Basic.MainActivity;
-import com.develop.vadim.english.Broadcasts.WordCheckBroadcast;
+import com.develop.vadim.english.Broadcasts.NotificationBroadcast;
 import com.develop.vadim.english.R;
 import com.develop.vadim.english.Basic.Word;
 import com.github.ybq.android.spinkit.style.DoubleBounce;
@@ -46,7 +45,6 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Objects;
 import java.util.Random;
 
 import bg.devlabs.transitioner.Transitioner;
@@ -90,13 +88,12 @@ public class AddNewWordFragment extends Fragment {
             switch(msg.what) {
                 case NEW_CATEGORY_HAS_BEEN_ADDED:
                     Log.d("BOB", "not new word");
-                    ((MainActivity)getActivity()).updateData(wordSendingHandler);
                     break;
                 case 12:
                     Log.d("BOB", "new category");
-
                     break;
             }
+
             wordSendingProgressBar.setVisibility(View.INVISIBLE);
 
             startAppearAnimation();
@@ -251,12 +248,9 @@ public class AddNewWordFragment extends Fragment {
 
                         wordSendingProgressBar.setVisibility(View.VISIBLE);
 
-                        if(isCategoryNew) {
-                            new Thread(new StartWordSendingThread(word, category)).start();
-                        }
-                        else {
-                            new Thread(new StartWordSendingThread(word)).start();
-                        }
+                        Log.d("BOB", category + "1");
+                        new Thread(new StartWordSendingThread(word, category)).start();
+
                     }
 
                     @Override
@@ -276,7 +270,7 @@ public class AddNewWordFragment extends Fragment {
     }
 
     private void setUpService() {
-        Intent intent = new Intent(getContext(), WordCheckBroadcast.class);
+        Intent intent = new Intent(getContext(), NotificationBroadcast.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(), 0, intent, 0);
 
         AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(ALARM_SERVICE);
@@ -308,41 +302,6 @@ public class AddNewWordFragment extends Fragment {
             timeSharedPreferences.edit().putInt(getString(R.string.hourOfDay), hourOfDay).putInt(getString(R.string.minute), minute).apply();
         }
     };
-
-    private class CategoriesCheck implements Runnable {
-
-        String category;
-
-        CategoriesCheck(String category) {
-            this.category = category;
-        }
-
-        int index;
-        boolean isCategoryReal = false;
-
-        @Override
-        public void run() {
-            MainActivity.reference.child("categories").addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    index = (int) dataSnapshot.getChildrenCount();
-
-                    for(int i = 0; i < dataSnapshot.getChildrenCount(); i++) {
-                        if(Objects.equals(dataSnapshot.child(String.valueOf(i)).getValue(), category)) {
-                            isCategoryReal = true;
-                        }
-                    }
-
-                    if(!isCategoryReal) {
-                        MainActivity.reference.child("categories").child(String.valueOf(index)).setValue(category);
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) { }
-            });
-        }
-    }
 
     private class CategoriesRecyclerViewAdapter extends RecyclerView.Adapter<CategoriesRecyclerViewAdapter.CategoriesRecyclerViewHolder> {
         private ArrayList<String> categories;
@@ -453,10 +412,6 @@ public class AddNewWordFragment extends Fragment {
         Word word;
         String category = "default";
 
-        StartWordSendingThread(Word word) {
-            this.word = word;
-        }
-
         StartWordSendingThread(Word word, String category) {
             this.word = word;
             this.category = category;
@@ -464,6 +419,7 @@ public class AddNewWordFragment extends Fragment {
 
         @Override
         public void run() {
+
 
             //Imitate loading
             try {
@@ -473,19 +429,21 @@ public class AddNewWordFragment extends Fragment {
                 e.printStackTrace();
             }
 
-            Log.d("BOB", category);
+            word.setWordCategory(category);
+            ((MainActivity)getActivity()).wordArrayList.add(word);
 
             if(getCategories().contains(category) || category.equals("default")) {
-               word.setWordCategory("default");
                word.sentWordToService();
                wordSendingHandler.sendEmptyMessage(MainActivity.CATEGORIES_LOAD_END);
-
+               Log.d("BOB", category);
             }
             else {
                 MainActivity.reference.child("categories").addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         MainActivity.reference.child("categories").child(String.valueOf(dataSnapshot.getChildrenCount())).setValue(category);
+
+                        ((MainActivity)getActivity()).categoryNames.add(category);
 
                         word.setWordCategory(category);
                         word.sentWordToService();

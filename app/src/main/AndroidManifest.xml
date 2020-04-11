@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.develop.vadim.english">
 
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -17,7 +18,7 @@
             <intent-filter>
                 <category android:name="android.intent.category.DEFAULT" />
                 <data
-                    android:host="easyenglish.page.link"
+                    android:host="sharelett.page.link"
                     android:scheme="https" />
             </intent-filter>
         </activity>
@@ -44,11 +45,11 @@
             android:enabled="true"
             android:exported="true">
             <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.RECEIVE_BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
         <receiver
-            android:name=".Broadcasts.WordCheckBroadcast"
+            android:name=".Broadcasts.NotificationBroadcast"
             android:enabled="true"
             android:exported="true" />
 

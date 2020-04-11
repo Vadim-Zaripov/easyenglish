@@ -102,6 +102,9 @@
     <string name="learnWords">Изучить</string>
     <string name="shareCategory">Поделиться</string>
     <string name="thisCategoryIsEmpty">Данная категория пуста</string>
+    <string name="add_word_from_categoty">Вы уверены, что хотите добавить это слово в цикл изучения?</string>
+    <string name="no">Нет</string>
+    <string name="changingWord">changingWord</string>
     <string-array name="pref_example_list_titles">
         <item>Always</item>
         <item>When possible</item>

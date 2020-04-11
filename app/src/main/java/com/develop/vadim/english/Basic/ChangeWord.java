@@ -43,14 +43,12 @@ public class ChangeWord extends AppCompatActivity {
             }
         };
 
-
-
         final Handler removingWordHandler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
 
-                sendBroadcast(new Intent(MainActivity.BROADCAST_ACTION));
+                sendBroadcast(new Intent(MainActivity.BROADCAST_ACTION).putExtra(getString(R.string.changingWord), changingWord));
             }
         };
 
@@ -89,8 +87,9 @@ public class ChangeWord extends AppCompatActivity {
         saveChangesImageView.setOnClickListener(new ImageView.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onBackPressed();
                 saveChanges();
+                removingWordHandler.sendMessage(removingWordHandler.obtainMessage());
+                onBackPressed();
             }
         });
 
@@ -131,12 +130,14 @@ public class ChangeWord extends AppCompatActivity {
     }
 
     private void saveChanges() {
-        if(originalWordEditText.getText().toString().equals(changingWord.getWordInEnglish())) {
+        if(!originalWordEditText.getText().toString().equals(changingWord.getWordInEnglish())) {
             MainActivity.reference.child("words").child(changingWord.getInd()).child(Word.englishDatabaseKey).setValue(originalWordEditText.getText().toString()) ;
+            changingWord.setWordInEnglish(originalWordEditText.getText().toString());
         }
 
-        if(translatedWordEditText.getText().toString().equals(changingWord.getWordInEnglish())) {
+        if(!translatedWordEditText.getText().toString().equals(changingWord.getWordInEnglish())) {
             MainActivity.reference.child("words").child(changingWord.getInd()).child(Word.russianDatabaseKey).setValue(translatedWordEditText.getText().toString());
+            changingWord.setWordInRussian(translatedWordEditText.getText().toString());
         }
     }
 }

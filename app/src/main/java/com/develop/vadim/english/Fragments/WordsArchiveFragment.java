@@ -62,8 +62,8 @@ public class WordsArchiveFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         reference.keepSynced(true);
-
         viewLayout = inflater.inflate(R.layout.words_archive_fragment, container, false);
+
         return viewLayout;
     }
 
@@ -103,7 +103,6 @@ public class WordsArchiveFragment extends Fragment {
         archivedWordsRecyclerView = view.findViewById(R.id.archivedWordsRecyclerView);
         archivedWordsRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
         archivedWordsSearchView = view.findViewById(R.id.archivedWordsSearchView);
-
     }
 
     @Override
@@ -167,11 +166,25 @@ public class WordsArchiveFragment extends Fragment {
         public void onBindViewHolder(ArchiveFragmentViewHolder holder, int position) {
             Log.d(ARCHIVE_ACTIVITY_TAG, "Cell has been created");
 
-            Word word = archivedWordsList.get(position);
+            final int currentPosition = position;
+            final Word word = archivedWordsList.get(position);
             holder.wordInEnglishTextView.setText(word.getWordInEnglish());
             holder.position = position;
 
             holder.wordMaterialCardView.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.appear));
+
+            holder.wordMaterialCardView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent wordDetailsIntent = new Intent(view.getContext(), ChangeWord.class);
+                    Log.d("TAG", String.valueOf(word.getIndex()));
+                    wordDetailsIntent.putExtra(getString(R.string.changeWord), archivedWordsListFull.get(currentPosition));
+
+                    ActivityOptions activityOptions = ActivityOptions.makeSceneTransitionAnimation(getActivity());
+
+                    startActivity(wordDetailsIntent, activityOptions.toBundle());
+                }
+            });
 
         }
 
@@ -195,18 +208,6 @@ public class WordsArchiveFragment extends Fragment {
                 super(itemView);
                 wordInEnglishTextView = itemView.findViewById(R.id.archiveWordInEnglishTextView);
                 wordMaterialCardView = itemView.findViewById(R.id.bob);
-
-                itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent wordDetailsIntent = new Intent(v.getContext(), ChangeWord.class);
-                        wordDetailsIntent.putExtra(getString(R.string.changeWord), archivedWordsListFull.get(position));
-
-                        ActivityOptions activityOptions = ActivityOptions.makeSceneTransitionAnimation(getActivity());
-
-                        startActivity(wordDetailsIntent, activityOptions.toBundle());
-                    }
-                });
             }
         }
     }

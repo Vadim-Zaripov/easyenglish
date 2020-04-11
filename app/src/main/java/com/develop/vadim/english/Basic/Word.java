@@ -24,13 +24,12 @@ public class Word implements Parcelable {
 
     private String wordInEnglish;
     private String wordInRussian;
-    private int level = 0;
+    private long level = 0;
     private long date;
     private String ind;
     private String wordCategory = "default";
 
     private long index;
-    private long archiveIndex;
 
     public final static String WORD_TAG = "WordClass";
 
@@ -49,12 +48,11 @@ public class Word implements Parcelable {
     protected Word(Parcel in) {
         wordInEnglish = in.readString();
         wordInRussian = in.readString();
-        level = in.readInt();
+        level = in.readLong();
         date = in.readLong();
         ind = in.readString();
         wordCategory = in.readString();
         index = in.readLong();
-        archiveIndex = in.readLong();
     }
 
     public String getInd() {
@@ -101,11 +99,11 @@ public class Word implements Parcelable {
         return dateKey;
     }
 
-    public int getLevel() {
+    public long getLevel() {
         return level;
     }
 
-    public void setLevel(int level) {
+    public void setLevel(long level) {
         this.level = level;
     }
 
@@ -190,9 +188,10 @@ public class Word implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(wordInEnglish);
         dest.writeString(wordInRussian);
-        dest.writeInt(level);
+        dest.writeLong(level);
         dest.writeLong(date);
         dest.writeString(ind);
         dest.writeString(wordCategory);
+        dest.writeLong(index);
     }
 }
