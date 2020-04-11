@@ -177,6 +177,8 @@ public class WordsArchiveFragment extends Fragment {
                 @Override
                 public void onClick(View view) {
                     Intent wordDetailsIntent = new Intent(view.getContext(), ChangeWord.class);
+                    Log.d("BOBIK", getCategoriesToWordCheckActivity().toString());
+                    wordDetailsIntent.putStringArrayListExtra("BOB", getCategoriesToWordCheckActivity());
                     Log.d("TAG", String.valueOf(word.getIndex()));
                     wordDetailsIntent.putExtra(getString(R.string.changeWord), archivedWordsListFull.get(currentPosition));
 
@@ -210,6 +212,15 @@ public class WordsArchiveFragment extends Fragment {
                 wordMaterialCardView = itemView.findViewById(R.id.bob);
             }
         }
+    }
+
+    private ArrayList<String> getCategoriesToWordCheckActivity() {
+        ArrayList<String> arrayList = new ArrayList<>();
+        arrayList.add("Без категрии");
+        arrayList.addAll(((MainActivity)getActivity()).getCategoryNamesList());
+        arrayList.add("Добавить");
+
+        return arrayList;
     }
 
     private class InitArchivedWordsThread implements Runnable {
