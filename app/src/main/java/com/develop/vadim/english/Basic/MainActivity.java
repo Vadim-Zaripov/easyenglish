@@ -351,6 +351,97 @@ public class MainActivity extends AppCompatActivity {
         SIX_MONTH_DATE = format.format(calendar.getTime());
     }
 
+    public ArrayList<String> getCategoryNamesList() {
+        return categoryNames;
+    }
+
+    public ArrayList<Word> getWordArrayList() {
+        return wordArrayList;
+    }
+
+    public ArrayList<Word> getArchivedWordsArrayList() {
+        return archivedWordsArrayList;
+    }
+
+    public void setArchivedWordsArrayList(ArrayList<Word> archivedWordsArrayList) {
+        this.archivedWordsArrayList = archivedWordsArrayList;
+    }
+
+    private void gitSraka() {
+
+    }
+
+    public void updateData(Handler handler) {
+        new Thread(new InitDataThread(handler)).start();
+    }
+
+    private void callErrorToast() {
+        Toast.makeText(this, "Произошла неизвестная ошибка", Toast.LENGTH_LONG).show();
+    }
+
+    private class InitDataThread implements Runnable {
+
+        Handler handler;
+        public InitDataThread(Handler handler) {
+            this.handler = handler;
+            wordArrayList = new ArrayList<>();
+            categoryNames = new ArrayList<>();
+        }
+
+        @Override
+        public void run() {
+
+            //Load words
+            reference.child("words").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    for(int wordsCounter = 0; wordsCounter < dataSnapshot.getChildrenCount(); wordsCounter++) {
+                        Word word = new Word(wordsCounter);
+                        word.setWordInEnglish(Objects.requireNonNull(dataSnapshot.child(String.valueOf(wordsCounter)).child(Word.englishDatabaseKey).getValue()).toString());
+                        word.setWordInRussian(Objects.requireNonNull(dataSnapshot.child(String.valueOf(wordsCounter)).child(Word.russianDatabaseKey).getValue()).toString());
+                        word.setWordCategory(Objects.requireNonNull(dataSnapshot.child(String.valueOf(wordsCounter)).child(Word.categoryDatabaseKey).getValue()).toString());
+                        word.setDate((long) Objects.requireNonNull(dataSnapshot.child(String.valueOf(wordsCounter)).child(Word.dateKey).getValue()));
+                        word.setLevel((long) Objects.requireNonNull(dataSnapshot.child(String.valueOf(wordsCounter)).child(Word.levelDatabaseKey)).getValue());
+                        wordArrayList.add(word);
+                    }
+
+                    handler.sendEmptyMessage(MainActivity.WORDS_LOAD_END);
+
+                    categoryReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                            for(int categoryReferenceChildrenCounter = 0; categoryReferenceChildrenCounter < dataSnapshot.getChildrenCount(); categoryReferenceChildrenCounter++) {
+                                categoryNames.add(String.valueOf(dataSnapshot.child(String.valueOf(categoryReferenceChildrenCounter)).getValue()));
+                            }
+
+                            handler.sendEmptyMessage(CATEGORIES_LOAD_END);
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) { }
+                    });
+
+                    //Filter words
+                    for(Word word : wordArrayList) {
+                        //TODO: Add logic to filtrate words, which have been learnt and have been moved to archive
+                        //But now I have made archived page as a all words page
+                        archivedWordsArrayList.add(word);
+                    }
+
+                    handler.sendEmptyMessage(MainActivity.WORDS_ANALYNG_WND);
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) { }
+            });
+
+            //Load categories
+            //
+
+        }
+    }
+
     private class StartAddingCategoryFromLink implements Runnable {
         String category;
         String sharingUserUid;
@@ -394,8 +485,26 @@ public class MainActivity extends AppCompatActivity {
 
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            FirebaseDatabase.getInstance().getReference().child("users").child(sharingUserUid).child("categories").child(String.valueOf(dataSnapshot.getChildrenCount())).setValue(category);
+                            for(int categoryCounter = 0; categoryCounter < dataSnapshot.getChildrenCount(); categoryCounter++) {
+                                if(Objects.requireNonNull(dataSnapshot.child(String.valueOf(categoryCounter)).getValue()).toString().equals(category)) {
+                                    isCategoryReal = true;
+                                    break;
+                                }
+                            }
+
+                            if(isCategoryReal) {
+                                Toast.makeText(getApplicationContext(), getString(R.string.isCategoryTheSame), Toast.LENGTH_LONG).show();
+                            }
+                            else {
+                                FirebaseDatabase.getInstance().getReference().child("users").child(sharingUserUid).child("categories").child(String.valueOf(dataSnapshot.getChildrenCount())).setValue(category);
+                                Toast.makeText(getApplicationContext(), getString(R.string.newWords), Toast.LENGTH_SHORT).show();
+                            }
                         }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) { }
+                    });
+                }
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) { }

@@ -56,9 +56,12 @@ public class AuthenticationActivity extends AppCompatActivity {
     private TextView registrationTextView;
     private TextView loginTextView;
     private ImageView registerImageView;
+    private GoogleSignInButton googleSignInButton;
 
     private SharedPreferences sharedPreferences;
     private SharedPreferences wordsCheckSharedPreferences;
+
+    private GoogleApiClient googleApiClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +70,21 @@ public class AuthenticationActivity extends AppCompatActivity {
 
         wordsCheckSharedPreferences = getSharedPreferences(getPackageName() + ".wordsCheckFlag", MODE_PRIVATE);
 
+        GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+
+        googleApiClient = new GoogleApiClient.Builder(getApplicationContext())
+                .enableAutoManage(this, new GoogleApiClient.OnConnectionFailedListener() {
+                    @Override
+                    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+                        Toast.makeText(getApplicationContext(), getString(R.string.undefinedError), Toast.LENGTH_LONG).show();
+                    }
+                })
+                .addApi(Auth.GOOGLE_SIGN_IN_API, googleSignInOptions)
+                .build();
+
         sharedPreferences = getSharedPreferences(getPackageName() + ".firstrun", MODE_PRIVATE);
         email = findViewById(R.id.emailEditView);
         password = findViewById(R.id.passwordEditText);
@@ -74,6 +92,7 @@ public class AuthenticationActivity extends AppCompatActivity {
         registrationTextView = findViewById(R.id.registrationTextView);
         loginTextView = findViewById(R.id.loginTextView);
         registerImageView = findViewById(R.id.registerImageView);
+        googleSignInButton = findViewById(R.id.signInWithGoogleButton);
 
         auth = FirebaseAuth.getInstance();
         Log.d(TAG, "--started RegistrationActivity--");
@@ -105,7 +124,34 @@ public class AuthenticationActivity extends AppCompatActivity {
             }
         });
 
+        googleSignInButton.setOnClickListener(new GoogleSignInButton.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                signInWithGoogle();
+            }
+        });
+
         Log.d(TAG, "--started RegistrationActivity--");
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
+        if (requestCode == 1) {
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            try {
+                // Google Sign In was successful, authenticate with Firebase
+                GoogleSignInAccount account = task.getResult(ApiException.class);
+                firebaseAuthWithGoogle(account);
+            }
+            catch(ApiException e) {
+                // Google Sign In failed, update UI appropriately
+                Log.w(TAG, "Google sign in failed", e);
+                // ...
+            }
+        }
     }
 
     private View.OnClickListener registerClickListener = new View.OnClickListener() {
@@ -212,5 +258,10 @@ public class AuthenticationActivity extends AppCompatActivity {
 
     private void controlFirstRun() {
         sharedPreferences.edit().putBoolean(getPackageName() + ".firstrun", true).apply();
+    }
+
+    private void signInWithGoogle() {
+        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
+        startActivityForResult(signInIntent, 1);
     }
 }
