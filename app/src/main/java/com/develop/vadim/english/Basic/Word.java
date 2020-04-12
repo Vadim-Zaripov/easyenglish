@@ -18,13 +18,33 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 
 public class Word implements Parcelable {
+
+    public static final int LEVEL_ADDED = -2;
+    public static final int LEVEL_ARCHIVED = -1;
+    static final int LEVEL_DAY = 0;
+    static final int LEVEL_WEEK = 1;
+    static final int LEVEL_MONTH = 2;
+    static final int LEVEL_QUARTER = 3;
+    static final int LEVEL_HALF = 4;
+    static final int LEVEL_YEAR = 5;
+    static final HashMap<Integer, Long> CHECK_INTERVAL = new HashMap<Integer, Long>() {{
+        put(LEVEL_DAY, 86400000L);
+        put(LEVEL_WEEK, 604800000L);
+        put(LEVEL_MONTH, 2592000000L);
+        put(LEVEL_QUARTER, 7776000000L);
+        put(LEVEL_HALF, 15552000000L);
+        put(LEVEL_YEAR, 31104000000L);
+    }};
+
+
     private static final int REMOVING_COMPLETE_KEY = 567;
 
     private String wordInEnglish;
     private String wordInRussian;
-    private long level = 0;
+    private long level = LEVEL_DAY;
     private long date;
     private String ind;
     private String wordCategory = "default";

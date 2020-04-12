@@ -51,7 +51,9 @@ import com.tbuonomo.viewpagerdotsindicator.DotsIndicator;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -367,10 +369,6 @@ public class MainActivity extends AppCompatActivity {
         this.archivedWordsArrayList = archivedWordsArrayList;
     }
 
-    private void gitSraka() {
-
-    }
-
     public void updateData(Handler handler) {
         new Thread(new InitDataThread(handler)).start();
     }
@@ -382,7 +380,7 @@ public class MainActivity extends AppCompatActivity {
     private class InitDataThread implements Runnable {
 
         Handler handler;
-        public InitDataThread(Handler handler) {
+        InitDataThread(Handler handler) {
             this.handler = handler;
             wordArrayList = new ArrayList<>();
             categoryNames = new ArrayList<>();
@@ -395,12 +393,19 @@ public class MainActivity extends AppCompatActivity {
             reference.child("words").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    for(int wordsCounter = 0; wordsCounter < dataSnapshot.getChildrenCount(); wordsCounter++) {
+                    for (int wordsCounter = 0; wordsCounter < dataSnapshot.getChildrenCount(); wordsCounter++) {
                         Word word = new Word(wordsCounter);
                         word.setWordInEnglish(Objects.requireNonNull(dataSnapshot.child(String.valueOf(wordsCounter)).child(Word.englishDatabaseKey).getValue()).toString());
                         word.setWordInRussian(Objects.requireNonNull(dataSnapshot.child(String.valueOf(wordsCounter)).child(Word.russianDatabaseKey).getValue()).toString());
                         word.setWordCategory(Objects.requireNonNull(dataSnapshot.child(String.valueOf(wordsCounter)).child(Word.categoryDatabaseKey).getValue()).toString());
-                        word.setDate((long) Objects.requireNonNull(dataSnapshot.child(String.valueOf(wordsCounter)).child(Word.dateKey).getValue()));
+                        word.setDate( Long.parseLong(
+                                Objects.requireNonNull(
+                                        dataSnapshot
+                                                .child(String.valueOf(wordsCounter))
+                                                .child(Word.dateKey)
+                                                .getValue()
+                                ).toString())
+                        );
                         word.setLevel((long) Objects.requireNonNull(dataSnapshot.child(String.valueOf(wordsCounter)).child(Word.levelDatabaseKey)).getValue());
                         wordArrayList.add(word);
                     }
@@ -411,7 +416,7 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                            for(int categoryReferenceChildrenCounter = 0; categoryReferenceChildrenCounter < dataSnapshot.getChildrenCount(); categoryReferenceChildrenCounter++) {
+                            for (int categoryReferenceChildrenCounter = 0; categoryReferenceChildrenCounter < dataSnapshot.getChildrenCount(); categoryReferenceChildrenCounter++) {
                                 categoryNames.add(String.valueOf(dataSnapshot.child(String.valueOf(categoryReferenceChildrenCounter)).getValue()));
                             }
 
@@ -419,26 +424,52 @@ public class MainActivity extends AppCompatActivity {
                         }
 
                         @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) { }
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                        }
                     });
 
                     //Filter words
-                    for(Word word : wordArrayList) {
-                        //TODO: Add logic to filtrate words, which have been learnt and have been moved to archive
-                        //But now I have made archived page as a all words page
-                        archivedWordsArrayList.add(word);
+                    ArrayList<Word> wordsCheckWordsArrayList = new ArrayList<>();
+                    for (Word word : wordArrayList) {
+                        Date date = new Date();
+                        Calendar calendar = new GregorianCalendar(
+                                date.getYear(),
+                                date.getMonth(),
+                                date.getDay()
+                        );
+                        long currentTime = calendar.getTimeInMillis();
+
+                        if (word.getLevel() == Word.LEVEL_ARCHIVED) {
+                            archivedWordsArrayList.add(word);
+                            continue;
+                        }
+
+                        if (currentTime > word.getDate()) {
+                            if (word.getLevel() == Word.LEVEL_DAY || word.getLevel() == Word.LEVEL_WEEK) {
+                                if (currentTime - word.getDate() > Word.CHECK_INTERVAL.get(Word.LEVEL_DAY) * 3)
+                                    word.setLevel(Word.LEVEL_DAY);
+
+                                wordsCheckWordsArrayList.add(word);
+                            }
+
+                        }
                     }
 
                     handler.sendEmptyMessage(MainActivity.WORDS_ANALYNG_WND);
+
+                    SharedPreferences.Editor editor = wordsCheckSharedPreferences.edit();
+                    Gson gson = new Gson();
+                    String json = gson.toJson(wordsCheckWordsArrayList);
+                    editor.putString(getString(R.string.service_saved_indexes_key), json);
+                    editor.apply();
                 }
 
                 @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) { }
+                public void onCancelled(@NonNull DatabaseError databaseError) {}
             });
 
             //Load categories
             //
-
         }
     }
 
