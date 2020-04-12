@@ -132,8 +132,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onReceive(Context context, Intent intent) {
                 Word word = intent.getParcelableExtra(getString(R.string.changingWord));
-                Log.d("AB", word.getInd());
 
+                if(intent.getBooleanExtra(getString(R.string.addNewCategory), false)) {
+                    Log.d("BOB", "BIB");
+                    categoryNames.add(word.getWordCategory());
+                }
 
                 wordArrayList.set((int) word.getIndex(), word);
 
@@ -365,10 +368,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void setArchivedWordsArrayList(ArrayList<Word> archivedWordsArrayList) {
         this.archivedWordsArrayList = archivedWordsArrayList;
-    }
-
-    private void gitSraka() {
-
     }
 
     public void updateData(Handler handler) {

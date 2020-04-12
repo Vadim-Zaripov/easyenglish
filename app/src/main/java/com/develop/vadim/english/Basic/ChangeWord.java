@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -24,9 +25,15 @@ import android.view.animation.AnticipateInterpolator;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.develop.vadim.english.R;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.card.MaterialCardView;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 import com.varunjohn1990.iosdialogs4android.IOSDialog;
 
 import java.util.ArrayList;
@@ -52,6 +59,10 @@ public class ChangeWord extends AppCompatActivity {
     private Word changingWord;
     private ArrayList<String> categories = new ArrayList<>();
 
+    private String category;
+
+    private boolean isCategoryNew;
+
     @SuppressLint("HandlerLeak")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,7 +82,14 @@ public class ChangeWord extends AppCompatActivity {
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
 
-                sendBroadcast(new Intent(MainActivity.BROADCAST_ACTION).putExtra(getString(R.string.changingWord), changingWord));
+                Intent intent = new Intent(MainActivity.BROADCAST_ACTION);
+                intent.putExtra(getString(R.string.changingWord), changingWord);
+
+                if(isCategoryNew) {
+                    intent.putExtra(getString(R.string.addNewCategory), true);
+                }
+
+                sendBroadcast(intent);
             }
         };
 
@@ -79,7 +97,7 @@ public class ChangeWord extends AppCompatActivity {
         categories = getIntent().getStringArrayListExtra("BOB");
         Log.d("BOB", categories.toString());
 
-        //categories.add("Добавить");
+        category = changingWord.getWordCategory();
 
         saveChangesImageView = findViewById(R.id.saveChangesImageView);
         originalWordEditText = findViewById(R.id.editTextRussian);
@@ -91,11 +109,15 @@ public class ChangeWord extends AppCompatActivity {
         categoriesTextView = findViewById(R.id.addNewWordCategoryTextView);
         categoriesMaterialCardViewComeBackPlaceHolder = findViewById(R.id.categoryChooseCardViewHolder);
 
+
+        categoriesTextView.setText(changingWord.getWordCategory());
+
+        category = categoriesTextView.getText().toString();
+
         categoriesMaterialCardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 categoriesTextView.setVisibility(View.INVISIBLE);
-
 
                 Transitioner transitioner = new Transitioner(categoriesMaterialCardView, categoriesMaterialCardViewPlaceHolder);
                 transitioner.animateTo(1f, (long) 400, new AccelerateDecelerateInterpolator());
@@ -122,7 +144,6 @@ public class ChangeWord extends AppCompatActivity {
                         .negativeClickListener(new IOSDialog.Listener() {
                             @Override
                             public void onClick(IOSDialog iosDialog) {
-                                startActivity(new Intent(ChangeWord.this, WordCheckActivity.class));
                             }
                         })
                         .positiveClickListener(new IOSDialog.Listener() {
@@ -191,7 +212,48 @@ public class ChangeWord extends AppCompatActivity {
 
         if(!translatedWordEditText.getText().toString().equals(changingWord.getWordInEnglish())) {
             MainActivity.reference.child("words").child(changingWord.getInd()).child(Word.russianDatabaseKey).setValue(translatedWordEditText.getText().toString());
+
             changingWord.setWordInRussian(translatedWordEditText.getText().toString());
+        }
+
+        if(!categoriesTextView.getText().toString().equals(changingWord.getWordCategory())) {
+
+            changingWord.setWordCategory(category);
+            if(categories.contains(categoriesTextView.getText().toString())) {
+               MainActivity.reference.child(changingWord.getInd()).child(Word.categoryDatabaseKey).setValue(categoriesTextView.getText().toString());
+            }
+            else {
+                MainActivity.reference.child("categories").addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        MainActivity.reference.child("categories").child(String.valueOf(dataSnapshot.getChildrenCount())).setValue(categoriesTextView.getText().toString())
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        callToast();
+                                    }
+                                })
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        MainActivity.reference.child("words").child(changingWord.getInd()).child(Word.categoryDatabaseKey).setValue(category);
+
+                                    }
+                                });
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        callToast();
+                    }
+
+                    private void callToast() {
+                        Toast.makeText(ChangeWord.this, "Произошла неизвестная ошибка, проверьте поделючение к сети!", Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+
+            isCategoryNew = true;
         }
     }
 
@@ -243,19 +305,35 @@ public class ChangeWord extends AppCompatActivity {
                     categoriesTextView.setText(categories.get(currentPosition));
                     categoriesTextView.setVisibility(View.VISIBLE);
 
-                    if(currentPosition == 0) {
-                        changingWord.setWordCategory("default");
-                    }
-                    else {
-                        changingWord.setWordCategory(categories.get(currentPosition));
-                    }
+                    changingWord.setWordCategory(categories.get(currentPosition));
 
                     if(currentPosition == getItemCount() - 1) {
-                        //
+                        callChooseCategoryDialog();
                     }
                 }
             });
 
+        }
+
+        private void callChooseCategoryDialog() {
+            final Dialog dialog = new Dialog(ChangeWord.this);
+            dialog.setContentView(R.layout.add_new_category_layout);
+            final EditText editText = dialog.findViewById(R.id.addNewCategoryEditText);
+            final ImageView continueEditText = dialog.findViewById(R.id.addNewCategoryImageView);
+            dialog.show();
+
+            continueEditText.setOnClickListener(new ImageView.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(!editText.getText().toString().equals("")) {
+                        categoriesTextView.setText(editText.getText());
+                        category = categoriesTextView.getText().toString();
+                    }
+
+                    dialog.dismiss();
+                }
+
+            });
         }
 
         @Override
