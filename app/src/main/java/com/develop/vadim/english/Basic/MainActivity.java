@@ -1,6 +1,7 @@
 package com.develop.vadim.english.Basic;
 
 import android.annotation.SuppressLint;
+import android.app.ActivityOptions;
 import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -103,6 +104,7 @@ public class MainActivity extends AppCompatActivity {
 
     public ArrayList<String> categoryNames = new ArrayList<>();
     public ArrayList<Word> wordArrayList = new ArrayList<>();
+    public ArrayList<Word> wordsCheckWordsArrayList = new ArrayList<>();
     private ArrayList<Word> archivedWordsArrayList = new ArrayList<>();
 
     private boolean isCategoriesLoaded = false;
@@ -197,7 +199,24 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case WORDS_ANALYNG_WND:
                         Log.d(MAIN_ACTIVITY_TAG, "Words has been analized successfully");
-                        callCheck();
+
+                        Intent intent = new Intent(MainActivity.this, WordCheckActivity.class);
+                        intent.putParcelableArrayListExtra(getString(R.string.wordsToCheckingKey), wordArrayList);
+
+                        ActivityOptions activityOptions = ActivityOptions.makeSceneTransitionAnimation(MainActivity.this);
+
+                        startActivity(intent, activityOptions.toBundle());
+                        /*if(wordsCheckWordsArrayList.size() != 0) {
+                            Intent intent = new Intent(MainActivity.this, WordCheckActivity.class);
+                            intent.putParcelableArrayListExtra(getString(R.string.wordsToCheckingKey), wordsCheckWordsArrayList);
+
+                            ActivityOptions activityOptions = ActivityOptions.makeSceneTransitionAnimation(MainActivity.this);
+
+                            startActivity(intent, activityOptions.toBundle());
+                        }
+                        else {
+                            Toast.makeText(getApplicationContext(), "Пока что слов для повторений нет", Toast.LENGTH_LONG).show();
+                        }*/
 
                         break;
                     case CHECKING_WORDS_LOAD_END:
@@ -259,9 +278,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onBackPressed() { }
-
-    @Override
     protected void onPause() {
         super.onPause();
 
@@ -279,9 +295,6 @@ public class MainActivity extends AppCompatActivity {
 
             wordsCheckSharedPreferences.edit().putInt(getPackageName() + ".wordsCheckFlag", Calendar.getInstance().get(Calendar.DAY_OF_YEAR)).apply();
         }
-
-
-
     }
 
     private void createNotificationChannel() {
@@ -432,8 +445,8 @@ public class MainActivity extends AppCompatActivity {
                     });
 
                     //Filter words
-                    ArrayList<Word> wordsCheckWordsArrayList = new ArrayList<>();
-                    for (Word word : wordArrayList) {
+
+                    for(Word word : wordArrayList) {
                         Date date = new Date();
                         Calendar calendar = new GregorianCalendar(
                                 date.getYear(),
@@ -460,19 +473,11 @@ public class MainActivity extends AppCompatActivity {
 
                     handler.sendEmptyMessage(MainActivity.WORDS_ANALYNG_WND);
 
-                    SharedPreferences.Editor editor = wordsCheckSharedPreferences.edit();
-                    Gson gson = new Gson();
-                    String json = gson.toJson(wordsCheckWordsArrayList);
-                    editor.putString(getString(R.string.service_saved_indexes_key), json);
-                    editor.apply();
                 }
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {}
             });
-
-            //Load categories
-            //
         }
     }
 

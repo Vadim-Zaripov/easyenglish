@@ -104,21 +104,6 @@
         app:layout_constraintTop_toTopOf="@+id/categoriesTextViewLinearLayout"
         app:layout_constraintVertical_bias="0.19">
 
-        <EditText
-            android:id="@+id/categoryEditText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:backgroundTint="@color/colorWhite"
-            android:tag="animation4"
-            android:hint="Категория"
-            android:layout_gravity="center_vertical"
-            android:textColorHint="@color/WHITE_TRANSPARENT"
-            android:textColor="@color/colorWhite"
-            android:visibility="invisible">
-        </EditText>
-
         <TextView
             android:id="@+id/addNewWordCategoryTextView"
             android:layout_width="match_parent"
@@ -168,14 +153,14 @@
         </ImageView>
 
         <TextView
+            android:id="@+id/addWordToServiceTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
             android:text="Добавить новое слово"
             android:textColor="@color/WHITE_TRANSPARENT"
-            android:textSize="14sp">
-        </TextView>
+            android:textSize="14sp"></TextView>
     </LinearLayout>
 
     <com.google.android.material.card.MaterialCardView
@@ -227,17 +212,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.36" />
 
-    <ImageView
-        android:id="@+id/timeImageView"
-        android:layout_width="41dp"
-        android:layout_height="37dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.022"
-        app:srcCompat="@drawable/time_icon" />
-
     <LinearLayout
         android:id="@+id/categoriesTextViewLinearLayout"
         android:layout_width="wrap_content"
@@ -253,8 +227,7 @@
             android:layout_height="wrap_content"
             android:text="Выберите категорию"
             android:textColor="@color/colorWhite"
-            android:textSize="24sp">
-        </TextView>
+            android:textSize="24sp"></TextView>
 
         <TextView
             android:layout_width="wrap_content"

@@ -48,7 +48,6 @@ public class WordsArchiveFragment extends Fragment {
 
     private RecyclerView archivedWordsRecyclerView;
     private SwipeRefreshLayout swipeRefreshLayout;
-    private SearchView archivedWordsSearchView;
 
     private ArrayList<Word> archivedWord = new ArrayList<>();
 
@@ -82,19 +81,6 @@ public class WordsArchiveFragment extends Fragment {
 
                 archiveFragmentRecyclerViewAdapter = new ArchiveFragmentRecyclerViewAdapter(((MainActivity)getActivity()).getWordArrayList()); //TODO: Replace to ArchivedWordsArrayList
                 archivedWordsRecyclerView.setAdapter(archiveFragmentRecyclerViewAdapter);
-                archivedWordsSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-                    @Override
-                    public boolean onQueryTextSubmit(String query) {
-                        return false;
-                    }
-
-                    @Override
-                    public boolean onQueryTextChange(String newText) {
-                        archiveFragmentRecyclerViewAdapter.getFilter().filter(newText);
-
-                        return false;
-                    }
-                });
             }
         };
 
@@ -102,7 +88,6 @@ public class WordsArchiveFragment extends Fragment {
 
         archivedWordsRecyclerView = view.findViewById(R.id.archivedWordsRecyclerView);
         archivedWordsRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
-        archivedWordsSearchView = view.findViewById(R.id.archivedWordsSearchView);
     }
 
     @Override
@@ -111,47 +96,12 @@ public class WordsArchiveFragment extends Fragment {
         initArchivedWordsHandler.sendMessage(initArchivedWordsHandler.obtainMessage());
     }
 
-    private class ArchiveFragmentRecyclerViewAdapter extends RecyclerView.Adapter<ArchiveFragmentRecyclerViewAdapter.ArchiveFragmentViewHolder> implements Filterable {
+    private class ArchiveFragmentRecyclerViewAdapter extends RecyclerView.Adapter<ArchiveFragmentRecyclerViewAdapter.ArchiveFragmentViewHolder> {
 
         private List<Word> archivedWordsList;
-        private List<Word> archivedWordsListFull;
-
-        private Filter archivedWordsFilter = new Filter() {
-            @Override
-            protected FilterResults performFiltering(CharSequence constraint) {
-                List<Word> filteredWordsList = new ArrayList<>();
-
-                if(constraint == null || constraint.length() == 0) {
-                    filteredWordsList.addAll(archivedWordsListFull);
-                }
-                else {
-                    String filterPattern = constraint.toString().toLowerCase().trim();
-
-                    for(Word item : archivedWordsListFull) {
-                        if(item.getWordInEnglish().toLowerCase().contains(filterPattern)) {
-                            filteredWordsList.add(item);
-                        }
-                    }
-                }
-
-                FilterResults results = new FilterResults();
-                results.values = filteredWordsList;
-
-                return results;
-            }
-
-            @Override
-            protected void publishResults(CharSequence constraint, FilterResults results) {
-                archivedWordsList.clear();
-                archivedWordsList.addAll((List<Word>) results.values);
-
-                notifyDataSetChanged();
-            }
-        };
 
         private ArchiveFragmentRecyclerViewAdapter(List<Word> archivedWordsList) {
             this.archivedWordsList = archivedWordsList;
-            this.archivedWordsListFull = new ArrayList<>(archivedWordsList);
         }
 
         @NonNull
@@ -180,7 +130,7 @@ public class WordsArchiveFragment extends Fragment {
                     Log.d("BOBIK", getCategoriesToWordCheckActivity().toString());
                     wordDetailsIntent.putStringArrayListExtra("BOB", getCategoriesToWordCheckActivity());
                     Log.d("TAG", String.valueOf(word.getIndex()));
-                    wordDetailsIntent.putExtra(getString(R.string.changeWord), archivedWordsListFull.get(currentPosition));
+                    wordDetailsIntent.putExtra(getString(R.string.changeWord), archivedWordsList.get(currentPosition));
 
                     ActivityOptions activityOptions = ActivityOptions.makeSceneTransitionAnimation(getActivity());
 
@@ -193,11 +143,6 @@ public class WordsArchiveFragment extends Fragment {
         @Override
         public int getItemCount() {
             return archivedWordsList.size();
-        }
-
-        @Override
-        public Filter getFilter() {
-            return archivedWordsFilter;
         }
 
         class ArchiveFragmentViewHolder extends RecyclerView.ViewHolder {
@@ -221,46 +166,5 @@ public class WordsArchiveFragment extends Fragment {
         arrayList.add("Добавить");
 
         return arrayList;
-    }
-
-    private class InitArchivedWordsThread implements Runnable {
-        ArrayList<Word> learntWordsFromDatabaseList = new ArrayList<>();
-
-        @SuppressLint("HandlerLeak")
-        private Handler handler = new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-                super.handleMessage(msg);
-
-                archiveFragmentRecyclerViewAdapter = new ArchiveFragmentRecyclerViewAdapter(learntWordsFromDatabaseList);
-
-                swipeRefreshLayout.setRefreshing(false);
-                archivedWordsRecyclerView.setAdapter(archiveFragmentRecyclerViewAdapter);
-            }
-        };
-        
-        @Override
-        public void run() {
-            reference.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    for(long childrenInDatabaseCounter = 0; childrenInDatabaseCounter < dataSnapshot.getChildrenCount(); childrenInDatabaseCounter++) {
-                        Word word = new Word(childrenInDatabaseCounter);
-                        word.setWordInRussian(Objects.requireNonNull(dataSnapshot.child(String.valueOf(childrenInDatabaseCounter)).child(Word.russianDatabaseKey).getValue()).toString());
-                        word.setWordInEnglish(Objects.requireNonNull(dataSnapshot.child(String.valueOf(childrenInDatabaseCounter)).child(Word.englishDatabaseKey).getValue()).toString());
-                        word.setWordCategory(Objects.requireNonNull(dataSnapshot.child(String.valueOf(childrenInDatabaseCounter)).child(Word.categoryDatabaseKey).getValue()).toString());
-
-                        learntWordsFromDatabaseList.add(word);
-                    }
-
-                    handler.sendMessage(handler.obtainMessage());
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                    Log.d(ARCHIVE_ACTIVITY_TAG, "Can not connect to database");
-                }
-            });
-        }
     }
 }

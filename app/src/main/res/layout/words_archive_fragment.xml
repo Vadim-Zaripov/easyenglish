@@ -16,23 +16,9 @@
         android:textSize="25sp">
     </TextView>
 
-    <com.google.android.material.card.MaterialCardView
+    <Space
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:contentPadding="8dp"
-        app:cardCornerRadius="12dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginBottom="4dp"
-        app:cardBackgroundColor="@color/colorWhite">
-
-        <SearchView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/archivedWordsSearchView">
-        </SearchView>
-    </com.google.android.material.card.MaterialCardView>
-
+        android:layout_height="10dp"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"

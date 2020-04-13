@@ -68,7 +68,6 @@ public class WordsUserCheckFragment extends Fragment {
 
     private RecyclerView wordsCategoriesRecyclerView;
     private SwipeRefreshLayout swipeRefreshLayout;
-    private SearchView categorySearchView;
     private MaterialCardView shareMaterialCardView;
     private MaterialCardView deleteMaterialCardView;
 
@@ -102,9 +101,6 @@ public class WordsUserCheckFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)   {
         super.onViewCreated(view, savedInstanceState);
 
-        categorySearchView = view.findViewById(R.id.categorySearchView);
-        categorySearchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
-
         initCategoriesHandler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
@@ -115,20 +111,6 @@ public class WordsUserCheckFragment extends Fragment {
                 wordsCategoriesRecyclerViewAdapter = new WordsCategoriesRecyclerViewAdapter(getCategories());
                 swipeRefreshLayout.setRefreshing(false);
                 wordsCategoriesRecyclerView.setAdapter(wordsCategoriesRecyclerViewAdapter);
-
-                categorySearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-                    @Override
-                    public boolean onQueryTextSubmit(String query) {
-                        return false;
-                    }
-
-                    @Override
-                    public boolean onQueryTextChange(String newText) {
-                        wordsCategoriesRecyclerViewAdapter.getFilter().filter(newText);
-
-                        return false;
-                    }
-                });
             }
         };
 
@@ -160,58 +142,20 @@ public class WordsUserCheckFragment extends Fragment {
         return ((MainActivity)getActivity()).getWordArrayList();
     }
 
-    private class WordsCategoriesRecyclerViewAdapter extends RecyclerView.Adapter<WordsCategoriesRecyclerViewAdapter.WordsCategoriesRecyclerViewHolder> implements Filterable {
+    private class WordsCategoriesRecyclerViewAdapter extends RecyclerView.Adapter<WordsCategoriesRecyclerViewAdapter.WordsCategoriesRecyclerViewHolder> {
 
-        ArrayList<String> categoryNamesListFull;
         ArrayList<String> categoryNamesList;
         ArrayList<Word> wordArrayList;
         ArrayList<ArrayList<Word>> wordsInCategoriesArrayList = new ArrayList<>();
 
-        Handler removeCategoryHandler;
-
-        Filter categoryFilter = new Filter() {
-            @Override
-            protected FilterResults performFiltering(CharSequence constraint) {
-                List<String> filteredCategoriesList = new ArrayList<>();
-
-                if(constraint == null || constraint.length() == 0) {
-                    filteredCategoriesList.addAll(categoryNamesListFull);
-                }
-                else {
-                    String filterPattern = constraint.toString().toLowerCase().trim();
-
-                    for(String categoryName : categoryNamesListFull) {
-                        if(categoryName.toLowerCase().contains(filterPattern)) {
-                            filteredCategoriesList.add(categoryName);
-                        }
-                    }
-                }
-
-                FilterResults results = new FilterResults();
-                results.values = filteredCategoriesList;
-
-                return results;
-            }
-
-            @Override
-            protected void publishResults(CharSequence constraint, FilterResults results) {
-                categoryNamesList.clear();
-                categoryNamesList.addAll((ArrayList) results.values);
-
-                notifyDataSetChanged();
-            }
-        };
-
         WordsCategoriesRecyclerViewAdapter(ArrayList<String> categoryNamesList) {
             this.categoryNamesList = categoryNamesList;
-            this.categoryNamesListFull = new ArrayList<>(categoryNamesList);
             wordArrayList = ((MainActivity)getActivity()).getWordArrayList();
 
-            for(int categoriesCounter = 0; categoriesCounter < categoryNamesListFull.size(); categoriesCounter++) {
+            for(int categoriesCounter = 0; categoriesCounter < categoryNamesList.size(); categoriesCounter++) {
                 ArrayList<Word> wordsInThisCategoryList = new ArrayList<>();
                 for(int wordsCounter = 0; wordsCounter < wordArrayList.size(); wordsCounter++) {
-                    if(wordArrayList.get(wordsCounter).getWordCategory().equals(categoryNamesListFull.get(categoriesCounter))) {
-                        Log.d("BOB", "BOB");
+                    if(wordArrayList.get(wordsCounter).getWordCategory().equals(categoryNamesList.get(categoriesCounter))) {
                         wordsInThisCategoryList.add(wordArrayList.get(wordsCounter));
                     }
                 }
@@ -229,13 +173,11 @@ public class WordsUserCheckFragment extends Fragment {
         @Override
         public void onBindViewHolder(WordsCategoriesRecyclerViewHolder holder, final int position) {
 
-            Log.d("SASHA", String.valueOf(position));
             holder.category = categoryNamesList.get(position);
             holder.categoryTextView.setText(categoryNamesList.get(position));
             holder.wordsInThisCategoryArrayList = wordsInCategoriesArrayList.get(position);
             holder.setPosition(position);
 
-            Log.d("SASHA1", String.valueOf(wordsInCategoriesArrayList.get(position).size()));
             if(wordsInCategoriesArrayList.get(position).size() != 0) {
                 for (int wordsInCategoriesCounter = 0; wordsInCategoriesCounter < wordsInCategoriesArrayList.get(position).size(); wordsInCategoriesCounter++) {
 
@@ -260,7 +202,6 @@ public class WordsUserCheckFragment extends Fragment {
                                                 @Override
                                                 public void onClick(final IOSDialog iosDialog) {
                                                     word.setLevel(0);
-
                                                     MainActivity.reference.child("words")
                                                             .child(wordsInCategoriesArrayList.get(localPosition).get(currentWordIndex).getInd()).child(Word.levelDatabaseKey).setValue(0)
                                                             .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -324,11 +265,12 @@ public class WordsUserCheckFragment extends Fragment {
 
                                     @Override
                                     public void onAnimationEnd(Animation animation) {
-                                        if (inEnglish) {
+                                        if(inEnglish) {
                                             wordInCategoryTextView.setText(wordsInCategoriesArrayList.get(localPosition).get(currentWordIndex).getWordInRussian());
 
                                             inEnglish = false;
-                                        } else {
+                                        }
+                                        else {
                                             wordInCategoryTextView.setText(wordsInCategoriesArrayList.get(localPosition).get(currentWordIndex).getWordInEnglish());
 
                                             inEnglish = true;
@@ -388,7 +330,7 @@ public class WordsUserCheckFragment extends Fragment {
                     for(int wordsInThisCategoryCounter = 0; wordsInThisCategoryCounter < wordsInCategoriesArrayList.get(position).size(); wordsInThisCategoryCounter++) {
                         Word word = wordsInCategoriesArrayList.get(position).get(wordsInThisCategoryCounter);
 
-                        if(word.getLevel() == -2) {
+                        if(word.getLevel() == Word.LEVEL_ADDED) {
                             changingWordsArrayList.add(word);
                         }
                     }
@@ -401,7 +343,6 @@ public class WordsUserCheckFragment extends Fragment {
                                 .message("В данной категории " + String.valueOf(changingWordsArrayList.size()) + " слов для добавления. Добавить?")
                                 .positiveButtonText(getString(R.string.yes))
                                 .positiveClickListener(new IOSDialog.Listener() {
-                                    boolean isSuccessful = true;
                                     @Override
                                     public void onClick(IOSDialog iosDialog) {
                                         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -467,11 +408,6 @@ public class WordsUserCheckFragment extends Fragment {
         @Override
         public int getItemCount() {
             return categoryNamesList.size();
-        }
-
-        @Override
-        public Filter getFilter() {
-            return categoryFilter;
         }
 
         class WordsCategoriesRecyclerViewHolder extends RecyclerView.ViewHolder {

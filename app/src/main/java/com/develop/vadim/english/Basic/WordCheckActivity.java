@@ -68,17 +68,7 @@ public class WordCheckActivity extends AppCompatActivity {
         continueImageView = findViewById(R.id.continueImageView);
         helpImageButtonsLinearLayout = findViewById(R.id.linearLayout3);
 
-        if(getIntent().getBooleanExtra(getString(R.string.word_check_flag), false)) {
-            checkingWordsList = getIntent().getParcelableArrayListExtra(getString(R.string.parcelableWordKey));
-        }
-        else {
-            checkingWordsList = loadData();
-
-            SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.archivedWordsSharedPreferences), MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-
-            editor.clear().apply();
-        }
+        checkingWordsList = getIntent().getParcelableArrayListExtra(getString(R.string.wordsToCheckingKey));
 
         setUpLesson(0);
     }

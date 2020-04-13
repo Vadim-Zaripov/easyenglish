@@ -27,6 +27,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -55,15 +56,16 @@ public class AddNewWordFragment extends Fragment {
 
     private EditText englishWordEditText;
     private EditText russianWordEditText;
-    private EditText categoryEditText;
     private ImageView addWordToServiceImageView;
     private MaterialCardView categoryMaterialCardView;
     private MaterialCardView categoriesChoosingMaterialMaterialCardView;
     private TextView categoryTextView;
+    private TextView headerTextView;
+    private TextView addWordToServiceTextView;
+    private LinearLayout categoriesTextViewsLinearLayout;
     private ProgressBar wordSendingProgressBar;
     private RecyclerView choosingCategoryRecyclerView;
     private MaterialCardView categoryMaterialCardViewHolder;
-    private ImageView timePickerImageView;
 
     public final static int NEW_CATEGORY_HAS_BEEN_ADDED = 5;
 
@@ -119,25 +121,17 @@ public class AddNewWordFragment extends Fragment {
         russianWordEditText = view.findViewById(R.id.editTextRussian);
         categoryMaterialCardView = view.findViewById(R.id.categoryChooseCardView);
         categoryTextView = categoryMaterialCardView.findViewById(R.id.addNewWordCategoryTextView);
+        headerTextView = view.findViewById(R.id.headerTextView);
+        categoriesTextViewsLinearLayout = view.findViewById(R.id.categoriesTextViewLinearLayout);
+        addWordToServiceTextView = view.findViewById(R.id.addWordToServiceTextView);
         categoriesChoosingMaterialMaterialCardView = view.findViewById(R.id.categoriesMaterialCardView);
         addWordToServiceImageView = view.findViewById(R.id.addWordToServiceImageView);
         wordSendingProgressBar = view.findViewById(R.id.spinKit);
         wordSendingProgressBar.setIndeterminateDrawable(new DoubleBounce());
         categoryMaterialCardViewHolder = view.findViewById(R.id.categoryChooseCardViewHolder);
-        categoryEditText = view.findViewById(R.id.categoryEditText);
-        timePickerImageView = view.findViewById(R.id.timeImageView);
 
-        timePickerImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(view.getContext(), "Выберите время, в которое вас удобно повторить  слова", Toast.LENGTH_LONG).show();
-                TimePickerDialog timePickerDialog = new TimePickerDialog(v.getContext(), timePickerDialogTimeSetListener,
-                        timePickerCalendar.get(Calendar.HOUR_OF_DAY),
-                        timePickerCalendar.get(Calendar.MINUTE), true);
 
-                timePickerDialog.show();
-            }
-        });
+        categoryTextView.setText("Без категории");
 
         categoryMaterialCardView.setOnClickListener(new View.OnClickListener() {
             private Handler handler;
@@ -153,9 +147,7 @@ public class AddNewWordFragment extends Fragment {
                 isCategoryNew = false;
 
                 categoryMaterialCardView.setCardBackgroundColor(Color.WHITE);
-                categoryTextView.setText("XENOUS");
                 categoryTextView.setVisibility(View.INVISIBLE);
-                categoryEditText.setVisibility(View.INVISIBLE);
                 categoryMaterialCardView.setClickable(false);
 
                 addWordToServiceImageView.animate().alphaBy(1).alpha(0).setDuration(300).start();
@@ -209,8 +201,7 @@ public class AddNewWordFragment extends Fragment {
 
                             englishWordEditText.setText("");
                             russianWordEditText.setText("");
-                            categoryTextView.setText("");
-                            categoryEditText.setVisibility(View.INVISIBLE);
+                            categoryTextView.setText("Без категории");
                         }
 
                         @Override
@@ -233,6 +224,9 @@ public class AddNewWordFragment extends Fragment {
                 russianWordEditText.startAnimation(animation);
                 englishWordEditText.startAnimation(animation);
                 addWordToServiceImageView.startAnimation(animation);
+                headerTextView.startAnimation(animation);
+                categoriesTextViewsLinearLayout.startAnimation(animation);
+                addWordToServiceTextView.startAnimation(animation);
 
                 animation.setAnimationListener(new Animation.AnimationListener() {
                     @Override
@@ -245,6 +239,9 @@ public class AddNewWordFragment extends Fragment {
                         russianWordEditText.setVisibility(View.INVISIBLE);
                         englishWordEditText.setVisibility(View.INVISIBLE);
                         addWordToServiceImageView.setVisibility(View.INVISIBLE);
+                        headerTextView.setVisibility(View.INVISIBLE);
+                        categoriesTextViewsLinearLayout.setVisibility(View.INVISIBLE);
+                        addWordToServiceTextView.setVisibility(View.INVISIBLE);
 
                         wordSendingProgressBar.setVisibility(View.VISIBLE);
 
@@ -289,19 +286,19 @@ public class AddNewWordFragment extends Fragment {
         englishWordEditText.setVisibility(View.VISIBLE);
         russianWordEditText.setVisibility(View.VISIBLE);
         addWordToServiceImageView.setVisibility(View.VISIBLE);
+        headerTextView.setVisibility(View.VISIBLE);
+        categoriesTextViewsLinearLayout.setVisibility(View.VISIBLE);
+        addWordToServiceTextView.setVisibility(View.VISIBLE);
 
         Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.appear);
         categoryMaterialCardView.startAnimation(animation);
         russianWordEditText.startAnimation(animation);
         englishWordEditText.startAnimation(animation);
         addWordToServiceImageView.startAnimation(animation);
+        headerTextView.startAnimation(animation);
+        categoriesTextViewsLinearLayout.startAnimation(animation);
+        addWordToServiceTextView.startAnimation(animation);
     }
-
-    private TimePickerDialog.OnTimeSetListener timePickerDialogTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
-        public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-            timeSharedPreferences.edit().putInt(getString(R.string.hourOfDay), hourOfDay).putInt(getString(R.string.minute), minute).apply();
-        }
-    };
 
     private class CategoriesRecyclerViewAdapter extends RecyclerView.Adapter<CategoriesRecyclerViewAdapter.CategoriesRecyclerViewHolder> {
         private ArrayList<String> categories;
