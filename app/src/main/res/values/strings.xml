@@ -28,7 +28,7 @@
     <string name="log_out">Выйти</string>
     <string name="reg">Регистрация</string>
     <string name="incorrect">Неправильно, на самом деле:</string>
-    <string name="changeWord"><u>Изменить слово</u></string>
+    <string name="changeWord"><u>Изменить</u></string>
 
 
     <!-- Example General settings -->
@@ -106,6 +106,9 @@
     <string name="no">Нет</string>
     <string name="changingWord">changingWord</string>
     <string name="wordsToCheckingKey">key701</string>
+    <string name="forgotWord">Не помню</string>
+    <string name="categoriesToChangeWordActivity">categories</string>
+    <string name="categoriesKey">categoriesKey</string>
     <string-array name="pref_example_list_titles">
         <item>Always</item>
         <item>When possible</item>

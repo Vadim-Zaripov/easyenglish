@@ -90,9 +90,6 @@ public class MainActivity extends AppCompatActivity {
     public static DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid());
     private DatabaseReference categoryReference = reference.child("categories");
 
-    public final static int STATUS_START = 100;
-    public final static int STATUS_FINISH = 200;
-
     public final static String PARAM_STATUS = "Status";
 
     public final static String BROADCAST_ACTION = "ru.lett.xenous.action.BROADCAST";
@@ -101,6 +98,9 @@ public class MainActivity extends AppCompatActivity {
     private WordsUserCheckFragment wordsUserCheckFragment;
     private AddNewWordFragment addNewWordFragment;
     private WordsArchiveFragment wordsArchiveFragment;
+
+    public final int STATUS_START = 100;
+    public final int STATUS_FINISH = 200;
 
     public ArrayList<String> categoryNames = new ArrayList<>();
     public ArrayList<Word> wordArrayList = new ArrayList<>();
@@ -138,7 +138,6 @@ public class MainActivity extends AppCompatActivity {
                 Word word = intent.getParcelableExtra(getString(R.string.changingWord));
 
                 if(intent.getBooleanExtra(getString(R.string.addNewCategory), false)) {
-                    Log.d("BOB", "BIB");
                     categoryNames.add(word.getWordCategory());
                 }
 
@@ -187,6 +186,7 @@ public class MainActivity extends AppCompatActivity {
                             public void onAnimationEnd(Animation animation) {
                                 spinKitView.setVisibility(View.INVISIBLE);
                                 viewPager.setAdapter(fragmentViewPagerAdapter);
+                                viewPager.setCurrentItem(1);
                                 dotsIndicator.setViewPager(viewPager);
                             }
 
@@ -202,6 +202,7 @@ public class MainActivity extends AppCompatActivity {
 
                         Intent intent = new Intent(MainActivity.this, WordCheckActivity.class);
                         intent.putParcelableArrayListExtra(getString(R.string.wordsToCheckingKey), wordArrayList);
+                        intent.putStringArrayListExtra(getString(R.string.categoriesKey), categoryNames);
 
                         ActivityOptions activityOptions = ActivityOptions.makeSceneTransitionAnimation(MainActivity.this);
 
@@ -221,7 +222,7 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case CHECKING_WORDS_LOAD_END:
                         Log.d(MAIN_ACTIVITY_TAG, "Words has been sorted");
-                        callWordsCheck();
+
 
                         break;
                 }
@@ -257,7 +258,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
-        callCheck();
     }
 
     @Override
@@ -272,9 +272,6 @@ public class MainActivity extends AppCompatActivity {
         catch(IllegalArgumentException e) {
             e.printStackTrace();
         }
-
-
-        callCheck();
     }
 
     @Override
@@ -287,14 +284,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-    }
-
-    private void callCheck() {
-        if(wordsCheckSharedPreferences.getInt(getPackageName() + ".wordsCheckFlag", -1) != Calendar.getInstance().get(Calendar.DAY_OF_YEAR)) {
-            new Thread(new LoadWordsToCheckingThread(loadingHandler)).start();
-
-            wordsCheckSharedPreferences.edit().putInt(getPackageName() + ".wordsCheckFlag", Calendar.getInstance().get(Calendar.DAY_OF_YEAR)).apply();
-        }
     }
 
     private void createNotificationChannel() {
@@ -548,54 +537,6 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) { }
             });
-        }
-    }
-
-    private class FilterWordsThread implements Runnable {
-        Handler handler;
-
-        FilterWordsThread(Handler handler) {
-            this.handler = handler;
-        }
-
-        @Override
-        public void run() {
-            for(Word word : wordArrayList) {
-                //TODO: Add logic to filtrate words, which have been learnt and have been moved to archive
-                //But now I have made archived page as a all words page
-                archivedWordsArrayList.add(word);
-            }
-
-            handler.sendEmptyMessage(MainActivity.WORDS_ANALYNG_WND);
-        }
-    }
-
-    private class LoadWordsToCheckingThread implements Runnable {
-
-        Handler handler;
-        ArrayList<Word> checkingWordsList = new ArrayList<>();
-
-        LoadWordsToCheckingThread(Handler handler) {
-            this.handler = handler;
-        }
-
-        @Override
-        public void run() {
-            //TODO: This thread should choose words from all words and call check
-            for(Word word : wordArrayList) {
-                checkingWordsList.add(word);
-            }
-
-            handler.sendEmptyMessage(CHECKING_WORDS_LOAD_END);
-            saveData();
-        }
-
-        synchronized void saveData() {
-            SharedPreferences.Editor editor = archivedWordsSharedPreferences.edit();
-            Gson gson = new Gson();
-            String json = gson.toJson(archivedWordsArrayList);
-            editor.putString(getString(R.string.service_saved_indexes_key), json);
-            editor.apply();
         }
     }
 }

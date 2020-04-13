@@ -94,8 +94,7 @@ public class ChangeWord extends AppCompatActivity {
         };
 
         changingWord = getIntent().getParcelableExtra(getString(R.string.changeWord));
-        categories = getIntent().getStringArrayListExtra("BOB");
-        Log.d("BOB", categories.toString());
+        categories = getIntent().getStringArrayListExtra(getString(R.string.categoriesToChangeWordActivity));
 
         category = changingWord.getWordCategory();
 
@@ -212,7 +211,6 @@ public class ChangeWord extends AppCompatActivity {
 
         if(!translatedWordEditText.getText().toString().equals(changingWord.getWordInEnglish())) {
             MainActivity.reference.child("words").child(changingWord.getInd()).child(Word.russianDatabaseKey).setValue(translatedWordEditText.getText().toString());
-
             changingWord.setWordInRussian(translatedWordEditText.getText().toString());
         }
 

@@ -8,33 +8,23 @@ import android.os.Handler;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Message;
 import android.util.Log;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.Filter;
-import android.widget.Filterable;
-import android.widget.SearchView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.develop.vadim.english.Basic.ChangeWord;
 import com.develop.vadim.english.Basic.MainActivity;
 import com.develop.vadim.english.R;
 import com.develop.vadim.english.Basic.Word;
 import com.google.android.material.card.MaterialCardView;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,23 +37,18 @@ public class WordsArchiveFragment extends Fragment {
     private DatabaseReference reference = MainActivity.reference.child("words");
 
     private RecyclerView archivedWordsRecyclerView;
-    private SwipeRefreshLayout swipeRefreshLayout;
-
-    private ArrayList<Word> archivedWord = new ArrayList<>();
 
     private ArchiveFragmentRecyclerViewAdapter archiveFragmentRecyclerViewAdapter;
 
     private Handler initArchivedWordsHandler;
 
-    private View viewLayout;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         reference.keepSynced(true);
-        viewLayout = inflater.inflate(R.layout.words_archive_fragment, container, false);
 
-        return viewLayout;
+        return inflater.inflate(R.layout.words_archive_fragment, container, false);
     }
 
     @SuppressLint("HandlerLeak")
@@ -79,7 +64,7 @@ public class WordsArchiveFragment extends Fragment {
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
 
-                archiveFragmentRecyclerViewAdapter = new ArchiveFragmentRecyclerViewAdapter(((MainActivity)getActivity()).getWordArrayList()); //TODO: Replace to ArchivedWordsArrayList
+                archiveFragmentRecyclerViewAdapter = new ArchiveFragmentRecyclerViewAdapter(((MainActivity) Objects.requireNonNull(getActivity())).getWordArrayList()); //TODO: Replace to ArchivedWordsArrayList
                 archivedWordsRecyclerView.setAdapter(archiveFragmentRecyclerViewAdapter);
             }
         };
@@ -127,8 +112,7 @@ public class WordsArchiveFragment extends Fragment {
                 @Override
                 public void onClick(View view) {
                     Intent wordDetailsIntent = new Intent(view.getContext(), ChangeWord.class);
-                    Log.d("BOBIK", getCategoriesToWordCheckActivity().toString());
-                    wordDetailsIntent.putStringArrayListExtra("BOB", getCategoriesToWordCheckActivity());
+                    wordDetailsIntent.putStringArrayListExtra(getString(R.string.categoriesToChangeWordActivity), getCategoriesToWordCheckActivity());
                     Log.d("TAG", String.valueOf(word.getIndex()));
                     wordDetailsIntent.putExtra(getString(R.string.changeWord), archivedWordsList.get(currentPosition));
 
@@ -162,7 +146,7 @@ public class WordsArchiveFragment extends Fragment {
     private ArrayList<String> getCategoriesToWordCheckActivity() {
         ArrayList<String> arrayList = new ArrayList<>();
         arrayList.add("Без категрии");
-        arrayList.addAll(((MainActivity)getActivity()).getCategoryNamesList());
+        arrayList.addAll(((MainActivity) Objects.requireNonNull(getActivity())).getCategoryNamesList());
         arrayList.add("Добавить");
 
         return arrayList;

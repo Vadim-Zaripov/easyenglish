@@ -254,56 +254,54 @@ public class WordsUserCheckFragment extends Fragment {
 
                         @Override
                         public void onClick(final View view) {
-                            if (true) { //TODO: remove this fucking if, please
-                                Animation animationFrom = new AlphaAnimation(1f, 0f);
-                                animationFrom.setDuration(300);
-                                animationFrom.setAnimationListener(new Animation.AnimationListener() {
-                                    @Override
-                                    public void onAnimationStart(Animation animation) {
-                                        view.setClickable(false);
+                            Animation animationFrom = new AlphaAnimation(1f, 0f);
+                            animationFrom.setDuration(300);
+                            animationFrom.setAnimationListener(new Animation.AnimationListener() {
+                                @Override
+                                public void onAnimationStart(Animation animation) {
+                                    view.setClickable(false);
+                                }
+
+                                @Override
+                                public void onAnimationEnd(Animation animation) {
+                                    if(inEnglish) {
+                                        wordInCategoryTextView.setText(wordsInCategoriesArrayList.get(localPosition).get(currentWordIndex).getWordInRussian());
+
+                                        inEnglish = false;
+                                    }
+                                    else {
+                                        wordInCategoryTextView.setText(wordsInCategoriesArrayList.get(localPosition).get(currentWordIndex).getWordInEnglish());
+
+                                        inEnglish = true;
                                     }
 
-                                    @Override
-                                    public void onAnimationEnd(Animation animation) {
-                                        if(inEnglish) {
-                                            wordInCategoryTextView.setText(wordsInCategoriesArrayList.get(localPosition).get(currentWordIndex).getWordInRussian());
+                                    Animation animationTo = new AlphaAnimation(0f, 1f);
+                                    animationTo.setDuration(300);
 
-                                            inEnglish = false;
+                                    animationTo.setAnimationListener(new Animation.AnimationListener() {
+                                        @Override
+                                        public void onAnimationStart(Animation animation) {
                                         }
-                                        else {
-                                            wordInCategoryTextView.setText(wordsInCategoriesArrayList.get(localPosition).get(currentWordIndex).getWordInEnglish());
 
-                                            inEnglish = true;
+                                        @Override
+                                        public void onAnimationEnd(Animation animation) {
+                                            view.setClickable(true);
                                         }
 
-                                        Animation animationTo = new AlphaAnimation(0f, 1f);
-                                        animationTo.setDuration(300);
+                                        @Override
+                                        public void onAnimationRepeat(Animation animation) {
+                                        }
+                                    });
 
-                                        animationTo.setAnimationListener(new Animation.AnimationListener() {
-                                            @Override
-                                            public void onAnimationStart(Animation animation) {
-                                            }
+                                    wordInCategoryTextView.startAnimation(animationTo);
+                                }
 
-                                            @Override
-                                            public void onAnimationEnd(Animation animation) {
-                                                view.setClickable(true);
-                                            }
+                                @Override
+                                public void onAnimationRepeat(Animation animation) {
+                                }
+                            });
 
-                                            @Override
-                                            public void onAnimationRepeat(Animation animation) {
-                                            }
-                                        });
-
-                                        wordInCategoryTextView.startAnimation(animationTo);
-                                    }
-
-                                    @Override
-                                    public void onAnimationRepeat(Animation animation) {
-                                    }
-                                });
-
-                                wordInCategoryTextView.startAnimation(animationFrom);
-                            }
+                            wordInCategoryTextView.startAnimation(animationFrom);
                         }
                     });
 

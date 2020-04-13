@@ -1,13 +1,14 @@
 package com.develop.vadim.english.Basic;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.ActivityOptions;
-import android.content.BroadcastReceiver;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -23,14 +24,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.develop.vadim.english.R;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.firebase.database.DatabaseReference;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.varunjohn1990.iosdialogs4android.IOSDialog;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.List;
 
 public class WordCheckActivity extends AppCompatActivity {
     private EditText userAnswerEditText;
@@ -39,6 +37,7 @@ public class WordCheckActivity extends AppCompatActivity {
     private TextView rightAnswerTextView;
     private TextView userAnswerTextView;
     private TextView headerTextView;
+    private TextView forgetWordTextView;
     private ImageView editWordImageView;
     private ImageView deleteWordImageView;
     private ImageView continueImageView;
@@ -48,8 +47,13 @@ public class WordCheckActivity extends AppCompatActivity {
     private DatabaseReference databaseReference;
 
     private ArrayList<Word> checkingWordsList;
+    private ArrayList<String> categoriesList = new ArrayList<>();
+
+    private int width;
 
     private Handler removingWordHandler;
+
+    private boolean widthFlag = true;
 
     @SuppressLint("HandlerLeak")
     @Override
@@ -57,7 +61,7 @@ public class WordCheckActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_check_word);
 
-        databaseReference = MainActivity.reference;
+        databaseReference = MainActivity.reference.child("words");
         rightAnswerTextView = findViewById(R.id.rightAnswerTextView);
         userAnswerEditText = findViewById(R.id.checkWordEditText);
         userQuestionTextView = findViewById(R.id.wordCheckTextView);
@@ -67,62 +71,59 @@ public class WordCheckActivity extends AppCompatActivity {
         deleteWordImageView = findViewById(R.id.deleteWordImageView);
         continueImageView = findViewById(R.id.continueImageView);
         helpImageButtonsLinearLayout = findViewById(R.id.linearLayout3);
+        forgetWordTextView = findViewById(R.id.forgetTextView);
 
+        categoriesList = getIntent().getStringArrayListExtra(getString(R.string.categoriesKey));
+        Log.d("POLLY", categoriesList.toString());
         checkingWordsList = getIntent().getParcelableArrayListExtra(getString(R.string.wordsToCheckingKey));
 
         setUpLesson(0);
     }
 
     private void setUpLesson(final int stage) {
+        Animation appearAnimation = new AlphaAnimation(0f, 1f);
+        appearAnimation.setDuration(200);
 
-        helpImageButtonsLinearLayout.animate().alphaBy(1).alpha(0).setDuration(animationDuration).start();
-
+        userQuestionTextView.setTextColor(getResources().getColor(R.color.colorWhite));
+        userQuestionTextView.setVisibility(View.VISIBLE);
         userAnswerEditText.setVisibility(View.VISIBLE);
+        headerTextView.setVisibility(View.VISIBLE);
+        forgetWordTextView.setVisibility(View.VISIBLE);
+
+        helpImageButtonsLinearLayout.setVisibility(View.INVISIBLE);
         userAnswerTextView.setVisibility(View.INVISIBLE);
-        rightAnswerTextView.setVisibility(View.INVISIBLE);
+
+        forgetWordTextView.startAnimation(appearAnimation);
+        headerTextView.startAnimation(appearAnimation);
+        userAnswerEditText.startAnimation(appearAnimation);
+        userAnswerEditText.setTextColor(getResources().getColor(R.color.colorWhite));
+        userAnswerEditText.setText("");
+
+        forgetWordTextView.setClickable(true);
 
         if(checkingWordsList == null || checkingWordsList.size() == 0) {
-            finish();
+            onBackPressed();
 
             return;
         }
+
+        forgetWordTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startDisappearAnimation(stage);
+            }
+        });
 
         if(stage != checkingWordsList.size()) {
             userQuestionTextView.setText(checkingWordsList.get(stage).getWordInRussian());
             continueImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(userAnswerEditText.getText().toString().equals(checkingWordsList.get(stage).getWordInEnglish())) {
-                        //new Thread(new AnalyzeUserAnswerThread(stage, true)).start();
+                    if(userAnswerEditText.getText().toString().equals("")) {
+                        Toast.makeText(v.getContext(), "Заполните поле для ввода", Toast.LENGTH_LONG).show();
                     }
                     else {
-                        userAnswerEditText.setTextColor(getResources().getColor(R.color.wrongWordRed));
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                AlphaAnimation alphaAnimation = new AlphaAnimation(1f, 0f);
-                                alphaAnimation.setDuration(400);
-                                alphaAnimation.setAnimationListener(new Animation.AnimationListener() {
-                                    @Override
-                                    public void onAnimationStart(Animation animation) { }
-
-                                    @Override
-                                    public void onAnimationEnd(Animation animation) {
-                                        callUserHelp(stage);
-                                        userAnswerEditText.setVisibility(View.INVISIBLE);
-                                        //userQuestionTextView.setVisibility(View.INVISIBLE);
-                                    }
-
-                                    @Override
-                                    public void onAnimationRepeat(Animation animation) { }
-                                });
-
-                                userAnswerEditText.startAnimation(alphaAnimation);
-                                userQuestionTextView.startAnimation(alphaAnimation);
-                            }
-                        }, 450);
-
-                        //new Thread(new AnalyzeUserAnswerThread(stage, false)).start();
+                        startDisappearAnimation(stage);
                     }
                 }
             });
@@ -135,30 +136,115 @@ public class WordCheckActivity extends AppCompatActivity {
             startActivity(new Intent(WordCheckActivity.this, MainActivity.class), activityOptions.toBundle());
         }
 
-        //editData();
     }
+
+    private void startDisappearAnimation(final int stage) {
+        if(userAnswerEditText.getText().toString().equals(checkingWordsList.get(stage).getWordInEnglish())) {
+            new Thread(new AnalyzeUserAnswerThread(stage, true)).start();
+
+            AlphaAnimation alphaAnimation = new AlphaAnimation(1f, 0f);
+            alphaAnimation.setDuration(200);
+            alphaAnimation.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+                    continueImageView.setClickable(false);
+                    forgetWordTextView.setClickable(false);
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    continueImageView.setClickable(true);
+
+                    userQuestionTextView.setVisibility(View.INVISIBLE);
+                    userAnswerEditText.setVisibility(View.INVISIBLE);
+                    forgetWordTextView.setVisibility(View.INVISIBLE);
+
+                    setUpLesson(stage + 1);
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) { }
+            });
+
+            userAnswerEditText.startAnimation(alphaAnimation);
+            userQuestionTextView.startAnimation(alphaAnimation);
+            forgetWordTextView.startAnimation(alphaAnimation);
+
+
+        }
+        else {
+            userAnswerEditText.setTextColor(getResources().getColor(R.color.wrongWordRed));
+            AlphaAnimation alphaAnimation = new AlphaAnimation(1f, 0f);
+            alphaAnimation.setDuration(200);
+            alphaAnimation.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) { }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    userAnswerEditText.setVisibility(View.INVISIBLE);
+                    headerTextView.setVisibility(View.INVISIBLE);
+                    userQuestionTextView.setVisibility(View.INVISIBLE);
+                    forgetWordTextView.setVisibility(View.INVISIBLE);
+
+                    callUserHelp(stage);
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) { }
+            });
+
+            userQuestionTextView.startAnimation(alphaAnimation);
+            headerTextView.startAnimation(alphaAnimation);
+            userAnswerEditText.startAnimation(alphaAnimation);
+            forgetWordTextView.startAnimation(alphaAnimation);
+
+            new Thread(new AnalyzeUserAnswerThread(stage, false)).start();
+        }
+    }
+
 
     @SuppressLint("HandlerLeak")
     private void callUserHelp(final int stage) {
-        userQuestionTextView.setVisibility(View.VISIBLE);
+        Animation appearAnimation = new AlphaAnimation(0f, 1f);
+        appearAnimation.setDuration(200);
+        appearAnimation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) { }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                userQuestionTextView.setVisibility(View.VISIBLE);
+                helpImageButtonsLinearLayout.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) { }
+        });
+        userQuestionTextView.startAnimation(appearAnimation);
+        helpImageButtonsLinearLayout.startAnimation(appearAnimation);
+        rightAnswerTextView.startAnimation(appearAnimation);
+        userQuestionTextView.startAnimation(appearAnimation);
+
+
         userQuestionTextView.setTextColor(getResources().getColor(R.color.wrongWordRed));
-        userQuestionTextView.animate().alphaBy(0).alpha(1).setDuration(600).start();
 
         removingWordHandler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
 
-                setUpLesson(stage + 1);
+                Toast.makeText(WordCheckActivity.this, "Слово успешно удалено", Toast.LENGTH_LONG).show();
+
+                continueChecking(stage);
             }
         };
 
-        helpImageButtonsLinearLayout.setVisibility(View.VISIBLE);
-        helpImageButtonsLinearLayout.animate().alphaBy(0).alpha(1).setDuration(animationDuration).start();
-        helpImageButtonsLinearLayout.setClickable(false);
+        if(widthFlag) {
+            width = continueImageView.getMeasuredWidth();
 
-        headerTextView.animate().alphaBy(1).alpha(0).setDuration(animationDuration).start();
-
+            widthFlag = false;
+        }
         ValueAnimator valueAnimator = ValueAnimator.ofInt(continueImageView.getMeasuredWidth(), continueImageView.getMeasuredHeight());
         valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
@@ -169,19 +255,36 @@ public class WordCheckActivity extends AppCompatActivity {
                 continueImageView.setLayoutParams(layoutParams);
             }
         });
+
+        valueAnimator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+
+                continueImageView.setClickable(true);
+            }
+
+            @Override
+            public void onAnimationStart(Animator animation) {
+                super.onAnimationStart(animation);
+                continueImageView.setClickable(false);
+
+            }
+        });
         valueAnimator.setDuration(animationDuration);
         valueAnimator.start();
 
         userQuestionTextView.setText(userAnswerEditText.getText());
         rightAnswerTextView.setVisibility(View.VISIBLE);
         userAnswerTextView.setVisibility(View.VISIBLE);
-        rightAnswerTextView.setText("Говно");
+        rightAnswerTextView.setText(checkingWordsList.get(stage).getWordInEnglish());
         rightAnswerTextView.setTextColor(getResources().getColor(R.color.rightWordGreen));
 
         editWordImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent changeWordIntent = new Intent(v.getContext(), ChangeWord.class);
+                changeWordIntent.putStringArrayListExtra(getString(R.string.categoriesToChangeWordActivity), getCategoriesToCheckWordActivityList());
                 changeWordIntent.putExtra(getString(R.string.changeWord), checkingWordsList.get(stage));
 
                 ActivityOptions activityOptions = ActivityOptions.makeSceneTransitionAnimation(WordCheckActivity.this);
@@ -219,51 +322,113 @@ public class WordCheckActivity extends AppCompatActivity {
         continueImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setUpLesson(stage + 1);
+               continueChecking(stage);
             }
         });
     }
 
-    private ArrayList<Word> loadData() {
-        SharedPreferences sharedPreferences = getSharedPreferences("Shared preferences for Words Service", MODE_PRIVATE);
-        Gson gson = new Gson();
-        String json = sharedPreferences.getString(getString(R.string.service_saved_indexes_key), null);
-        Type type = new TypeToken<List<Word>>() {}.getType();
-        if(json == null) {
-            Log.d("JSON", "NULL");
+    private void continueChecking(final int stage) {
+        Animation animationAppear = new AlphaAnimation(0f, 1f);
+        animationAppear.setDuration(animationDuration);
+        Animation disappearAnimation = new AlphaAnimation(1f, 0f);
+        disappearAnimation.setDuration(animationDuration / 2);
 
-            return new ArrayList<>();
-        }
+        ValueAnimator valueAnimator = ValueAnimator.ofInt(continueImageView.getMeasuredWidth(), width);
+        valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                int val = (Integer) animation.getAnimatedValue();
+                ViewGroup.LayoutParams layoutParams = continueImageView.getLayoutParams();
+                layoutParams.width = val;
+                continueImageView.setLayoutParams(layoutParams);
+            }
+        });
 
-        return gson.fromJson(json, type);
+        valueAnimator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                super.onAnimationStart(animation);
+
+                continueImageView.setClickable(false);
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+
+                continueImageView.setClickable(true);
+            }
+        });
+
+        userAnswerTextView.startAnimation(disappearAnimation);
+        rightAnswerTextView.startAnimation(disappearAnimation);
+        helpImageButtonsLinearLayout.startAnimation(disappearAnimation);
+        disappearAnimation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                userAnswerTextView.setVisibility(View.INVISIBLE);
+                rightAnswerTextView.setVisibility(View.INVISIBLE);
+                helpImageButtonsLinearLayout.setVisibility(View.INVISIBLE);
+
+                setUpLesson(stage + 1);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+
+        valueAnimator.setDuration(animationDuration);
+        valueAnimator.start();
+
     }
 
-    private synchronized void editData() {
-        SharedPreferences.Editor editor = getSharedPreferences("Shared preferences for Words Service", MODE_PRIVATE).edit();
-        Gson gson = new Gson();
-        String json = gson.toJson(checkingWordsList.remove(0));
-        editor.putString(getString(R.string.service_saved_indexes_key), json);
-        editor.apply();
+    private ArrayList<String> getCategoriesToCheckWordActivityList() {
+        ArrayList<String> arrayList = new ArrayList<>();
+        arrayList.add("Без категории");
+        arrayList.addAll(categoriesList);
+        arrayList.add("Добавить");
+
+        return arrayList;
     }
 
     private class AnalyzeUserAnswerThread implements Runnable {
         int index;
         boolean isAnswerRight;
+        long value;
+
+        Word checkingWord = checkingWordsList.get(index);
 
         AnalyzeUserAnswerThread(int index, boolean isAnswerRight) {
             this.index = index;
             this.isAnswerRight = isAnswerRight;
+
+            if(isAnswerRight) {
+                value = checkingWord.getLevel() + 1;
+            }
+            else {
+                value = 0;
+            }
         }
 
         @Override
         public void run() {
-            Word checkingWord = checkingWordsList.get(index);
-            if(isAnswerRight) {
-                MainActivity.reference.child("words").child(String.valueOf(checkingWord.getIndex())).child(Word.levelDatabaseKey).setValue(checkingWord.getLevel() + 1);
-            }
-            else {
-                MainActivity.reference.child("words").child(String.valueOf(checkingWord.getIndex())).child(Word.levelDatabaseKey).setValue(0);
-            }
+            databaseReference.child(String.valueOf(checkingWord.getIndex())).child(Word.levelDatabaseKey).setValue(value).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    e.printStackTrace();
+
+                    Toast.makeText(getApplicationContext(), "Произошла ошибка. Проверьте подключение к сети", Toast.LENGTH_LONG).show();
+
+                    onBackPressed();
+                }
+            });
         }
     }
 }

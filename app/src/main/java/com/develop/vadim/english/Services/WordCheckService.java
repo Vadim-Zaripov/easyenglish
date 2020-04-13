@@ -69,7 +69,6 @@ public class WordCheckService extends Service {
 
         @Override
         public void run() {
-            intent.putExtra(MainActivity.PARAM_STATUS, MainActivity.STATUS_START);
             sendBroadcast(intent);
 
             neededWordsList.clear();
@@ -92,10 +91,8 @@ public class WordCheckService extends Service {
                     saveData();
 
                     Log.d(MainActivity.MAIN_ACTIVITY_TAG, MainActivity.BROADCAST_ACTION);
-                    intent.putExtra(MainActivity.PARAM_STATUS, MainActivity.STATUS_FINISH);
                     LocalBroadcastManager.getInstance(WordCheckService.this).sendBroadcast(intent);
 
-                    intent.putExtra(MainActivity.PARAM_STATUS, MainActivity.STATUS_FINISH);
                     sendBroadcast(intent);
 
                     stopSelf();
