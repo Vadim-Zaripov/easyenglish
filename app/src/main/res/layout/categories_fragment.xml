@@ -15,7 +15,7 @@
             android:id="@+id/userWordsCheckLabel"
             android:layout_gravity="center"
             android:textColor="@android:color/white"
-            android:text="@string/user_words_check_label"
+            android:text="@string/categories"
             android:gravity="center"
             android:textSize="25sp">
         </TextView>
@@ -24,10 +24,25 @@
             android:layout_width="match_parent"
             android:layout_height="10dp"/>
 
-        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/userWordsCheckSwipeToRefreshLayout">
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/emptyContainerTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorWhite"
+                android:textSize="28sp"
+                android:gravity="center"
+                android:visibility="invisible"
+                android:layout_gravity="center_horizontal|start"
+                android:text="@string/thereIsNoCategories"/>
+
+            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/userWordsCheckSwipeToRefreshLayout">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/userWordsCheckRecyclerView"
@@ -36,7 +51,10 @@
 
             </androidx.recyclerview.widget.RecyclerView>
 
-        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+            </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+        </FrameLayout>
+
     </LinearLayout>
 
 </FrameLayout>

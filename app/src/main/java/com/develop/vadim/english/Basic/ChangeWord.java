@@ -45,8 +45,6 @@ public class ChangeWord extends AppCompatActivity {
 
     private EditText originalWordEditText;
     private EditText translatedWordEditText;
-    private ImageView deleteWordImageView;
-    private ImageView saveChangesImageView;
 
     private MaterialCardView categoriesMaterialCardView;
     private MaterialCardView categoriesMaterialCardViewPlaceHolder;
@@ -98,20 +96,17 @@ public class ChangeWord extends AppCompatActivity {
 
         category = changingWord.getWordCategory();
 
-        saveChangesImageView = findViewById(R.id.saveChangesImageView);
+        ImageView saveChangesImageView = findViewById(R.id.saveChangesImageView);
         originalWordEditText = findViewById(R.id.editTextRussian);
         translatedWordEditText = findViewById(R.id.editTextEnglish);
-        deleteWordImageView = findViewById(R.id.deleteWordImageView);
+        ImageView deleteWordImageView = findViewById(R.id.deleteWordImageView);
         categoriesRecyclerView = findViewById(R.id.categoriesWhileAddingWordRecyclerView);
         categoriesMaterialCardView = findViewById(R.id.categoryChooseCardView);
         categoriesMaterialCardViewPlaceHolder = findViewById(R.id.categoriesMaterialCardView);
         categoriesTextView = findViewById(R.id.addNewWordCategoryTextView);
         categoriesMaterialCardViewComeBackPlaceHolder = findViewById(R.id.categoryChooseCardViewHolder);
 
-
         categoriesTextView.setText(changingWord.getWordCategory());
-
-        category = categoriesTextView.getText().toString();
 
         categoriesMaterialCardView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -161,6 +156,8 @@ public class ChangeWord extends AppCompatActivity {
         saveChangesImageView.setOnClickListener(new ImageView.OnClickListener() {
             @Override
             public void onClick(View view) {
+                category = categoriesTextView.getText().toString();
+
                 saveChanges();
                 removingWordHandler.sendMessage(removingWordHandler.obtainMessage());
                 onBackPressed();
@@ -214,52 +211,37 @@ public class ChangeWord extends AppCompatActivity {
             changingWord.setWordInRussian(translatedWordEditText.getText().toString());
         }
 
-        if(!categoriesTextView.getText().toString().equals(changingWord.getWordCategory())) {
-
-            changingWord.setWordCategory(category);
+        if(!category.equals(changingWord.getWordCategory())) {
             if(categories.contains(categoriesTextView.getText().toString())) {
-               MainActivity.reference.child(changingWord.getInd()).child(Word.categoryDatabaseKey).setValue(categoriesTextView.getText().toString());
+                MainActivity.reference.child("words").child(changingWord.getInd()).child(Word.categoryDatabaseKey).setValue(categoriesTextView.getText().toString());
             }
             else {
-                MainActivity.reference.child("categories").addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        MainActivity.reference.child("categories").child(String.valueOf(dataSnapshot.getChildrenCount())).setValue(categoriesTextView.getText().toString())
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        callToast();
-                                    }
-                                })
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        MainActivity.reference.child("words").child(changingWord.getInd()).child(Word.categoryDatabaseKey).setValue(category);
+                MainActivity.reference.child("categories").child(String.valueOf(categories.size() - 2)).setValue(category)
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(ChangeWord.this, "Произошла неизвестная ошибка, проверьте поделючение к сети!", Toast.LENGTH_LONG).show();
+                            }
+                        })
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                MainActivity.reference.child("words").child(changingWord.getInd()).child(Word.categoryDatabaseKey).setValue(category);
 
-                                    }
-                                });
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                        callToast();
-                    }
-
-                    private void callToast() {
-                        Toast.makeText(ChangeWord.this, "Произошла неизвестная ошибка, проверьте поделючение к сети!", Toast.LENGTH_LONG).show();
-                    }
-                });
+                            }
+                        });
             }
 
             isCategoryNew = true;
+
+
+            changingWord.setWordCategory(category);
         }
     }
 
     private class CategoriesRecyclerViewAdapter extends RecyclerView.Adapter<CategoriesRecyclerViewAdapter.CategoriesRecyclerViewHolder> {
 
-        ArrayList<String> categories = new ArrayList<>();
-
-        final int lastPosition = getItemCount() - 1;
+        ArrayList<String> categories;
 
         private Animation animation = AnimationUtils.loadAnimation(ChangeWord.this, R.anim.appear);
 
@@ -291,6 +273,10 @@ public class ChangeWord extends AppCompatActivity {
             holder.categoryTextView.setText(categories.get(position));
             holder.materialCardView.setCardBackgroundColor(getResources().getColor(materialCardsColors[new Random().nextInt(materialCardsColors.length)]));
 
+            if(position == getItemCount() - 1) {
+                holder.materialCardView.setCardBackgroundColor(getResources().getColor(R.color.DOUBLE_DRAGON_SKIN));
+            }
+
             holder.materialCardView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -303,13 +289,15 @@ public class ChangeWord extends AppCompatActivity {
                     categoriesTextView.setText(categories.get(currentPosition));
                     categoriesTextView.setVisibility(View.VISIBLE);
 
-                    changingWord.setWordCategory(categories.get(currentPosition));
-
                     if(currentPosition == getItemCount() - 1) {
                         callChooseCategoryDialog();
                     }
+
+                    category = categories.get(currentPosition);
                 }
             });
+
+            holder.materialCardView.startAnimation(animation);
 
         }
 
@@ -325,7 +313,7 @@ public class ChangeWord extends AppCompatActivity {
                 public void onClick(View view) {
                     if(!editText.getText().toString().equals("")) {
                         categoriesTextView.setText(editText.getText());
-                        category = categoriesTextView.getText().toString();
+                        category = editText.getText().toString();
                     }
 
                     dialog.dismiss();

@@ -136,8 +136,6 @@ public class AddNewWordFragment extends Fragment {
         categoryMaterialCardView.setOnClickListener(new View.OnClickListener() {
             private Handler handler;
 
-            private ArrayList<String> categories = new ArrayList<>();
-
             @SuppressLint("HandlerLeak")
             @Override
             public void onClick(View v) {
@@ -407,7 +405,7 @@ public class AddNewWordFragment extends Fragment {
 
     private class StartWordSendingThread implements Runnable {
         Word word;
-        String category = "default";
+        String category;
 
         StartWordSendingThread(Word word, String category) {
             this.word = word;
@@ -420,9 +418,9 @@ public class AddNewWordFragment extends Fragment {
 
             //Imitate loading
             try {
-                Thread.sleep(2500);
+                Thread.sleep(2000);
             }
-            catch (InterruptedException e) {
+            catch(InterruptedException e) {
                 e.printStackTrace();
             }
 

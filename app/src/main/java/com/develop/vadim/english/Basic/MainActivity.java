@@ -12,6 +12,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 
@@ -72,33 +73,15 @@ public class MainActivity extends AppCompatActivity {
 
     public static String ind;
 
-    public static final String PARCELABLE_EXTRA = "Parcelable";
-
-    private SharedPreferences wordsCheckSharedPreferences;
-
-    public String NOW_DATE;
     public static String NEXT_DATE;
-    public String WEEK_DATE, MONTH_DATE, THREE_MONTH_DATE, SIX_MONTH_DATE;
-    public DateFormat format;
-    public Date now;
-    public Calendar calendar = Calendar.getInstance();
-    public GregorianCalendar gregorianCalendar = new GregorianCalendar();
 
     public static FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     public static DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid());
     private DatabaseReference categoryReference = reference.child("categories");
 
-    public final static String PARAM_STATUS = "Status";
-
     public final static String BROADCAST_ACTION = "ru.lett.xenous.action.BROADCAST";
     public final static String BROADCAST_UPDATE_HAS_BEEN_DONE_ACTION = "ru.lett.xenous.action.UPDATE";
 
-    private CategoriesFragment wordsUserCheckFragment;
-    private AddNewWordFragment addNewWordFragment;
-    private WordsArchiveFragment wordsArchiveFragment;
-
-    public final int STATUS_START = 100;
-    public final int STATUS_FINISH = 200;
 
     public ArrayList<String> categoryNames = new ArrayList<>();
     public ArrayList<Word> wordArrayList = new ArrayList<>();
@@ -114,10 +97,7 @@ public class MainActivity extends AppCompatActivity {
     public static final int WORDS_ANALYNG_WND = 3;
     public static final int CHECKING_WORDS_LOAD_END = 4;
 
-    private SharedPreferences archivedWordsSharedPreferences;
-
     private BroadcastReceiver updateDataBroadcastReceiver;
-
 
     @SuppressLint("HandlerLeak")
     @Override
@@ -126,7 +106,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         initDefaultFiles();
-        initDate();
         createNotificationChannel();
         createNotification();
 
@@ -135,7 +114,9 @@ public class MainActivity extends AppCompatActivity {
             public void onReceive(Context context, Intent intent) {
                 Word word = intent.getParcelableExtra(getString(R.string.changingWord));
 
+                Log.d("BOB", "PIG");
                 if(intent.getBooleanExtra(getString(R.string.addNewCategory), false)) {
+
                     categoryNames.add(word.getWordCategory());
                 }
 
@@ -145,14 +126,7 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        archivedWordsSharedPreferences = getSharedPreferences(getString(R.string.archivedWordsSharedPreferences), MODE_PRIVATE);
-        wordsCheckSharedPreferences = getSharedPreferences(getPackageName() + ".wordsCheckFlag", MODE_PRIVATE);
-
         fragmentViewPagerAdapter = new FragmentViewPagerAdapter(getSupportFragmentManager());
-
-        wordsUserCheckFragment = (CategoriesFragment) fragmentViewPagerAdapter.getItem(0);
-        addNewWordFragment = (AddNewWordFragment) fragmentViewPagerAdapter.getItem(1);
-        wordsArchiveFragment = (WordsArchiveFragment) fragmentViewPagerAdapter.getItem(2);
 
         viewPager = findViewById(R.id.mainViewPagerId);
         dotsIndicator = findViewById(R.id.dots_indicator);
@@ -176,9 +150,7 @@ public class MainActivity extends AppCompatActivity {
                         animation.setDuration(300);
                         animation.setAnimationListener(new Animation.AnimationListener() {
                             @Override
-                            public void onAnimationStart(Animation animation) {
-
-                            }
+                            public void onAnimationStart(Animation animation) { }
 
                             @Override
                             public void onAnimationEnd(Animation animation) {
@@ -198,14 +170,7 @@ public class MainActivity extends AppCompatActivity {
                     case WORDS_ANALYNG_WND:
                         Log.d(MAIN_ACTIVITY_TAG, "Words has been analized successfully");
 
-                        Intent intent = new Intent(MainActivity.this, WordCheckActivity.class);
-                        intent.putParcelableArrayListExtra(getString(R.string.wordsToCheckingKey), wordArrayList);
-                        intent.putStringArrayListExtra(getString(R.string.categoriesKey), categoryNames);
-
-                        ActivityOptions activityOptions = ActivityOptions.makeSceneTransitionAnimation(MainActivity.this);
-
-                        //startActivity(intent, activityOptions.toBundle());
-                        /*if(wordsCheckWordsArrayList.size() != 0) {
+                        if(wordsCheckWordsArrayList.size() != 0) {
                             Intent intent = new Intent(MainActivity.this, WordCheckActivity.class);
                             intent.putParcelableArrayListExtra(getString(R.string.wordsToCheckingKey), wordsCheckWordsArrayList);
 
@@ -215,7 +180,34 @@ public class MainActivity extends AppCompatActivity {
                         }
                         else {
                             Toast.makeText(getApplicationContext(), "Пока что слов для повторений нет", Toast.LENGTH_LONG).show();
-                        }*/
+                        }
+
+                        FirebaseDynamicLinks
+                                .getInstance()
+                                .getDynamicLink(getIntent())
+                                .addOnSuccessListener(new OnSuccessListener<PendingDynamicLinkData>() {
+                                    @Override
+                                    public void onSuccess(PendingDynamicLinkData pendingDynamicLinkData) {
+                                        Uri deepLink;
+                                        if(pendingDynamicLinkData != null) {
+                                            deepLink = pendingDynamicLinkData.getLink();
+                                            String userUid = deepLink.getQueryParameter("user");
+                                            String category = deepLink.getQueryParameter("category");
+
+                                            Log.d("PUMP", userUid);
+                                            Log.d("PUMPP", category);
+
+                                            new Thread(new StartAddingCategoryFromLink(category, userUid)).start();
+                                        }
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.d("TAG", "FAILED");
+                                    }
+                                });
+
 
                         break;
                     case CHECKING_WORDS_LOAD_END:
@@ -231,52 +223,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d(MAIN_ACTIVITY_TAG, "OnCreate");
         updateData(loadingHandler);
 
-        FirebaseDynamicLinks
-                .getInstance()
-                .getDynamicLink(getIntent())
-                .addOnSuccessListener(new OnSuccessListener<PendingDynamicLinkData>() {
-                    @Override
-                    public void onSuccess(PendingDynamicLinkData pendingDynamicLinkData) {
-                        Uri deepLink;
-                        if(pendingDynamicLinkData != null) {
-                            deepLink = pendingDynamicLinkData.getLink();
-                            String userUid = deepLink.getQueryParameter("user");
-                            String category = deepLink.getQueryParameter("category");
-
-                            Log.d("PUMP", userUid);
-                            Log.d("PUMPP", category);
-
-                            new Thread(new StartAddingCategoryFromLink(category, userUid)).start();
-                        }
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.d("TAG", "FAILED");
-                    }
-                });
-
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        //here we check if out update broadcast receiver is registered
-        //try {
-        //    unregisterReceiver(updateDataBroadcastReceiver);
-        //}
-        //catch(IllegalArgumentException e) {
-        //    e.printStackTrace();
-        //}
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-        //registerReceiver(updateDataBroadcastReceiver, new IntentFilter(MainActivity.BROADCAST_ACTION));
+        registerReceiver(updateDataBroadcastReceiver, new IntentFilter(MainActivity.BROADCAST_ACTION));
     }
 
     @Override
@@ -330,31 +277,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void callWordsCheck() {
-        Intent wordCheckIntent = new Intent(this, WordCheckActivity.class);
-        wordCheckIntent.putExtra(getString(R.string.word_check_flag), 1);
-
-        startActivity(wordCheckIntent);
-    }
-
-    private void initDate() {
-        format = new SimpleDateFormat("yyyy-MM-dd");
-        Calendar calendar = Calendar.getInstance();
-        NOW_DATE = format.format(calendar.getTime());
-        try {now = format.parse(NOW_DATE);} catch (ParseException e) {}
-        calendar.add(Calendar.DAY_OF_YEAR, 1);
-        NEXT_DATE = format.format(calendar.getTime());
-        calendar.add(Calendar.DAY_OF_YEAR, 6);
-        WEEK_DATE = format.format(calendar.getTime());
-        calendar.add(Calendar.DAY_OF_YEAR, -7);
-        calendar.add(Calendar.MONTH, 1);
-        MONTH_DATE = format.format(calendar.getTime());
-        calendar.add(Calendar.MONTH, 2);
-        THREE_MONTH_DATE = format.format(calendar.getTime());
-        calendar.add(Calendar.MONTH, 3);
-        SIX_MONTH_DATE = format.format(calendar.getTime());
-    }
-
     public ArrayList<String> getCategoryNamesList() {
         return categoryNames;
     }
@@ -367,16 +289,8 @@ public class MainActivity extends AppCompatActivity {
         return archivedWordsArrayList;
     }
 
-    public void setArchivedWordsArrayList(ArrayList<Word> archivedWordsArrayList) {
-        this.archivedWordsArrayList = archivedWordsArrayList;
-    }
-
     public void updateData(Handler handler) {
         new Thread(new InitDataThread(handler)).start();
-    }
-
-    private void callErrorToast() {
-        Toast.makeText(this, "Произошла неизвестная ошибка", Toast.LENGTH_LONG).show();
     }
 
     private class InitDataThread implements Runnable {
@@ -508,17 +422,18 @@ public class MainActivity extends AppCompatActivity {
                                 sharingWordList.add(newWord);
                             }
                         }
+                    }
 
-                        for(int categoryCounter = 0; categoryCounter < categoryNames.size(); categoryCounter++) {
-                            if(Objects.requireNonNull(dataSnapshot.child(String.valueOf(categoryCounter)).getValue()).toString().equals(category)) {
-                                isCategoryReal = true;
-                                break;
-                            }
+                    //Checking if our categories list contains sharing category
+                    for(int categoryCounter = 0; categoryCounter < categoryNames.size(); categoryCounter++) {
+                        if(Objects.requireNonNull(dataSnapshot.child(String.valueOf(categoryCounter)).getValue()).toString().equals(category)) {
+                            isCategoryReal = true;
+                            break;
                         }
                     }
 
                     String message = "Новых слов для добавления " +
-                            String.valueOf(sharingWordList.size()) +
+                            sharingWordList.size() +
                             "." +
                             " Добавить?" +
                             "\n" +
@@ -546,10 +461,12 @@ public class MainActivity extends AppCompatActivity {
 
                                     if(!isCategoryReal) {
                                         FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid()).child("categories").child(String.valueOf(categoryNames.size())).setValue(category);
+                                        categoryNames.add(category);
+
                                         Toast.makeText(getApplicationContext(), getString(R.string.newWords), Toast.LENGTH_SHORT).show();
                                     }
 
-                                    updateData(loadingHandler);
+                                    wordArrayList.addAll(sharingWordList);
 
                                     iosDialog.dismiss();
                                 }

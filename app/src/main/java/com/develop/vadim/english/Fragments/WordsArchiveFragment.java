@@ -37,6 +37,7 @@ public class WordsArchiveFragment extends Fragment {
     private DatabaseReference reference = MainActivity.reference.child("words");
 
     private RecyclerView archivedWordsRecyclerView;
+    private TextView emptyContainerTextView;
 
     private ArchiveFragmentRecyclerViewAdapter archiveFragmentRecyclerViewAdapter;
 
@@ -63,15 +64,27 @@ public class WordsArchiveFragment extends Fragment {
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
+                ArrayList<Word> archivedWordsArrayList = ((MainActivity) Objects.requireNonNull(getActivity())).getArchivedWordsArrayList();
 
-                archiveFragmentRecyclerViewAdapter = new ArchiveFragmentRecyclerViewAdapter(((MainActivity) Objects.requireNonNull(getActivity())).getWordArrayList()); //TODO: Replace to ArchivedWordsArrayList
-                archivedWordsRecyclerView.setAdapter(archiveFragmentRecyclerViewAdapter);
+                if(archivedWordsArrayList.size() == 0) {
+
+                    emptyContainerTextView.setVisibility(View.VISIBLE);
+                }
+                else {
+                    emptyContainerTextView.setVisibility(View.INVISIBLE);
+
+                    archiveFragmentRecyclerViewAdapter = new ArchiveFragmentRecyclerViewAdapter(archivedWordsArrayList); //TODO: Replace to ArchivedWordsArrayList
+                    archivedWordsRecyclerView.setAdapter(archiveFragmentRecyclerViewAdapter);
+                }
+
             }
         };
 
         initArchivedWordsHandler.sendMessage(initArchivedWordsHandler.obtainMessage());
 
+        emptyContainerTextView = view.findViewById(R.id.emptyContainerTextView);
         archivedWordsRecyclerView = view.findViewById(R.id.archivedWordsRecyclerView);
+
         archivedWordsRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
     }
 
@@ -113,7 +126,7 @@ public class WordsArchiveFragment extends Fragment {
                 public void onClick(View view) {
                     Intent wordDetailsIntent = new Intent(view.getContext(), ChangeWord.class);
                     wordDetailsIntent.putStringArrayListExtra(getString(R.string.categoriesToChangeWordActivity), getCategoriesToWordCheckActivity());
-                    Log.d("TAG", String.valueOf(word.getIndex()));
+
                     wordDetailsIntent.putExtra(getString(R.string.changeWord), archivedWordsList.get(currentPosition));
 
                     ActivityOptions activityOptions = ActivityOptions.makeSceneTransitionAnimation(getActivity());

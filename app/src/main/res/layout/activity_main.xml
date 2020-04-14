@@ -35,6 +35,11 @@
         app:progressMode="true"
         app:selectedDotColor="@color/colorWhite" />
 
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#00000000"/>
+
     <com.github.ybq.android.spinkit.SpinKitView
         android:id="@+id/spinKit"
         style="@style/SpinKitView.DoubleBounce"

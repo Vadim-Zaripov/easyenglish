@@ -1,11 +1,9 @@
 package com.develop.vadim.english.Fragments;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -25,12 +23,7 @@ import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.view.inputmethod.EditorInfo;
-import android.widget.Filter;
-import android.widget.Filterable;
 import android.widget.LinearLayout;
-import android.widget.SearchView;
-import android.widget.Space;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,45 +36,31 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.card.MaterialCardView;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.database.core.view.QueryParams;
 import com.google.firebase.dynamiclinks.DynamicLink;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import com.google.firebase.dynamiclinks.ShortDynamicLink;
-import com.pitt.library.fresh.FreshDownloadView;
 import com.varunjohn1990.iosdialogs4android.IOSDialog;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
-import bg.devlabs.transitioner.Transitioner;
 
 public class CategoriesFragment extends Fragment {
 
     private RecyclerView wordsCategoriesRecyclerView;
     private SwipeRefreshLayout swipeRefreshLayout;
-    private MaterialCardView shareMaterialCardView;
-    private MaterialCardView deleteMaterialCardView;
+    private TextView emptyCategoriesTextView;
 
     private DatabaseReference databaseReference;
-    private DatabaseReference categoryReference;
-
-    private static ArrayList<String> categoryNames;
 
     private WordsCategoriesRecyclerViewAdapter wordsCategoriesRecyclerViewAdapter;
 
     private Handler initCategoriesHandler;
-    private Handler loadingCategoriesHandler;
 
     private View viewLayout;
 
@@ -90,10 +69,8 @@ public class CategoriesFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         databaseReference = MainActivity.reference.child("words");
-        categoryReference = MainActivity.reference.child("categories");
-        databaseReference.keepSynced(true);
 
-        viewLayout = inflater.inflate(R.layout.user_words_check_fragment, container, false);
+        viewLayout = inflater.inflate(R.layout.categories_fragment, container, false);
         return viewLayout;
     }
 
@@ -108,11 +85,20 @@ public class CategoriesFragment extends Fragment {
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
 
-                viewLayout.setClickable(true);
-                swipeRefreshLayout.setRefreshing(true);
-                wordsCategoriesRecyclerViewAdapter = new WordsCategoriesRecyclerViewAdapter(getCategories());
-                swipeRefreshLayout.setRefreshing(false);
-                wordsCategoriesRecyclerView.setAdapter(wordsCategoriesRecyclerViewAdapter);
+                ArrayList<String> categories = ((MainActivity)getActivity()).getCategoryNamesList();
+
+                if(categories.size() == 0) {
+                    emptyCategoriesTextView.setVisibility(View.VISIBLE);
+                }
+                else {
+                    emptyCategoriesTextView.setVisibility(View.INVISIBLE);
+
+                    viewLayout.setClickable(true);
+                    swipeRefreshLayout.setRefreshing(true);
+                    wordsCategoriesRecyclerViewAdapter = new WordsCategoriesRecyclerViewAdapter(categories);
+                    swipeRefreshLayout.setRefreshing(false);
+                    wordsCategoriesRecyclerView.setAdapter(wordsCategoriesRecyclerViewAdapter);
+                }
             }
         };
 
@@ -120,6 +106,8 @@ public class CategoriesFragment extends Fragment {
 
         wordsCategoriesRecyclerView = view.findViewById(R.id.userWordsCheckRecyclerView);
         swipeRefreshLayout = view.findViewById(R.id.userWordsCheckSwipeToRefreshLayout);
+        emptyCategoriesTextView = view.findViewById(R.id.emptyContainerTextView);
+
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -128,21 +116,9 @@ public class CategoriesFragment extends Fragment {
             }
         });
 
-
-
         wordsCategoriesRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
     }
 
-    private ArrayList<String> getCategories() {
-        ArrayList<String> categories = new ArrayList<>();
-        categories.addAll(((MainActivity)getActivity()).getCategoryNamesList());
-
-        return categories;
-    }
-
-    private ArrayList<Word> getAllWords() {
-        return ((MainActivity)getActivity()).getWordArrayList();
-    }
 
     private class WordsCategoriesRecyclerViewAdapter extends RecyclerView.Adapter<WordsCategoriesRecyclerViewAdapter.WordsCategoriesRecyclerViewHolder> {
 
@@ -178,7 +154,6 @@ public class CategoriesFragment extends Fragment {
             final int currentPosition = position;
             holder.categoryTextView.setText(categoryNamesList.get(position));
             holder.wordsInThisCategoryArrayList = wordsInCategoriesArrayList.get(position);
-            holder.setPosition(position);
 
             if(wordsInCategoriesArrayList.get(position).size() != 0) {
                 for (int wordsInCategoriesCounter = 0; wordsInCategoriesCounter < wordsInCategoriesArrayList.get(position).size(); wordsInCategoriesCounter++) {
@@ -250,8 +225,7 @@ public class CategoriesFragment extends Fragment {
 
                     wordInCategoryTextView.setText(wordsInCategoriesArrayList.get(position).get(wordsInCategoriesCounter).getWordInEnglish());
 
-
-                    view.setOnClickListener(new View.OnClickListener() {
+                    wordInCategoryTextView.setOnClickListener(new View.OnClickListener() {
                         boolean inEnglish = true;
 
                         @Override
@@ -283,6 +257,7 @@ public class CategoriesFragment extends Fragment {
                                     animationTo.setAnimationListener(new Animation.AnimationListener() {
                                         @Override
                                         public void onAnimationStart(Animation animation) {
+                                            view.setClickable(false);
                                         }
 
                                         @Override
@@ -405,6 +380,11 @@ public class CategoriesFragment extends Fragment {
                 @Override
                 public void onClick(View view){
 
+                    final AlphaAnimation alphaAnimation = new AlphaAnimation(1f, 0f);
+                    alphaAnimation.setDuration(250);
+
+                    viewLayout.setClickable(false);
+                    ((MainActivity)getActivity()).spinKitView.setVisibility(View.VISIBLE);
                     try {
                         currentUri = appendQueryParameters("https://sharelett.page.link", "user", MainActivity.user.getUid());
                         currentUri = appendQueryParameters(currentUri.toString(), "category", categoryNamesList.get(currentPosition));
@@ -426,18 +406,49 @@ public class CategoriesFragment extends Fragment {
                             .addOnSuccessListener(new OnSuccessListener<ShortDynamicLink>() {
                                 @Override
                                 public void onSuccess(ShortDynamicLink shortDynamicLink) {
-                                    Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                                    final Intent shareIntent = new Intent(Intent.ACTION_SEND);
                                     shareIntent.setType("text/plain");
                                     String shareBody = shortDynamicLink.getShortLink().toString();
                                     shareIntent.putExtra(Intent.EXTRA_TEXT, shareBody);
 
-                                    startActivity(Intent.createChooser(shareIntent, "Поделиться"));
+                                    alphaAnimation.setAnimationListener(new Animation.AnimationListener() {
+                                        @Override
+                                        public void onAnimationStart(Animation animation) {
+                                        }
+
+                                        @Override
+                                        public void onAnimationEnd(Animation animation) {
+                                            ((MainActivity)getActivity()).spinKitView.setVisibility(View.INVISIBLE);
+
+                                            startActivity(Intent.createChooser(shareIntent, "Поделиться"));
+                                        }
+
+                                        @Override
+                                        public void onAnimationRepeat(Animation animation) { }
+                                    });
+
+                                    ((MainActivity)getActivity()).spinKitView.startAnimation(alphaAnimation);
                                 }
                             })
                             .addOnFailureListener(new OnFailureListener() {
                                 @Override
                                 public void onFailure(@NonNull Exception e) {
                                     Log.d("TAG", e.toString());
+
+                                    alphaAnimation.setAnimationListener(new Animation.AnimationListener() {
+                                        @Override
+                                        public void onAnimationStart(Animation animation) { }
+
+                                        @Override
+                                        public void onAnimationEnd(Animation animation) {
+                                            ((MainActivity)getActivity()).spinKitView.setVisibility(View.INVISIBLE);
+                                        }
+
+                                        @Override
+                                        public void onAnimationRepeat(Animation animation) { }
+                                    });
+
+                                    ((MainActivity)getActivity()).spinKitView.startAnimation(alphaAnimation);
                                 }
                             });
                 }
@@ -508,8 +519,6 @@ public class CategoriesFragment extends Fragment {
                 linearLayoutF = itemView.findViewById(R.id.bob2);
                 expansionHeader.setExpansionLayout(expansionLayout);
 
-
-
                 expansionHeader.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -554,77 +563,6 @@ public class CategoriesFragment extends Fragment {
 
             }
 
-            private void learnCategory(Handler handler) {
-
-            }
-
-            private void setPosition(int position) {
-                this.position = position;
-            }
-
         }
     }
-
-    private class RemoveCategoryThread implements Runnable {
-        String category;
-        boolean isCategoryDeleted = false;
-
-        @SuppressLint("HandlerLeak")
-        Handler handler = new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-                super.handleMessage(msg);
-
-                swipeRefreshLayout.setRefreshing(false);
-            }
-        };
-
-        RemoveCategoryThread(String categoryName) {
-            this.category = categoryName;
-
-            swipeRefreshLayout.setRefreshing(true);
-        }
-
-        @Override
-        public void run() {
-            categoryReference.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    for(int categoriesCounter = 0; categoriesCounter < dataSnapshot.getChildrenCount(); categoriesCounter++) {
-
-                        //Removing category from categories list
-                        if(Objects.equals(category, dataSnapshot.child(String.valueOf(categoriesCounter)).getValue())) {
-                            categoryReference.child(String.valueOf(categoriesCounter)).setValue(dataSnapshot.child(String.valueOf(dataSnapshot.getChildrenCount() - 1)).getValue());
-                            categoryReference.child(String.valueOf(dataSnapshot.getChildrenCount() - 1)).removeValue();
-
-                            isCategoryDeleted = true;
-                        }
-                    }
-
-                    //Replacing removing category
-                    if(isCategoryDeleted) {
-                        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                for(int wordsCounter = 0; wordsCounter < dataSnapshot.getChildrenCount(); wordsCounter++) {
-                                    if(Objects.requireNonNull(dataSnapshot.child(String.valueOf(wordsCounter)).child(Word.categoryDatabaseKey).getValue()).toString().equals(category)) {
-                                        databaseReference.child(String.valueOf(wordsCounter)).child(Word.categoryDatabaseKey).setValue("default");
-                                    }
-                                }
-                            }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) { }
-                        });
-                    }
-
-                    ((MainActivity)getActivity()).updateData(initCategoriesHandler);
-                }
-
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) { }
-            });
-        }
-    } //
 }
