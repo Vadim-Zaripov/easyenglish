@@ -31,7 +31,7 @@ import com.develop.vadim.english.Broadcasts.NotificationBroadcast;
 import com.develop.vadim.english.Fragments.AddNewWordFragment;
 import com.develop.vadim.english.Fragments.FragmentViewPagerAdapter;
 import com.develop.vadim.english.Fragments.WordsArchiveFragment;
-import com.develop.vadim.english.Fragments.WordsUserCheckFragment;
+import com.develop.vadim.english.Fragments.CategoriesFragment;
 import com.develop.vadim.english.R;
 import com.github.ybq.android.spinkit.SpinKitView;
 import com.github.ybq.android.spinkit.style.DoubleBounce;
@@ -46,15 +46,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import com.google.firebase.dynamiclinks.PendingDynamicLinkData;
-import com.google.gson.Gson;
 import com.tbuonomo.viewpagerdotsindicator.DotsIndicator;
+import com.varunjohn1990.iosdialogs4android.IOSDialog;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -95,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
     public final static String BROADCAST_ACTION = "ru.lett.xenous.action.BROADCAST";
     public final static String BROADCAST_UPDATE_HAS_BEEN_DONE_ACTION = "ru.lett.xenous.action.UPDATE";
 
-    private WordsUserCheckFragment wordsUserCheckFragment;
+    private CategoriesFragment wordsUserCheckFragment;
     private AddNewWordFragment addNewWordFragment;
     private WordsArchiveFragment wordsArchiveFragment;
 
@@ -152,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
 
         fragmentViewPagerAdapter = new FragmentViewPagerAdapter(getSupportFragmentManager());
 
-        wordsUserCheckFragment = (WordsUserCheckFragment) fragmentViewPagerAdapter.getItem(0);
+        wordsUserCheckFragment = (CategoriesFragment) fragmentViewPagerAdapter.getItem(0);
         addNewWordFragment = (AddNewWordFragment) fragmentViewPagerAdapter.getItem(1);
         wordsArchiveFragment = (WordsArchiveFragment) fragmentViewPagerAdapter.getItem(2);
 
@@ -206,7 +204,7 @@ public class MainActivity extends AppCompatActivity {
 
                         ActivityOptions activityOptions = ActivityOptions.makeSceneTransitionAnimation(MainActivity.this);
 
-                        startActivity(intent, activityOptions.toBundle());
+                        //startActivity(intent, activityOptions.toBundle());
                         /*if(wordsCheckWordsArrayList.size() != 0) {
                             Intent intent = new Intent(MainActivity.this, WordCheckActivity.class);
                             intent.putParcelableArrayListExtra(getString(R.string.wordsToCheckingKey), wordsCheckWordsArrayList);
@@ -242,12 +240,13 @@ public class MainActivity extends AppCompatActivity {
                         Uri deepLink;
                         if(pendingDynamicLinkData != null) {
                             deepLink = pendingDynamicLinkData.getLink();
-                            String[] splitedLink = deepLink.toString().split("/");
+                            String userUid = deepLink.getQueryParameter("user");
+                            String category = deepLink.getQueryParameter("category");
 
-                            String category = splitedLink[splitedLink.length - 2];
-                            String sharingUserUid = splitedLink[splitedLink.length - 1];
+                            Log.d("PUMP", userUid);
+                            Log.d("PUMPP", category);
 
-                            new Thread(new StartAddingCategoryFromLink(category, sharingUserUid)).start();
+                            new Thread(new StartAddingCategoryFromLink(category, userUid)).start();
                         }
                     }
                 })
@@ -264,21 +263,20 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-
         //here we check if out update broadcast receiver is registered
-        try {
-            unregisterReceiver(updateDataBroadcastReceiver);
-        }
-        catch(IllegalArgumentException e) {
-            e.printStackTrace();
-        }
+        //try {
+        //    unregisterReceiver(updateDataBroadcastReceiver);
+        //}
+        //catch(IllegalArgumentException e) {
+        //    e.printStackTrace();
+        //}
     }
 
     @Override
     protected void onPause() {
         super.onPause();
 
-        registerReceiver(updateDataBroadcastReceiver, new IntentFilter(MainActivity.BROADCAST_ACTION));
+        //registerReceiver(updateDataBroadcastReceiver, new IntentFilter(MainActivity.BROADCAST_ACTION));
     }
 
     @Override
@@ -316,7 +314,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void initDefaultFiles() {
         user = FirebaseAuth.getInstance().getCurrentUser();
-    //       FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         reference = FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid());
         reference.keepSynced(true);
 
@@ -444,14 +441,14 @@ public class MainActivity extends AppCompatActivity {
                         );
                         long currentTime = calendar.getTimeInMillis();
 
-                        if (word.getLevel() == Word.LEVEL_ARCHIVED) {
+                        if(word.getLevel() == Word.LEVEL_ARCHIVED) {
                             archivedWordsArrayList.add(word);
                             continue;
                         }
 
-                        if (currentTime > word.getDate()) {
-                            if (word.getLevel() == Word.LEVEL_DAY || word.getLevel() == Word.LEVEL_WEEK) {
-                                if (currentTime - word.getDate() > Word.CHECK_INTERVAL.get(Word.LEVEL_DAY) * 3)
+                        if(currentTime > word.getDate()) {
+                            if(word.getLevel() == Word.LEVEL_DAY || word.getLevel() == Word.LEVEL_WEEK) {
+                                if(currentTime - word.getDate() > Word.CHECK_INTERVAL.get(Word.LEVEL_DAY) * 3)
                                     word.setLevel(Word.LEVEL_DAY);
 
                                 wordsCheckWordsArrayList.add(word);
@@ -484,54 +481,81 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void run() {
             final DatabaseReference sharingUserReference  = FirebaseDatabase.getInstance().getReference().child("users").child(sharingUserUid).child("words");
+
             sharingUserReference.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     int newWordsCounter = 0;
 
+                    //Init words from another user
                     for(int wordsCounter = 0; wordsCounter < dataSnapshot.getChildrenCount(); wordsCounter++) {
+                        boolean isCurrentUserContainsThisWord = false;
                         if(Objects.equals(dataSnapshot.child(String.valueOf(wordsCounter)).child(Word.categoryDatabaseKey).getValue(), category)) {
-                            Log.d("HUY", "bib");
-                            Word newWord = new Word(dataSnapshot.getChildrenCount() + newWordsCounter);
-                            newWord.setWordInRussian(Objects.requireNonNull(dataSnapshot.child(String.valueOf(wordsCounter)).child(Word.russianDatabaseKey).getValue()).toString());
-                            newWord.setWordInEnglish(Objects.requireNonNull(dataSnapshot.child(String.valueOf(wordsCounter)).child(Word.englishDatabaseKey).getValue()).toString());
-                            newWord.setWordCategory(category);
-
-                            newWordsCounter += 1;
-                            sharingWordList.add(newWord);
-                        }
-                    }
-
-                    for(int wordsCounter = 0; wordsCounter < sharingWordList.size(); wordsCounter++) {
-                        Word word = sharingWordList.get(wordsCounter);
-                        Log.d("BIBKA", String.valueOf(word.getIndex()));
-                        word.sentWordToService();
-                    }
-
-                    FirebaseDatabase.getInstance().getReference().child("users").child(sharingUserUid).child("categories").addListenerForSingleValueEvent(new ValueEventListener() {
-
-
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            for(int categoryCounter = 0; categoryCounter < dataSnapshot.getChildrenCount(); categoryCounter++) {
-                                if(Objects.requireNonNull(dataSnapshot.child(String.valueOf(categoryCounter)).getValue()).toString().equals(category)) {
-                                    isCategoryReal = true;
-                                    break;
+                            for(int currentUserWordsCounter = 0; currentUserWordsCounter < wordArrayList.size(); currentUserWordsCounter++) {
+                                if(Objects.equals(dataSnapshot.child(String.valueOf(wordsCounter)).child(Word.russianDatabaseKey).getValue(), wordArrayList.get(currentUserWordsCounter).getWordInRussian())) {
+                                    isCurrentUserContainsThisWord = true;
                                 }
                             }
 
-                            if(isCategoryReal) {
-                                Toast.makeText(getApplicationContext(), getString(R.string.isCategoryTheSame), Toast.LENGTH_LONG).show();
-                            }
-                            else {
-                                FirebaseDatabase.getInstance().getReference().child("users").child(sharingUserUid).child("categories").child(String.valueOf(dataSnapshot.getChildrenCount())).setValue(category);
-                                Toast.makeText(getApplicationContext(), getString(R.string.newWords), Toast.LENGTH_SHORT).show();
+                            if(!isCurrentUserContainsThisWord) {
+                                Word newWord = new Word(wordArrayList.size() + newWordsCounter);
+                                newWord.setWordInRussian(Objects.requireNonNull(dataSnapshot.child(String.valueOf(wordsCounter)).child(Word.russianDatabaseKey).getValue()).toString());
+                                newWord.setWordInEnglish(Objects.requireNonNull(dataSnapshot.child(String.valueOf(wordsCounter)).child(Word.englishDatabaseKey).getValue()).toString());
+                                newWord.setWordCategory(category);
+                                newWord.setLevel(Word.LEVEL_ADDED);
+
+                                newWordsCounter += 1;
+                                sharingWordList.add(newWord);
                             }
                         }
 
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) { }
-                    });
+                        for(int categoryCounter = 0; categoryCounter < categoryNames.size(); categoryCounter++) {
+                            if(Objects.requireNonNull(dataSnapshot.child(String.valueOf(categoryCounter)).getValue()).toString().equals(category)) {
+                                isCategoryReal = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    String message = "Новых слов для добавления " +
+                            String.valueOf(sharingWordList.size()) +
+                            "." +
+                            " Добавить?" +
+                            "\n" +
+                            "Слова будут добавлены в категорию " +
+                            category;
+
+                    new IOSDialog.Builder(getApplicationContext())
+                            .message(message)
+                            .negativeButtonText(getString(R.string.no))
+                            .negativeClickListener(new IOSDialog.Listener() {
+                                @Override
+                                public void onClick(IOSDialog iosDialog) {
+                                    iosDialog.dismiss();
+                                }
+                            })
+                            .positiveButtonText("Да")
+                            .positiveClickListener(new IOSDialog.Listener() {
+                                @Override
+                                public void onClick(IOSDialog iosDialog) {
+                                    for(int wordsCounter = 0; wordsCounter < sharingWordList.size(); wordsCounter++) {
+                                        Word word = sharingWordList.get(wordsCounter);
+                                        Log.d("BIBKA", String.valueOf(word.getIndex()));
+                                        word.sentWordToService();
+                                    }
+
+                                    if(!isCategoryReal) {
+                                        FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid()).child("categories").child(String.valueOf(categoryNames.size())).setValue(category);
+                                        Toast.makeText(getApplicationContext(), getString(R.string.newWords), Toast.LENGTH_SHORT).show();
+                                    }
+
+                                    updateData(loadingHandler);
+
+                                    iosDialog.dismiss();
+                                }
+                            })
+                            .build()
+                            .show();
                 }
 
                 @Override

@@ -57,6 +57,8 @@ import com.google.firebase.dynamiclinks.ShortDynamicLink;
 import com.pitt.library.fresh.FreshDownloadView;
 import com.varunjohn1990.iosdialogs4android.IOSDialog;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -64,7 +66,7 @@ import java.util.Objects;
 
 import bg.devlabs.transitioner.Transitioner;
 
-public class WordsUserCheckFragment extends Fragment {
+public class CategoriesFragment extends Fragment {
 
     private RecyclerView wordsCategoriesRecyclerView;
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -171,9 +173,9 @@ public class WordsUserCheckFragment extends Fragment {
         }
 
         @Override
-        public void onBindViewHolder(WordsCategoriesRecyclerViewHolder holder, final int position) {
+        public void onBindViewHolder(WordsCategoriesRecyclerViewHolder holder, int position) {
 
-            holder.category = categoryNamesList.get(position);
+            final int currentPosition = position;
             holder.categoryTextView.setText(categoryNamesList.get(position));
             holder.wordsInThisCategoryArrayList = wordsInCategoriesArrayList.get(position);
             holder.setPosition(position);
@@ -325,8 +327,8 @@ public class WordsUserCheckFragment extends Fragment {
                 @Override
                 public void onClick(View view) {
 
-                    for(int wordsInThisCategoryCounter = 0; wordsInThisCategoryCounter < wordsInCategoriesArrayList.get(position).size(); wordsInThisCategoryCounter++) {
-                        Word word = wordsInCategoriesArrayList.get(position).get(wordsInThisCategoryCounter);
+                    for(int wordsInThisCategoryCounter = 0; wordsInThisCategoryCounter < wordsInCategoriesArrayList.get(currentPosition).size(); wordsInThisCategoryCounter++) {
+                        Word word = wordsInCategoriesArrayList.get(currentPosition).get(wordsInThisCategoryCounter);
 
                         if(word.getLevel() == Word.LEVEL_ADDED) {
                             changingWordsArrayList.add(word);
@@ -398,6 +400,71 @@ public class WordsUserCheckFragment extends Fragment {
                 }
             });
 
+            holder.shareTextView.setOnClickListener(new TextView.OnClickListener() {
+                URI currentUri;
+                @Override
+                public void onClick(View view){
+
+                    try {
+                        currentUri = appendQueryParameters("https://sharelett.page.link", "user", MainActivity.user.getUid());
+                        currentUri = appendQueryParameters(currentUri.toString(), "category", categoryNamesList.get(currentPosition));
+                    }
+                    catch (URISyntaxException e) {
+                        e.printStackTrace();
+                    }
+
+                    Log.d("URI", currentUri.toString());
+                    FirebaseDynamicLinks
+                            .getInstance()
+                            .createDynamicLink()
+                            .setLink(Uri.parse(currentUri.toString()))
+                            .setDomainUriPrefix("https://sharelett.page.link")
+                            .setAndroidParameters(
+                                    new DynamicLink.AndroidParameters.Builder("com.develop.vadim.english").build()
+                            )
+                            .buildShortDynamicLink()
+                            .addOnSuccessListener(new OnSuccessListener<ShortDynamicLink>() {
+                                @Override
+                                public void onSuccess(ShortDynamicLink shortDynamicLink) {
+                                    Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                                    shareIntent.setType("text/plain");
+                                    String shareBody = shortDynamicLink.getShortLink().toString();
+                                    shareIntent.putExtra(Intent.EXTRA_TEXT, shareBody);
+
+                                    startActivity(Intent.createChooser(shareIntent, "Поделиться"));
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Log.d("TAG", e.toString());
+                                }
+                            });
+                }
+
+                private URI appendQueryParameters(String uri, String key, String parameter) throws URISyntaxException {
+                    URI oldUri = new URI(uri);
+
+                    StringBuilder buildQueryBuilder = new StringBuilder();
+                    buildQueryBuilder.append(key);
+                    buildQueryBuilder.append("=");
+                    buildQueryBuilder.append(parameter);
+
+                    String newQuery = oldUri.getQuery();
+                    if (newQuery == null) {
+                        newQuery = buildQueryBuilder.toString();
+                    }
+                    else {
+                        newQuery += "&" + buildQueryBuilder.toString();
+                    }
+
+                    URI newUri = new URI(oldUri.getScheme(), oldUri.getAuthority(), oldUri.getPath(), newQuery, oldUri.getFragment());
+
+
+                    return newUri;
+                }
+            });
+
 
             Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.appear);
             holder.materialCardView.startAnimation(animation);
@@ -421,7 +488,6 @@ public class WordsUserCheckFragment extends Fragment {
 
             ArrayList<Word> wordsInThisCategoryArrayList;
 
-            String category = "u";
             int position;
             int height;
 
@@ -442,56 +508,7 @@ public class WordsUserCheckFragment extends Fragment {
                 linearLayoutF = itemView.findViewById(R.id.bob2);
                 expansionHeader.setExpansionLayout(expansionLayout);
 
-                Log.d("POLLY", category);
 
-
-
-                learnTextView.setOnClickListener(new View.OnClickListener() {
-                    @SuppressLint("HandlerLeak")
-                    @Override
-                    public void onClick(View view) {
-                        Handler handler = new Handler() {
-
-                            @Override
-                            public void handleMessage(Message msg) {
-                                super.handleMessage(msg);
-                            }
-                        };
-                        learnCategory(handler);
-                    }
-                });
-
-                shareTextView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        FirebaseDynamicLinks
-                                .getInstance()
-                                .createDynamicLink()
-
-                                .setDomainUriPrefix("https://sharelett.page.link")
-                                .setAndroidParameters(
-                                        new DynamicLink.AndroidParameters.Builder("com.develop.vadim.english").build()
-                                )
-                                .buildShortDynamicLink()
-                                .addOnSuccessListener(new OnSuccessListener<ShortDynamicLink>() {
-                                    @Override
-                                    public void onSuccess(ShortDynamicLink shortDynamicLink) {
-                                        Intent shareIntent = new Intent(Intent.ACTION_SEND);
-                                        shareIntent.setType("text/plain");
-                                        String shareBody = shortDynamicLink.getShortLink().toString();
-                                        shareIntent.putExtra(Intent.EXTRA_TEXT, shareBody);
-
-                                        startActivity(Intent.createChooser(shareIntent, "Поделиться"));
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Log.d("TAG", e.toString());
-                                    }
-                                });
-                    }
-                });
 
                 expansionHeader.setOnClickListener(new View.OnClickListener() {
                     @Override

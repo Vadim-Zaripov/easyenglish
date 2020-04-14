@@ -9,7 +9,8 @@
     <com.github.florent37.expansionpanel.ExpansionHeader
         android:id="@+id/categoryCellExpansionHeader"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        app:expansion_headerIndicator="@id/expansionHeaderIndicator">
 
         <com.google.android.material.card.MaterialCardView
         android:layout_height="60dp"
@@ -37,16 +38,37 @@
                     android:layout_width="match_parent"
                     android:layout_height="5dp"/>
 
-                <TextView
-                    android:paddingStart="16dp"
-                    android:id="@+id/archiveWordInEnglishTextView"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingStart="16dp"
+                    android:layout_gravity="center_vertical"
+                    android:paddingEnd="30dp">
 
-                    android:gravity="start"
-                    android:tag="animation3"
-                    android:textColor="@color/colorWhite"
-                    android:textSize="30sp" />
+                    <TextView
+                        android:id="@+id/archiveWordInEnglishTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+
+                        android:gravity="start"
+                        android:tag="animation3"
+                        android:textColor="@color/colorWhite"
+                        android:textSize="30sp" />
+
+                    <ImageView
+                        android:id="@+id/expansionHeaderIndicator"
+                        android:layout_width="30dp"
+                        android:rotation="90"
+                        android:layout_height="30dp"
+                        android:layout_gravity="center_vertical|end"
+                        android:layout_weight="0"
+                        android:tint="@color/colorWhite"
+                        android:src="@drawable/ic_expansion_header_indicator_grey_24dp">
+                    </ImageView>
+                </LinearLayout>
+
                 
                 <Space
                     android:layout_width="match_parent"
@@ -99,6 +121,8 @@
             android:layout_marginRight="10dp"
             app:strokeColor="@color/colorWhite"
             app:strokeWidth="3dp">
+
+
 
             <LinearLayout
                 android:layout_width="match_parent"
