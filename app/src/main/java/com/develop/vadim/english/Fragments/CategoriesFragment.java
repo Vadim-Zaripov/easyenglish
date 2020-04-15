@@ -49,10 +49,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 
-public class CategoriesFragment extends Fragment {
+public class CategoriesFragment extends Fragment implements UpdateDataListener {
 
     private RecyclerView wordsCategoriesRecyclerView;
-    private SwipeRefreshLayout swipeRefreshLayout;
     private TextView emptyCategoriesTextView;
 
     private DatabaseReference databaseReference;
@@ -93,9 +92,7 @@ public class CategoriesFragment extends Fragment {
                     emptyCategoriesTextView.setVisibility(View.INVISIBLE);
 
                     viewLayout.setClickable(true);
-                    swipeRefreshLayout.setRefreshing(true);
                     wordsCategoriesRecyclerViewAdapter = new WordsCategoriesRecyclerViewAdapter(categories);
-                    swipeRefreshLayout.setRefreshing(false);
                     wordsCategoriesRecyclerView.setAdapter(wordsCategoriesRecyclerViewAdapter);
                 }
             }
@@ -104,20 +101,15 @@ public class CategoriesFragment extends Fragment {
         initCategoriesHandler.sendMessage(initCategoriesHandler.obtainMessage());
 
         wordsCategoriesRecyclerView = view.findViewById(R.id.userWordsCheckRecyclerView);
-        swipeRefreshLayout = view.findViewById(R.id.userWordsCheckSwipeToRefreshLayout);
         emptyCategoriesTextView = view.findViewById(R.id.emptyContainerTextView);
-
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                viewLayout.setClickable(false);
-                initCategoriesHandler.sendMessage(initCategoriesHandler.obtainMessage());
-            }
-        });
 
         wordsCategoriesRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
     }
 
+    @Override
+    public void onDataChange() {
+        initCategoriesHandler.sendMessage(initCategoriesHandler.obtainMessage());
+    }
 
     private class WordsCategoriesRecyclerViewAdapter extends RecyclerView.Adapter<WordsCategoriesRecyclerViewAdapter.WordsCategoriesRecyclerViewHolder> {
 

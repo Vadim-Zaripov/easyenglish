@@ -9,11 +9,14 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -75,7 +78,7 @@ public class ChangeWord extends AppCompatActivity {
             }
         };
 
-        final Handler removingWordHandler = new Handler() {
+        final Handler changingWordHandler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
@@ -86,6 +89,19 @@ public class ChangeWord extends AppCompatActivity {
                 if(isCategoryNew) {
                     intent.putExtra(getString(R.string.addNewCategory), true);
                 }
+
+                sendBroadcast(intent);
+            }
+        };
+
+        final Handler removingWordHandler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+
+                Intent intent = new Intent(MainActivity.BROADCAST_ACTION);
+                intent.putExtra(getString(R.string.changingWord), changingWord);
+                intent.putExtra(getString(R.string.removeWordKey), true);
 
                 sendBroadcast(intent);
             }
@@ -160,7 +176,7 @@ public class ChangeWord extends AppCompatActivity {
                 category = categoriesTextView.getText().toString();
 
                 saveChanges();
-                removingWordHandler.sendMessage(removingWordHandler.obtainMessage());
+                changingWordHandler.sendMessage(changingWordHandler.obtainMessage());
                 onBackPressed();
             }
         });
@@ -305,10 +321,28 @@ public class ChangeWord extends AppCompatActivity {
             final Dialog dialog = new Dialog(ChangeWord.this);
             dialog.setContentView(R.layout.add_new_category_layout);
             final EditText editText = dialog.findViewById(R.id.addNewCategoryEditText);
-            final ImageView continueEditText = dialog.findViewById(R.id.addNewCategoryImageView);
+            final ImageView continueImageView = dialog.findViewById(R.id.addNewCategoryImageView);
+
             dialog.show();
 
-            continueEditText.setOnClickListener(new ImageView.OnClickListener() {
+            editText.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                    categoriesTextView.setText(charSequence);
+                }
+
+                @Override
+                public void afterTextChanged(Editable editable) {
+
+                }
+            });
+
+            continueImageView.setOnClickListener(new ImageView.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     if(!editText.getText().toString().equals("")) {
@@ -316,9 +350,21 @@ public class ChangeWord extends AppCompatActivity {
                         category = editText.getText().toString();
                     }
 
+                    dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                        @Override
+                        public void onDismiss(DialogInterface dialogInterface) { }
+                    });
+
                     dialog.dismiss();
                 }
 
+            });
+
+            dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                @Override
+                public void onDismiss(DialogInterface dialogInterface) {
+                    categoriesTextView.setText("Без категории");
+                }
             });
         }
 

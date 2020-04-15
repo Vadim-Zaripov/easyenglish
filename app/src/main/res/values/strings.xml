@@ -112,6 +112,7 @@
     <string name="thereIsNoLearntWords">Пока что выученных слов нету</string>
     <string name="categories">Категории</string>
     <string name="thereIsNoCategories">Пока что у вас нету своих категорий</string>
+    <string name="removeWordKey">removing word</string>
     <string-array name="pref_example_list_titles">
         <item>Always</item>
         <item>When possible</item>

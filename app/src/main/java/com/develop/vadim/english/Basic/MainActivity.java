@@ -11,8 +11,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 
@@ -50,9 +48,6 @@ import com.google.firebase.dynamiclinks.PendingDynamicLinkData;
 import com.tbuonomo.viewpagerdotsindicator.DotsIndicator;
 import com.varunjohn1990.iosdialogs4android.IOSDialog;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -92,6 +87,10 @@ public class MainActivity extends AppCompatActivity {
 
     private Handler loadingHandler;
 
+    public static final int CATEGORIES_FRAGMENT_KEY = 0;
+    public static final int ADD_NEW_WORD_FRAGMENT_KEY = 1;
+    public static final int WORDS_ARCHIVE_FRAGMENT_KEY = 2;
+
     public static final int CATEGORIES_LOAD_END = 0;
     public static final int WORDS_LOAD_END = 1;
     public static final int WORDS_ANALYNG_WND = 3;
@@ -114,12 +113,19 @@ public class MainActivity extends AppCompatActivity {
             public void onReceive(Context context, Intent intent) {
                 Word word = intent.getParcelableExtra(getString(R.string.changingWord));
 
-                if(intent.getBooleanExtra(getString(R.string.addNewCategory), false)) {
+                if(intent.getBooleanExtra(getString(R.string.removeWordKey), false)) {
+                    if(intent.getBooleanExtra(getString(R.string.addNewCategory), false)) {
+                        categoryNames.add(word.getWordCategory());
+                    }
 
-                    categoryNames.add(word.getWordCategory());
+                    wordArrayList.set((int) word.getIndex(), word);
+                }
+                else {
+                    wordArrayList.remove(word.getIndex());
                 }
 
-                wordArrayList.set((int) word.getIndex(), word);
+                callFragmentContentUpdate(CATEGORIES_FRAGMENT_KEY);
+                callFragmentContentUpdate(WORDS_ARCHIVE_FRAGMENT_KEY);
 
                 sendBroadcast(new Intent(MainActivity.BROADCAST_UPDATE_HAS_BEEN_DONE_ACTION));
             }
@@ -155,7 +161,9 @@ public class MainActivity extends AppCompatActivity {
                             public void onAnimationEnd(Animation animation) {
                                 spinKitView.setVisibility(View.INVISIBLE);
                                 viewPager.setAdapter(fragmentViewPagerAdapter);
+                                viewPager.setOffscreenPageLimit(3);
                                 viewPager.setCurrentItem(1);
+
                                 dotsIndicator.setViewPager(viewPager);
                             }
 
@@ -223,6 +231,29 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+    }
+
+    public void callFragmentContentUpdate(int position) {
+        CategoriesFragment categoriesFragment = (CategoriesFragment) fragmentViewPagerAdapter.getItem(CATEGORIES_FRAGMENT_KEY);
+        AddNewWordFragment addNewWordFragment = (AddNewWordFragment) fragmentViewPagerAdapter.getItem(ADD_NEW_WORD_FRAGMENT_KEY);
+        WordsArchiveFragment wordsArchiveFragment = (WordsArchiveFragment) fragmentViewPagerAdapter.getItem(WORDS_ARCHIVE_FRAGMENT_KEY);
+
+        switch(position) {
+            case CATEGORIES_FRAGMENT_KEY:
+                categoriesFragment.onDataChange();
+
+                break;
+            case ADD_NEW_WORD_FRAGMENT_KEY:
+                addNewWordFragment.onDataChange();
+
+                break;
+            case WORDS_ARCHIVE_FRAGMENT_KEY:
+                wordsArchiveFragment.onDataChange();
+
+                break;
+        }
+
+
     }
 
     private void createNotificationChannel() {

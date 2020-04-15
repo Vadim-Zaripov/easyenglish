@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class WordsArchiveFragment extends Fragment {
+public class WordsArchiveFragment extends Fragment implements UpdateDataListener {
 
     private String ARCHIVE_ACTIVITY_TAG = "Archive activity";
 
@@ -94,6 +94,11 @@ public class WordsArchiveFragment extends Fragment {
     public void onResume() {
         super.onResume();
         initArchivedWordsHandler.sendMessage(initArchivedWordsHandler.obtainMessage());
+    }
+
+    @Override
+    public void onDataChange() {
+
     }
 
     private class ArchiveFragmentRecyclerViewAdapter extends RecyclerView.Adapter<ArchiveFragmentRecyclerViewAdapter.ArchiveFragmentViewHolder> {

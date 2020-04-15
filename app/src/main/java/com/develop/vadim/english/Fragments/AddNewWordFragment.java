@@ -52,7 +52,7 @@ import bg.devlabs.transitioner.Transitioner;
 
 import static android.content.Context.ALARM_SERVICE;
 
-public class AddNewWordFragment extends Fragment {
+public class AddNewWordFragment extends Fragment implements UpdateDataListener {
 
     private EditText englishWordEditText;
     private EditText russianWordEditText;
@@ -297,6 +297,12 @@ public class AddNewWordFragment extends Fragment {
         addWordToServiceTextView.startAnimation(animation);
     }
 
+
+    @Override
+    public void onDataChange() {
+
+    }
+
     private class CategoriesRecyclerViewAdapter extends RecyclerView.Adapter<CategoriesRecyclerViewAdapter.CategoriesRecyclerViewHolder> {
         private ArrayList<String> categories;
 
@@ -429,25 +435,19 @@ public class AddNewWordFragment extends Fragment {
             if(getCategories().contains(category) || category.equals("default")) {
                word.sentWordToService();
                wordSendingHandler.sendEmptyMessage(MainActivity.CATEGORIES_LOAD_END);
-               Log.d("BOB", category);
             }
             else {
-                MainActivity.reference.child("categories").addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        MainActivity.reference.child("categories").child(String.valueOf(dataSnapshot.getChildrenCount())).setValue(category);
 
-                        ((MainActivity)getActivity()).categoryNames.add(category);
+                MainActivity.reference.child("categories").child(String.valueOf(((MainActivity)getActivity()).categoryNames.size())).setValue(category);
 
-                        word.setWordCategory(category);
-                        word.sentWordToService();
-                        wordSendingHandler.sendEmptyMessage(NEW_CATEGORY_HAS_BEEN_ADDED);
-                    }
+                ((MainActivity)getActivity()).categoryNames.add(category);
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) { }
-                });
+                word.setWordCategory(category);
+                word.sentWordToService();
+                wordSendingHandler.sendEmptyMessage(NEW_CATEGORY_HAS_BEEN_ADDED);
             }
+
+            ((MainActivity)getActivity()).callFragmentContentUpdate(MainActivity.CATEGORIES_FRAGMENT_KEY);
         }
     }
 }
