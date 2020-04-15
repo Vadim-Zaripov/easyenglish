@@ -114,7 +114,6 @@ public class MainActivity extends AppCompatActivity {
             public void onReceive(Context context, Intent intent) {
                 Word word = intent.getParcelableExtra(getString(R.string.changingWord));
 
-                Log.d("BOB", "PIG");
                 if(intent.getBooleanExtra(getString(R.string.addNewCategory), false)) {
 
                     categoryNames.add(word.getWordCategory());
@@ -191,11 +190,8 @@ public class MainActivity extends AppCompatActivity {
                                         Uri deepLink;
                                         if(pendingDynamicLinkData != null) {
                                             deepLink = pendingDynamicLinkData.getLink();
-                                            String userUid = deepLink.getQueryParameter("user");
                                             String category = deepLink.getQueryParameter("category");
-
-                                            Log.d("PUMP", userUid);
-                                            Log.d("PUMPP", category);
+                                            String userUid = deepLink.getQueryParameter("user");
 
                                             new Thread(new StartAddingCategoryFromLink(category, userUid)).start();
                                         }
@@ -208,11 +204,9 @@ public class MainActivity extends AppCompatActivity {
                                     }
                                 });
 
-
                         break;
                     case CHECKING_WORDS_LOAD_END:
                         Log.d(MAIN_ACTIVITY_TAG, "Words has been sorted");
-
 
                         break;
                 }
@@ -309,11 +303,13 @@ public class MainActivity extends AppCompatActivity {
             reference.child("words").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    for (int wordsCounter = 0; wordsCounter < dataSnapshot.getChildrenCount(); wordsCounter++) {
+                    final ArrayList<String> wordsCategories = new ArrayList<>();
+                    for(int wordsCounter = 0; wordsCounter < dataSnapshot.getChildrenCount(); wordsCounter++) {
                         Word word = new Word(wordsCounter);
                         word.setWordInEnglish(Objects.requireNonNull(dataSnapshot.child(String.valueOf(wordsCounter)).child(Word.englishDatabaseKey).getValue()).toString());
                         word.setWordInRussian(Objects.requireNonNull(dataSnapshot.child(String.valueOf(wordsCounter)).child(Word.russianDatabaseKey).getValue()).toString());
                         word.setWordCategory(Objects.requireNonNull(dataSnapshot.child(String.valueOf(wordsCounter)).child(Word.categoryDatabaseKey).getValue()).toString());
+                        word.setLevel((long) Objects.requireNonNull(dataSnapshot.child(String.valueOf(wordsCounter)).child(Word.levelDatabaseKey)).getValue());
                         word.setDate( Long.parseLong(
                                 Objects.requireNonNull(
                                         dataSnapshot
@@ -322,7 +318,11 @@ public class MainActivity extends AppCompatActivity {
                                                 .getValue()
                                 ).toString())
                         );
-                        word.setLevel((long) Objects.requireNonNull(dataSnapshot.child(String.valueOf(wordsCounter)).child(Word.levelDatabaseKey)).getValue());
+
+                        if(!wordsCategories.contains(word.getWordCategory())) {
+                            wordsCategories.add(word.getWordCategory());
+                        }
+
                         wordArrayList.add(word);
                     }
 
@@ -331,21 +331,26 @@ public class MainActivity extends AppCompatActivity {
                     categoryReference.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            for(int categoryReferenceChildrenCounter = 0; categoryReferenceChildrenCounter < dataSnapshot.getChildrenCount(); categoryReferenceChildrenCounter++) {
+                                String category = String.valueOf(dataSnapshot.child(String.valueOf(categoryReferenceChildrenCounter)).getValue());
 
-                            for (int categoryReferenceChildrenCounter = 0; categoryReferenceChildrenCounter < dataSnapshot.getChildrenCount(); categoryReferenceChildrenCounter++) {
-                                categoryNames.add(String.valueOf(dataSnapshot.child(String.valueOf(categoryReferenceChildrenCounter)).getValue()));
+                                if(wordsCategories.contains(category)) {
+                                    categoryNames.add(String.valueOf(dataSnapshot.child(String.valueOf(categoryReferenceChildrenCounter)).getValue()));
+                                }
+                                else {
+                                    categoryReference.child(String.valueOf(categoryReferenceChildrenCounter)).setValue(dataSnapshot.child(String.valueOf(dataSnapshot.getChildrenCount() - 1)).getValue());
+                                    categoryReference.child(String.valueOf(dataSnapshot.getChildrenCount() - 1)).removeValue();
+                                }
                             }
 
                             handler.sendEmptyMessage(CATEGORIES_LOAD_END);
                         }
 
                         @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-                        }
+                        public void onCancelled(@NonNull DatabaseError databaseError) { }
                     });
 
                     //Filter words
-
                     for(Word word : wordArrayList) {
                         Date date = new Date();
                         Calendar calendar = new GregorianCalendar(
@@ -353,10 +358,12 @@ public class MainActivity extends AppCompatActivity {
                                 date.getMonth(),
                                 date.getDay()
                         );
+
                         long currentTime = calendar.getTimeInMillis();
 
                         if(word.getLevel() == Word.LEVEL_ARCHIVED) {
                             archivedWordsArrayList.add(word);
+
                             continue;
                         }
 
@@ -367,12 +374,10 @@ public class MainActivity extends AppCompatActivity {
 
                                 wordsCheckWordsArrayList.add(word);
                             }
-
                         }
                     }
 
                     handler.sendEmptyMessage(MainActivity.WORDS_ANALYNG_WND);
-
                 }
 
                 @Override

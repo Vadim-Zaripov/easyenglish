@@ -16,6 +16,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
@@ -105,36 +107,79 @@ public class WordsArchiveFragment extends Fragment {
         @NonNull
         @Override
         public ArchiveFragmentViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.archived_word_cell, parent, false);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.arhived_word_cell, parent, false);
 
             return new ArchiveFragmentViewHolder(view);
         }
 
         @Override
-        public void onBindViewHolder(ArchiveFragmentViewHolder holder, int position) {
+        public void onBindViewHolder(final ArchiveFragmentViewHolder holder, int position) {
             Log.d(ARCHIVE_ACTIVITY_TAG, "Cell has been created");
 
-            final int currentPosition = position;
             final Word word = archivedWordsList.get(position);
-            holder.wordInEnglishTextView.setText(word.getWordInEnglish());
+
+            String text = word.getWordInRussian();
+            holder.wordInEnglishTextView.setText(text);
             holder.position = position;
+            holder.wordInEnglishTextView.setOnClickListener(new View.OnClickListener() {
+                boolean isInRussian = true;
 
-            holder.wordMaterialCardView.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.appear));
-
-            holder.wordMaterialCardView.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View view) {
-                    Intent wordDetailsIntent = new Intent(view.getContext(), ChangeWord.class);
-                    wordDetailsIntent.putStringArrayListExtra(getString(R.string.categoriesToChangeWordActivity), getCategoriesToWordCheckActivity());
+                public void onClick(final View view) {
+                    final AlphaAnimation alphaAnimation = new AlphaAnimation(0f, 1f);
+                    alphaAnimation.setDuration(250);
 
-                    wordDetailsIntent.putExtra(getString(R.string.changeWord), archivedWordsList.get(currentPosition));
+                    alphaAnimation.setAnimationListener(new Animation.AnimationListener() {
+                        @Override
+                        public void onAnimationStart(Animation animation) {
+                            view.setClickable(false);
+                        }
 
-                    ActivityOptions activityOptions = ActivityOptions.makeSceneTransitionAnimation(getActivity());
+                        @Override
+                        public void onAnimationEnd(Animation animation) {
+                            AlphaAnimation alphaAnimationBack = new AlphaAnimation(0f, 1f);
+                            alphaAnimationBack.setDuration(250);
 
-                    startActivity(wordDetailsIntent, activityOptions.toBundle());
+                            if(isInRussian) {
+                                holder.wordInEnglishTextView.setText(word.getWordInEnglish());
+
+                                isInRussian = false;
+                            }
+                            else {
+                                holder.wordInEnglishTextView.setText(word.getWordInRussian());
+
+                                isInRussian = true;
+                            }
+
+                            alphaAnimationBack.setAnimationListener(new Animation.AnimationListener() {
+                                @Override
+                                public void onAnimationStart(Animation animation) {
+
+                                }
+
+                                @Override
+                                public void onAnimationEnd(Animation animation) {
+                                    view.setClickable(true);
+                                }
+
+                                @Override
+                                public void onAnimationRepeat(Animation animation) {
+
+                                }
+                            });
+
+                            holder.wordInEnglishTextView.startAnimation(alphaAnimationBack);
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animation animation) { }
+                    });
+
+                    holder.wordInEnglishTextView.startAnimation(alphaAnimation);
                 }
             });
 
+            holder.wordMaterialCardView.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.appear));
         }
 
         @Override
@@ -146,7 +191,6 @@ public class WordsArchiveFragment extends Fragment {
             MaterialCardView wordMaterialCardView;
             TextView wordInEnglishTextView;
             int position;
-
 
             ArchiveFragmentViewHolder(View itemView) {
                 super(itemView);

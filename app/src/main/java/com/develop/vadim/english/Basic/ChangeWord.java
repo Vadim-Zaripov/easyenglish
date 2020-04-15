@@ -138,6 +138,7 @@ public class ChangeWord extends AppCompatActivity {
                         .negativeClickListener(new IOSDialog.Listener() {
                             @Override
                             public void onClick(IOSDialog iosDialog) {
+                                iosDialog.dismiss();
                             }
                         })
                         .positiveClickListener(new IOSDialog.Listener() {
@@ -230,10 +231,9 @@ public class ChangeWord extends AppCompatActivity {
 
                             }
                         });
+
+                isCategoryNew = true;
             }
-
-            isCategoryNew = true;
-
 
             changingWord.setWordCategory(category);
         }

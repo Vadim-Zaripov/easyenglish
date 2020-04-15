@@ -130,7 +130,6 @@ public class AddNewWordFragment extends Fragment {
         wordSendingProgressBar.setIndeterminateDrawable(new DoubleBounce());
         categoryMaterialCardViewHolder = view.findViewById(R.id.categoryChooseCardViewHolder);
 
-
         categoryTextView.setText("Без категории");
 
         categoryMaterialCardView.setOnClickListener(new View.OnClickListener() {
