@@ -146,7 +146,7 @@ public class WordCheckActivity extends AppCompatActivity {
     }
 
     private void startDisappearAnimation(final int stage) {
-        if(userAnswerEditText.getText().toString().equals(checkingWordsList.get(stage).getWordInEnglish())) {
+        if(userAnswerEditText.getText().toString().trim().toLowerCase().equals(checkingWordsList.get(stage).getWordInEnglish())) {
             new Thread(new AnalyzeUserAnswerThread(stage, true)).start();
 
             AlphaAnimation alphaAnimation = new AlphaAnimation(1f, 0f);
@@ -410,11 +410,12 @@ public class WordCheckActivity extends AppCompatActivity {
         boolean isAnswerRight;
         long value;
 
-        Word checkingWord = checkingWordsList.get(index);
+        Word checkingWord;
 
         AnalyzeUserAnswerThread(int index, boolean isAnswerRight) {
             this.index = index;
             this.isAnswerRight = isAnswerRight;
+            checkingWord = checkingWordsList.get(index);
 
             if(isAnswerRight) {
                 value = checkingWord.getLevel() + 1;
@@ -436,6 +437,7 @@ public class WordCheckActivity extends AppCompatActivity {
                     onBackPressed();
                 }
             });
+
             databaseReference.child(String.valueOf(checkingWord.getIndex())).child(Word.dateKey).setValue(new Date().getTime());
         }
     }

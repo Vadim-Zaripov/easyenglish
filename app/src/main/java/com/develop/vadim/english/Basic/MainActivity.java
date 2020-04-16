@@ -216,6 +216,7 @@ public class MainActivity extends AppCompatActivity {
                             Intent intent = new Intent(getApplicationContext(), WordCheckActivity.class);
                             intent.putParcelableArrayListExtra(getString(R.string.wordsToCheckingKey), wordsCheckWordsArrayList);
                             intent.putStringArrayListExtra(getString(R.string.categoriesKey), categoryNames);
+
                             //ActivityOptions activityOptions = ActivityOptions.makeSceneTransitionAnimation(MainActivity.this);
                             startActivity(intent);
                         }
@@ -415,7 +416,6 @@ public class MainActivity extends AppCompatActivity {
                         public void onCancelled(@NonNull DatabaseError databaseError) { }
                     });
 
-                    Log.w(MAIN_ACTIVITY_TAG, wordArrayList.toString());
                     //Filter words
                     for(Word word : wordArrayList) {
                         Date date = new Date();
