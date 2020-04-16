@@ -6,6 +6,20 @@
     android:layout_height="match_parent"
     android:background="@drawable/progress_bar">
 
+    <TextView
+        android:id="@+id/headerTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/changeWord"
+        android:textColor="@color/colorWhite"
+        android:textSize="30sp"
+        app:layout_constraintBottom_toTopOf="@+id/editTextEnglish"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.73" />
+
     <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/editTextEnglish"
         android:layout_width="0dp"
@@ -115,33 +129,6 @@
     </com.google.android.material.card.MaterialCardView>
 
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/categoryChooseCardViewHolder"
-        app:layout_constraintVertical_bias="0.26">
-
-        <ImageView
-            android:id="@+id/deleteWordImageView"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
-            android:layout_gravity="center_horizontal"
-            app:srcCompat="@drawable/delete_word" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:gravity="center"
-            android:text="@string/deleteWord"
-            android:textColor="@color/WHITE_TRANSPARENT"
-            android:textSize="14sp"/>
-    </LinearLayout>
-
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/categoryChooseCardView"
         android:layout_width="246dp"
@@ -250,17 +237,31 @@
 
     </com.google.android.material.card.MaterialCardView>
 
-    <TextView
-        android:id="@+id/headerTextView"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="@string/changeWord"
-        android:textColor="@color/colorWhite"
-        android:textSize="30sp"
-        app:layout_constraintBottom_toTopOf="@+id/editTextEnglish"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.73" />
+        app:layout_constraintTop_toTopOf="@id/categoryChooseCardViewHolder"
+        app:layout_constraintVertical_bias="0.26">
+
+        <ImageView
+            android:id="@+id/deleteWordImageView"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_gravity="center_horizontal"
+            app:srcCompat="@drawable/delete_word" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center"
+            android:text="@string/deleteWord"
+            android:textColor="@color/WHITE_TRANSPARENT"
+            android:textSize="14sp" />
+    </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

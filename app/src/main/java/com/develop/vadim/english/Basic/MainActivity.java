@@ -384,27 +384,24 @@ public class MainActivity extends AppCompatActivity {
                     //Filter words
                     for(Word word : wordArrayList) {
                         Date date = new Date();
-                        Calendar calendar = new GregorianCalendar(
-                                date.getYear(),
-                                date.getMonth(),
-                                date.getDay()
-                        );
+                        long currentTime = date.getTime();
 
-                        long currentTime = calendar.getTimeInMillis();
+                        Log.w(MAIN_ACTIVITY_TAG, currentTime + " is equals to " + word.getDate() + ": " + (currentTime == word.getDate()));
+
 
                         if(word.getLevel() == Word.LEVEL_ARCHIVED) {
                             archivedWordsArrayList.add(word);
-
                             continue;
                         }
 
-                        if(currentTime > word.getDate()) {
+                        if(currentTime >= word.getDate()) {
                             if(word.getLevel() == Word.LEVEL_DAY || word.getLevel() == Word.LEVEL_WEEK) {
-                                if(currentTime - word.getDate() > Word.CHECK_INTERVAL.get(Word.LEVEL_DAY) * 3)
+                                if(currentTime - word.getDate() > Word.CHECK_INTERVAL.get(Word.LEVEL_DAY) * 3) {
                                     word.setLevel(Word.LEVEL_DAY);
-
-                                wordsCheckWordsArrayList.add(word);
+                                }
                             }
+
+                            wordsCheckWordsArrayList.add(word);
                         }
                     }
 
