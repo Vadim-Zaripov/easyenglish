@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.Dialog;
 import android.app.PendingIntent;
-import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -30,7 +29,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.develop.vadim.english.Basic.MainActivity;
@@ -62,7 +60,7 @@ public class AddNewWordFragment extends Fragment implements UpdateDataListener {
     private TextView categoryTextView;
     private TextView headerTextView;
     private TextView addWordToServiceTextView;
-    private LinearLayout categoriesTextViewsLinearLayout;
+    private TextView categoriesTextView;
     private ProgressBar wordSendingProgressBar;
     private RecyclerView choosingCategoryRecyclerView;
     private MaterialCardView categoryMaterialCardViewHolder;
@@ -110,7 +108,7 @@ public class AddNewWordFragment extends Fragment implements UpdateDataListener {
 
         timeSharedPreferences = getActivity().getSharedPreferences("Time Picker", Context.MODE_PRIVATE);
 
-        return inflater.inflate(R.layout.add_new_word_layout, container, false);
+        return inflater.inflate(R.layout.edit_new_word_layout, container, false);
     }
 
     @Override
@@ -122,7 +120,7 @@ public class AddNewWordFragment extends Fragment implements UpdateDataListener {
         categoryMaterialCardView = view.findViewById(R.id.categoryChooseCardView);
         categoryTextView = categoryMaterialCardView.findViewById(R.id.addNewWordCategoryTextView);
         headerTextView = view.findViewById(R.id.headerTextView);
-        categoriesTextViewsLinearLayout = view.findViewById(R.id.categoriesTextViewLinearLayout);
+        categoriesTextView = view.findViewById(R.id.categoriesTextView);
         addWordToServiceTextView = view.findViewById(R.id.addWordToServiceTextView);
         categoriesChoosingMaterialMaterialCardView = view.findViewById(R.id.categoriesMaterialCardView);
         addWordToServiceImageView = view.findViewById(R.id.addWordToServiceImageView);
@@ -222,7 +220,7 @@ public class AddNewWordFragment extends Fragment implements UpdateDataListener {
                 englishWordEditText.startAnimation(animation);
                 addWordToServiceImageView.startAnimation(animation);
                 headerTextView.startAnimation(animation);
-                categoriesTextViewsLinearLayout.startAnimation(animation);
+                categoriesTextView.startAnimation(animation);
                 addWordToServiceTextView.startAnimation(animation);
 
                 animation.setAnimationListener(new Animation.AnimationListener() {
@@ -237,7 +235,7 @@ public class AddNewWordFragment extends Fragment implements UpdateDataListener {
                         englishWordEditText.setVisibility(View.INVISIBLE);
                         addWordToServiceImageView.setVisibility(View.INVISIBLE);
                         headerTextView.setVisibility(View.INVISIBLE);
-                        categoriesTextViewsLinearLayout.setVisibility(View.INVISIBLE);
+                        categoriesTextView.setVisibility(View.INVISIBLE);
                         addWordToServiceTextView.setVisibility(View.INVISIBLE);
 
                         wordSendingProgressBar.setVisibility(View.VISIBLE);
@@ -284,7 +282,7 @@ public class AddNewWordFragment extends Fragment implements UpdateDataListener {
         russianWordEditText.setVisibility(View.VISIBLE);
         addWordToServiceImageView.setVisibility(View.VISIBLE);
         headerTextView.setVisibility(View.VISIBLE);
-        categoriesTextViewsLinearLayout.setVisibility(View.VISIBLE);
+        categoriesTextView.setVisibility(View.VISIBLE);
         addWordToServiceTextView.setVisibility(View.VISIBLE);
 
         Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.appear);
@@ -293,7 +291,7 @@ public class AddNewWordFragment extends Fragment implements UpdateDataListener {
         englishWordEditText.startAnimation(animation);
         addWordToServiceImageView.startAnimation(animation);
         headerTextView.startAnimation(animation);
-        categoriesTextViewsLinearLayout.startAnimation(animation);
+        categoriesTextView.startAnimation(animation);
         addWordToServiceTextView.startAnimation(animation);
     }
 

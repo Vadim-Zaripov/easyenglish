@@ -64,7 +64,7 @@
         android:layout_width="300dp"
         android:layout_height="60dp"
         android:tag="animation"
-        android:visibility="invisible"
+        android:visibility="visible"
         app:cardBackgroundColor="@color/WHITE_TRANSPARENT"
         app:cardCornerRadius="20dp"
         app:cardElevation="0dp"
@@ -72,7 +72,7 @@
         app:layout_constraintEnd_toEndOf="@+id/editTextRussian"
         app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="@+id/editTextRussian"
-        app:layout_constraintTop_toTopOf="@+id/categoriesTextViewLinearLayout"
+        app:layout_constraintTop_toTopOf="@+id/categoriesTextView"
         app:layout_constraintVertical_bias="0.19">
 
         <EditText
@@ -83,8 +83,7 @@
             android:layout_marginRight="8dp"
             android:tag="animation4"
             android:textColor="@color/colorWhite"
-            android:textColorHint="@color/colorWhite">
-        </EditText>
+            android:textColorHint="@color/colorWhite"></EditText>
 
         <TextView
             android:layout_width="match_parent"
@@ -93,14 +92,12 @@
             android:tag="animation3"
             android:text="xenous"
             android:textColor="@android:color/white"
-            android:textSize="18sp">
-        </TextView>
+            android:textSize="18sp"></TextView>
 
         <androidx.recyclerview.widget.RecyclerView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:tag="animation2">
-        </androidx.recyclerview.widget.RecyclerView>
+            android:tag="animation2"></androidx.recyclerview.widget.RecyclerView>
 
     </com.google.android.material.card.MaterialCardView>
 
@@ -116,7 +113,7 @@
         app:layout_constraintEnd_toEndOf="@+id/editTextRussian"
         app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="@+id/editTextRussian"
-        app:layout_constraintTop_toTopOf="@+id/categoriesTextViewLinearLayout"
+        app:layout_constraintTop_toTopOf="@+id/categoriesTextView"
         app:layout_constraintVertical_bias="0.19">
 
         <TextView
@@ -190,26 +187,23 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.94">
+        app:layout_constraintVertical_bias="1.0">
 
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:tag="animation4">
-        </EditText>
+            android:tag="animation4"></EditText>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:tag="animation3"
-            android:text="xenous">
-        </TextView>
+            android:text="xenous"></TextView>
 
         <androidx.recyclerview.widget.RecyclerView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:tag="animation2">
-        </androidx.recyclerview.widget.RecyclerView>
+            android:tag="animation2"></androidx.recyclerview.widget.RecyclerView>
 
     </com.google.android.material.card.MaterialCardView>
 
@@ -228,7 +222,7 @@
         app:layout_constraintVertical_bias="0.36" />
 
     <LinearLayout
-        android:id="@+id/categoriesTextViewLinearLayout"
+        android:id="@+id/categoriesTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -242,7 +236,7 @@
             android:layout_height="wrap_content"
             android:text="Выберите категорию"
             android:textColor="@color/colorWhite"
-            android:textSize="24sp"></TextView>
+            android:textSize="24sp" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -250,8 +244,7 @@
             android:layout_gravity="center"
             android:text="или создайте новую"
             android:textColor="@color/colorWhite"
-            android:textSize="18sp">
-        </TextView>
+            android:textSize="18sp" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -14,7 +14,8 @@
         tools:ignore="GoogleAppIndexingWarning">
         <activity android:name=".Basic.ChangeWord" />
         <activity android:name=".Basic.WordCheckActivity" />
-        <activity android:name=".Basic.MainActivity">
+        <activity android:name=".Basic.MainActivity"
+            android:windowSoftInputMode="adjustNothing">
             <intent-filter>
                 <category android:name="android.intent.category.DEFAULT" />
                 <data
