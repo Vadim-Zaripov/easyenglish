@@ -219,7 +219,7 @@ public class MainActivity extends AppCompatActivity {
 
                             //ActivityOptions activityOptions = ActivityOptions.makeSceneTransitionAnimation(MainActivity.this);
 
-                            //startActivity(intent);
+                            startActivity(intent);
                         }
                         else {
                             Toast.makeText(getApplicationContext(), "Пока что слов для повторений нет", Toast.LENGTH_LONG).show();
@@ -529,8 +529,6 @@ public class MainActivity extends AppCompatActivity {
                                     if(!isCategoryReal) {
                                         FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid()).child("categories").child(String.valueOf(categoryNames.size())).setValue(category);
                                         categoryNames.add(category);
-
-                                        Toast.makeText(getApplicationContext(), getString(R.string.newWords), Toast.LENGTH_SHORT).show();
                                     }
 
                                     wordArrayList.addAll(sharingWordList);

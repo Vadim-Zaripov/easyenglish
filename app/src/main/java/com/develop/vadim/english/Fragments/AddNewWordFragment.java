@@ -80,8 +80,6 @@ public class AddNewWordFragment extends Fragment implements UpdateDataListener {
 
     private SharedPreferences timeSharedPreferences;
 
-    private boolean isCategoryNew = false;
-
     @SuppressLint("HandlerLeak")
     private Handler wordSendingHandler = new Handler() {
         @Override
@@ -173,8 +171,6 @@ public class AddNewWordFragment extends Fragment implements UpdateDataListener {
                 transitioner = new Transitioner(categoryMaterialCardView, categoriesChoosingMaterialMaterialCardView);
                 transitioner.animateTo(1f, (long) 400, new AccelerateDecelerateInterpolator());
 
-                isCategoryNew = false;
-
                 categoryMaterialCardView.setCardBackgroundColor(Color.WHITE);
                 categoryTextView.setVisibility(View.INVISIBLE);
                 categoryMaterialCardView.setClickable(false);
@@ -222,10 +218,10 @@ public class AddNewWordFragment extends Fragment implements UpdateDataListener {
                             ind = dataSnapshot.getChildrenCount();
 
                             newWord = new Word(ind);
-                            newWord.setWordInEnglish(englishWordEditText.getText().toString());
-                            newWord.setWordInRussian(russianWordEditText.getText().toString());
+                            newWord.setWordInEnglish(englishWordEditText.getText().toString().trim().toLowerCase());
+                            newWord.setWordInRussian(russianWordEditText.getText().toString().trim().toLowerCase());
 
-                            startDisappearingAnimation(newWord, categoryTextView.getText().toString());
+                            startDisappearingAnimation(newWord, categoryTextView.getText().toString().trim().toLowerCase());
 
 
                             englishWordEditText.setText("");
@@ -403,7 +399,6 @@ public class AddNewWordFragment extends Fragment implements UpdateDataListener {
                         }
                         else {
                             categoryTextView.setText(categoryNameTextView.getText());
-                            isCategoryNew = false;
                         }
 
                         categoryTextView.setVisibility(View.VISIBLE);
@@ -429,7 +424,6 @@ public class AddNewWordFragment extends Fragment implements UpdateDataListener {
                     public void onClick(View view) {
                         if(!editText.getText().toString().equals("")) {
                             categoryTextView.setText(editText.getText());
-                            isCategoryNew = true;
                         }
 
                         dialog.dismiss();
@@ -464,7 +458,7 @@ public class AddNewWordFragment extends Fragment implements UpdateDataListener {
             word.setWordCategory(category);
             ((MainActivity)getActivity()).wordArrayList.add(word);
 
-            if(getCategories().contains(category) || category.equals("default")) {
+            if(getCategories().contains(category) || category.equals("Без категории")) {
                word.sentWordToService();
                wordSendingHandler.sendEmptyMessage(MainActivity.CATEGORIES_LOAD_END);
             }
