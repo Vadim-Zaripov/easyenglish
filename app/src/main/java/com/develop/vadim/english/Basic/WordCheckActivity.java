@@ -418,10 +418,10 @@ public class WordCheckActivity extends AppCompatActivity {
             checkingWord = checkingWordsList.get(index);
 
             if(isAnswerRight) {
-                value = checkingWord.getLevel() + 1;
+                value = checkingWord.getLevel() + 1L;
             }
             else {
-                value = 0;
+                value = Word.LEVEL_DAY;
             }
         }
 
@@ -442,7 +442,7 @@ public class WordCheckActivity extends AppCompatActivity {
                     .child(String.valueOf(checkingWord.getIndex()))
                     .child(Word.dateKey)
                     .setValue(
-                            new Date().getTime() + Word.CHECK_INTERVAL.get(value)
+                            new Date().getTime() + Word.CHECK_INTERVAL.get((int)value)
                     );
         }
     }
