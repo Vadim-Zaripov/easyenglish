@@ -9,6 +9,7 @@ import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.ActivityOptions;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -29,6 +30,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.varunjohn1990.iosdialogs4android.IOSDialog;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 public class WordCheckActivity extends AppCompatActivity {
     private EditText userAnswerEditText;
@@ -130,9 +132,10 @@ public class WordCheckActivity extends AppCompatActivity {
         else {
             Toast.makeText(getApplicationContext(), "Отлично!", Toast.LENGTH_SHORT).show();
 
-            ActivityOptions activityOptions = ActivityOptions.makeSceneTransitionAnimation(WordCheckActivity.this);
+            SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.konfetti), MODE_PRIVATE);
+            sharedPreferences.edit().putBoolean(getString(R.string.konfettiKey), true).apply();
 
-            onBackPressed();
+            finish();
         }
 
     }
@@ -433,6 +436,7 @@ public class WordCheckActivity extends AppCompatActivity {
                     onBackPressed();
                 }
             });
+            databaseReference.child(String.valueOf(checkingWord.getIndex())).child(Word.dateKey).setValue(new Date().getTime());
         }
     }
 }

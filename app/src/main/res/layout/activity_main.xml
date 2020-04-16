@@ -8,6 +8,15 @@
     android:background="@drawable/progress_bar"
     tools:context=".Basic.MainActivity">
 
+    <nl.dionsegijn.konfetti.KonfettiView
+        android:id="@+id/viewKonfetti"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="@+id/mainViewPagerId"
+        app:layout_constraintEnd_toEndOf="@+id/mainViewPagerId"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/mainViewPagerId" />
+
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/mainViewPagerId"
         android:layout_width="match_parent"
@@ -38,7 +47,11 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#00000000"/>
+        android:background="#00000000"
+        app:layout_constraintBottom_toBottomOf="@+id/mainViewPagerId"
+        app:layout_constraintEnd_toEndOf="@+id/mainViewPagerId"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <com.github.ybq.android.spinkit.SpinKitView
         android:id="@+id/spinKit"

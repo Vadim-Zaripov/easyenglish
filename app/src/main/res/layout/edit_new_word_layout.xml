@@ -3,8 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/progress_bar">
+    android:layout_height="match_parent">
 
 
     <TextView
@@ -143,13 +142,13 @@
             android:text="xenous"
             android:textColor="@android:color/white"
             android:textSize="18sp"
-            android:visibility="visible"></TextView>
+            android:visibility="visible"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/categoriesWhileAddingWordRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:tag="animation2"></androidx.recyclerview.widget.RecyclerView>
+            android:tag="animation2"/>
 
     </com.google.android.material.card.MaterialCardView>
 
@@ -171,18 +170,18 @@
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:tag="animation4"></EditText>
+            android:tag="animation4"/>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:tag="animation3"
-            android:text="xenous"></TextView>
+            android:text="xenous"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:tag="animation2"></androidx.recyclerview.widget.RecyclerView>
+            android:tag="animation2"/>
 
     </com.google.android.material.card.MaterialCardView>
 
@@ -207,7 +206,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.74"></ImageView>
+            app:layout_constraintVertical_bias="0.74"/>
 
         <TextView
             android:id="@+id/addWordToServiceTextView"
@@ -217,7 +216,7 @@
             android:gravity="center"
             android:text="Добавить новое слово"
             android:textColor="@color/WHITE_TRANSPARENT"
-            android:textSize="14sp"></TextView>
+            android:textSize="14sp"/>
     </LinearLayout>
 
     <com.github.ybq.android.spinkit.SpinKitView
@@ -233,5 +232,19 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.36" />
+
+    <com.github.chengang.library.TickView
+        android:id="@+id/tickViewAccent"
+        android:layout_width="148dp"
+        android:layout_height="148dp"
+        android:visibility="invisible"
+        app:radius="40dp"
+        app:check_base_color="@color/rightWordGreen"
+        app:rate="normal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.36"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

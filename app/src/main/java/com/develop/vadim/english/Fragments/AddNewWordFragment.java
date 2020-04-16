@@ -22,6 +22,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.EditText;
@@ -35,6 +36,7 @@ import com.develop.vadim.english.Basic.MainActivity;
 import com.develop.vadim.english.Broadcasts.NotificationBroadcast;
 import com.develop.vadim.english.R;
 import com.develop.vadim.english.Basic.Word;
+import com.github.chengang.library.TickView;
 import com.github.ybq.android.spinkit.style.DoubleBounce;
 import com.google.android.material.card.MaterialCardView;
 import com.google.firebase.database.DataSnapshot;
@@ -64,6 +66,7 @@ public class AddNewWordFragment extends Fragment implements UpdateDataListener {
     private ProgressBar wordSendingProgressBar;
     private RecyclerView choosingCategoryRecyclerView;
     private MaterialCardView categoryMaterialCardViewHolder;
+    private TickView tickView;
 
     public final static int NEW_CATEGORY_HAS_BEEN_ADDED = 5;
 
@@ -94,9 +97,37 @@ public class AddNewWordFragment extends Fragment implements UpdateDataListener {
                     break;
             }
 
-            wordSendingProgressBar.setVisibility(View.INVISIBLE);
 
-            startAppearAnimation();
+
+            wordSendingProgressBar.setVisibility(View.INVISIBLE);
+            tickView.setVisibility(View.VISIBLE);
+            tickView.toggle();
+            tickView.addAnimatorListener(new TickView.TickAnimatorListener() {
+                @Override
+                public void onAnimationStart(TickView tickView) { }
+
+                @Override
+                public void onAnimationEnd(final TickView tickView) {
+                    AlphaAnimation alphaAnimation = new AlphaAnimation(1f, 0f);
+                    alphaAnimation.setDuration(200);
+                    alphaAnimation.setAnimationListener(new Animation.AnimationListener() {
+                        @Override
+                        public void onAnimationStart(Animation animation) { }
+
+                        @Override
+                        public void onAnimationEnd(Animation animation) {
+                            tickView.setVisibility(View.INVISIBLE);
+                            tickView.toggle();
+                            startAppearAnimation();
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animation animation) { }
+                    });
+
+                    tickView.startAnimation(alphaAnimation);
+                }
+            });
         }
     };
 
@@ -125,8 +156,11 @@ public class AddNewWordFragment extends Fragment implements UpdateDataListener {
         categoriesChoosingMaterialMaterialCardView = view.findViewById(R.id.categoriesMaterialCardView);
         addWordToServiceImageView = view.findViewById(R.id.addWordToServiceImageView);
         wordSendingProgressBar = view.findViewById(R.id.spinKit);
-        wordSendingProgressBar.setIndeterminateDrawable(new DoubleBounce());
         categoryMaterialCardViewHolder = view.findViewById(R.id.categoryChooseCardViewHolder);
+
+        tickView = view.findViewById(R.id.tickViewAccent);
+
+        wordSendingProgressBar.setIndeterminateDrawable(new DoubleBounce());
 
         categoryTextView.setText("Без категории");
 

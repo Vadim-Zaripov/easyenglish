@@ -3,6 +3,7 @@ package com.develop.vadim.english.Basic;
 import android.annotation.SuppressLint;
 import android.app.ActivityOptions;
 import android.app.AlarmManager;
+import android.app.Dialog;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -11,6 +12,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 
@@ -54,6 +57,13 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Objects;
+
+import nl.dionsegijn.konfetti.Confetti;
+import nl.dionsegijn.konfetti.KonfettiView;
+import nl.dionsegijn.konfetti.ParticleSystem;
+import nl.dionsegijn.konfetti.models.Shape;
+import nl.dionsegijn.konfetti.models.Shape.Circle;
+import nl.dionsegijn.konfetti.models.Size;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -240,7 +250,23 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        Log.d("ZAIKA", "ZAIKA");
+        Log.d("BOB", "BIBS");
+        SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.konfetti), MODE_PRIVATE);
+        if(sharedPreferences.getBoolean(getString(R.string.konfettiKey), false)) {
+            sharedPreferences.edit().putBoolean(getString(R.string.konfettiKey), false).apply();
+
+            KonfettiView konfettiView = findViewById(R.id.viewKonfetti);
+            konfettiView.build()
+                    .addColors(Color.MAGENTA, Color.YELLOW, getResources().getColor(R.color.purple))
+                    .setDirection(0.0, 359.0)
+                    .setSpeed(1f, 5f)
+                    .setFadeOutEnabled(true)
+                    .setTimeToLive(2000L)
+                    .addShapes(Shape.CIRCLE, Shape.RECT)
+                    .addSizes(new Size(10, 5))
+                    .setPosition(-50f, konfettiView.getWidth() + 50f, -50f, -50f)
+                    .streamFor(300,  1500L);
+        }
     }
 
     public void callFragmentContentUpdate(int position) {
@@ -401,10 +427,11 @@ public class MainActivity extends AppCompatActivity {
 
                         if(word.getLevel() == Word.LEVEL_ARCHIVED) {
                             archivedWordsArrayList.add(word);
+
                             continue;
                         }
 
-                        if(currentTime >= word.getDate()) {
+                        if(currentTime > word.getDate()) {
                             if(word.getLevel() == Word.LEVEL_DAY || word.getLevel() == Word.LEVEL_WEEK) {
                                 if(currentTime - word.getDate() > Word.CHECK_INTERVAL.get(Word.LEVEL_DAY) * 3) {
                                     word.setLevel(Word.LEVEL_DAY);
