@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:padding="@dimen/edit_word_root_view_padding"
+    android:background="@drawable/progress_bar">
 
 
     <TextView
@@ -12,7 +14,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/edit_word_title_margin_top"
         android:gravity="center"
-        android:text="@string/addWord"
+        android:text="@string/changeWord"
         android:textColor="@color/colorWhite"
         android:textSize="@dimen/edit_word_title_text_size"
         app:layout_constraintEnd_toEndOf="parent"
@@ -23,9 +25,7 @@
         android:id="@+id/linearLayout5"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
         android:layout_marginTop="@dimen/edit_word_translations_linear_layout_margin_top"
-        android:layout_marginEnd="32dp"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -62,7 +62,7 @@
     </LinearLayout>
 
     <TextView
-        android:id="@+id/categoriesTextView"
+        android:id="@+id/categoriesTextViewTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
@@ -70,7 +70,7 @@
         android:orientation="vertical"
         android:text="Выберите категорию:"
         android:textColor="@color/colorWhite"
-        android:textSize="24sp"
+        android:textSize="@dimen/edit_word_category_title_text_size"
         app:layout_constraintEnd_toEndOf="@+id/linearLayout5"
         app:layout_constraintStart_toStartOf="@+id/linearLayout5"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout5" />
@@ -87,9 +87,9 @@
         app:cardBackgroundColor="@color/WHITE_TRANSPARENT"
         app:cardCornerRadius="20dp"
         app:cardElevation="0dp"
-        app:layout_constraintEnd_toEndOf="@+id/categoriesTextView"
-        app:layout_constraintStart_toStartOf="@+id/categoriesTextView"
-        app:layout_constraintTop_toBottomOf="@+id/categoriesTextView">
+        app:layout_constraintEnd_toEndOf="@+id/categoriesTextViewTitle"
+        app:layout_constraintStart_toStartOf="@+id/categoriesTextViewTitle"
+        app:layout_constraintTop_toBottomOf="@+id/categoriesTextViewTitle">
 
         <EditText
             android:layout_width="match_parent"
@@ -109,7 +109,7 @@
             android:tag="animation3"
             android:text="xenous"
             android:textColor="@android:color/white"
-            android:textSize="18sp" />
+            android:textSize="@dimen/edit_word_category_title_text_size" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:layout_width="match_parent"
@@ -117,7 +117,6 @@
             android:tag="animation2" />
 
     </com.google.android.material.card.MaterialCardView>
-
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/categoryChooseCardView"
@@ -141,51 +140,77 @@
             android:tag="animation3"
             android:text="xenous"
             android:textColor="@android:color/white"
-            android:textSize="18sp"
-            android:visibility="visible"/>
+            android:textSize="@dimen/edit_word_category_title_text_size"
+            android:visibility="visible"></TextView>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/categoriesWhileAddingWordRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:tag="animation2"/>
+            android:tag="animation2"></androidx.recyclerview.widget.RecyclerView>
 
     </com.google.android.material.card.MaterialCardView>
-
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/categoriesMaterialCardView"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginBottom="32dp"
         android:tag="animation"
         android:visibility="invisible"
         app:cardCornerRadius="20dp"
         app:contentPadding="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/categoriesTextView"
-        app:layout_constraintStart_toStartOf="@+id/categoriesTextView"
+        app:layout_constraintEnd_toEndOf="@+id/categoriesTextViewTitle"
+        app:layout_constraintStart_toStartOf="@+id/categoriesTextViewTitle"
         app:layout_constraintTop_toTopOf="@+id/categoryChooseCardViewHolder">
 
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:tag="animation4"/>
+            android:tag="animation4"></EditText>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:tag="animation3"
-            android:text="xenous"/>
+            android:text="xenous"></TextView>
 
         <androidx.recyclerview.widget.RecyclerView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:tag="animation2"/>
+            android:tag="animation2"></androidx.recyclerview.widget.RecyclerView>
 
     </com.google.android.material.card.MaterialCardView>
 
+
     <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout6"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/categoryChooseCardViewHolder">
+
+        <ImageView
+            android:id="@+id/deleteWordImageView"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_gravity="center_horizontal"
+            app:srcCompat="@drawable/delete_word" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center"
+            android:text="@string/deleteWord"
+            android:textColor="@color/WHITE_TRANSPARENT"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout6"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/edit_word_save_button_margin_bottom"
@@ -196,34 +221,29 @@
 
 
         <ImageView
-            android:id="@+id/addWordToServiceImageView"
+            android:id="@+id/saveChangesImageView"
             android:layout_width="200dp"
             android:layout_height="50dp"
             android:layout_gravity="center_horizontal"
             android:background="@drawable/button_background"
-            android:src="@drawable/add_word"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.74"/>
+            android:src="@drawable/edit_word" />
 
         <TextView
-            android:id="@+id/addWordToServiceTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:gravity="center"
-            android:text="Добавить новое слово"
+            android:gravity="center_horizontal"
+            android:text="@string/saveChanges"
             android:textColor="@color/WHITE_TRANSPARENT"
-            android:textSize="14sp"/>
+            android:textSize="20sp" />
+
     </LinearLayout>
 
     <com.github.ybq.android.spinkit.SpinKitView
         android:id="@+id/spinKit"
         style="@style/SpinKitView.DoubleBounce"
-        android:layout_width="114dp"
-        android:layout_height="148dp"
+        android:layout_width="120dp"
+        android:layout_height="150dp"
         android:layout_gravity="center"
         android:visibility="invisible"
         app:SpinKit_Color="@color/colorWhite"
@@ -238,13 +258,13 @@
         android:layout_width="148dp"
         android:layout_height="148dp"
         android:visibility="invisible"
-        app:radius="40dp"
         app:check_base_color="@color/rightWordGreen"
-        app:rate="normal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.36"/>
+        app:layout_constraintVertical_bias="0.36"
+        app:radius="40dp"
+        app:rate="normal" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

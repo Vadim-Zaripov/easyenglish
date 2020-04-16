@@ -216,10 +216,8 @@ public class MainActivity extends AppCompatActivity {
                             Intent intent = new Intent(getApplicationContext(), WordCheckActivity.class);
                             intent.putParcelableArrayListExtra(getString(R.string.wordsToCheckingKey), wordsCheckWordsArrayList);
                             intent.putStringArrayListExtra(getString(R.string.categoriesKey), categoryNames);
-
                             //ActivityOptions activityOptions = ActivityOptions.makeSceneTransitionAnimation(MainActivity.this);
-
-                            //startActivity(intent);
+                            startActivity(intent);
                         }
                         else {
                             Toast.makeText(getApplicationContext(), "Пока что слов для повторений нет", Toast.LENGTH_LONG).show();
@@ -417,12 +415,13 @@ public class MainActivity extends AppCompatActivity {
                         public void onCancelled(@NonNull DatabaseError databaseError) { }
                     });
 
+                    Log.w(MAIN_ACTIVITY_TAG, wordArrayList.toString());
                     //Filter words
                     for(Word word : wordArrayList) {
                         Date date = new Date();
                         long currentTime = date.getTime();
 
-                        Log.w(MAIN_ACTIVITY_TAG, currentTime + " is equals to " + word.getDate() + ": " + (currentTime == word.getDate()));
+                        Log.w(MAIN_ACTIVITY_TAG, currentTime + " is greater than " + word.getDate() + ": " + (currentTime > word.getDate()));
 
 
                         if(word.getLevel() == Word.LEVEL_ARCHIVED) {
