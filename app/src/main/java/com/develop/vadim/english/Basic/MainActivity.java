@@ -177,13 +177,16 @@ public class MainActivity extends AppCompatActivity {
                     case WORDS_ANALYNG_WND:
                         Log.d(MAIN_ACTIVITY_TAG, "Words has been analized successfully");
 
+                        Log.d("BIBKA", "BOB");
+
                         if(wordsCheckWordsArrayList.size() != 0) {
-                            Intent intent = new Intent(MainActivity.this, WordCheckActivity.class);
+                            Intent intent = new Intent(getApplicationContext(), WordCheckActivity.class);
                             intent.putParcelableArrayListExtra(getString(R.string.wordsToCheckingKey), wordsCheckWordsArrayList);
+                            intent.putStringArrayListExtra(getString(R.string.categoriesKey), categoryNames);
 
-                            ActivityOptions activityOptions = ActivityOptions.makeSceneTransitionAnimation(MainActivity.this);
+                            //ActivityOptions activityOptions = ActivityOptions.makeSceneTransitionAnimation(MainActivity.this);
 
-                            startActivity(intent, activityOptions.toBundle());
+                            startActivity(intent);
                         }
                         else {
                             Toast.makeText(getApplicationContext(), "Пока что слов для повторений нет", Toast.LENGTH_LONG).show();
@@ -231,6 +234,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        Log.d("ZAIKA", "ZAIKA");
     }
 
     public void callFragmentContentUpdate(int position) {

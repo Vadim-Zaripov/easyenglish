@@ -74,13 +74,18 @@ public class WordCheckActivity extends AppCompatActivity {
         forgetWordTextView = findViewById(R.id.forgetTextView);
 
         categoriesList = getIntent().getStringArrayListExtra(getString(R.string.categoriesKey));
-        Log.d("POLLY", categoriesList.toString());
         checkingWordsList = getIntent().getParcelableArrayListExtra(getString(R.string.wordsToCheckingKey));
 
         setUpLesson(0);
     }
 
     private void setUpLesson(final int stage) {
+        if(checkingWordsList == null || checkingWordsList.size() == 0) {
+            onBackPressed();
+
+            return;
+        }
+
         Animation appearAnimation = new AlphaAnimation(0f, 1f);
         appearAnimation.setDuration(200);
 
@@ -100,12 +105,6 @@ public class WordCheckActivity extends AppCompatActivity {
         userAnswerEditText.setText("");
 
         forgetWordTextView.setClickable(true);
-
-        if(checkingWordsList == null || checkingWordsList.size() == 0) {
-            onBackPressed();
-
-            return;
-        }
 
         forgetWordTextView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -133,9 +132,14 @@ public class WordCheckActivity extends AppCompatActivity {
 
             ActivityOptions activityOptions = ActivityOptions.makeSceneTransitionAnimation(WordCheckActivity.this);
 
-            startActivity(new Intent(WordCheckActivity.this, MainActivity.class), activityOptions.toBundle());
+            onBackPressed();
         }
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 
     private void startDisappearAnimation(final int stage) {
