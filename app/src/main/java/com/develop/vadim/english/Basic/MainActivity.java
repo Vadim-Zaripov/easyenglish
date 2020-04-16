@@ -189,19 +189,6 @@ public class MainActivity extends AppCompatActivity {
 
                         Log.d("BIBKA", "BOB");
 
-                        if(wordsCheckWordsArrayList.size() != 0) {
-                            Intent intent = new Intent(getApplicationContext(), WordCheckActivity.class);
-                            intent.putParcelableArrayListExtra(getString(R.string.wordsToCheckingKey), wordsCheckWordsArrayList);
-                            intent.putStringArrayListExtra(getString(R.string.categoriesKey), categoryNames);
-
-                            //ActivityOptions activityOptions = ActivityOptions.makeSceneTransitionAnimation(MainActivity.this);
-
-                            startActivity(intent);
-                        }
-                        else {
-                            Toast.makeText(getApplicationContext(), "Пока что слов для повторений нет", Toast.LENGTH_LONG).show();
-                        }
-
                         FirebaseDynamicLinks
                                 .getInstance()
                                 .getDynamicLink(getIntent())
@@ -224,6 +211,19 @@ public class MainActivity extends AppCompatActivity {
                                         Log.d("TAG", "FAILED");
                                     }
                                 });
+
+                        if(wordsCheckWordsArrayList.size() != 0) {
+                            Intent intent = new Intent(getApplicationContext(), WordCheckActivity.class);
+                            intent.putParcelableArrayListExtra(getString(R.string.wordsToCheckingKey), wordsCheckWordsArrayList);
+                            intent.putStringArrayListExtra(getString(R.string.categoriesKey), categoryNames);
+
+                            //ActivityOptions activityOptions = ActivityOptions.makeSceneTransitionAnimation(MainActivity.this);
+
+                            //startActivity(intent);
+                        }
+                        else {
+                            Toast.makeText(getApplicationContext(), "Пока что слов для повторений нет", Toast.LENGTH_LONG).show();
+                        }
 
                         break;
                     case CHECKING_WORDS_LOAD_END:
@@ -495,11 +495,8 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     //Checking if our categories list contains sharing category
-                    for(int categoryCounter = 0; categoryCounter < categoryNames.size(); categoryCounter++) {
-                        if(Objects.requireNonNull(dataSnapshot.child(String.valueOf(categoryCounter)).getValue()).toString().equals(category)) {
-                            isCategoryReal = true;
-                            break;
-                        }
+                    if(categoryNames.contains(category)) {
+                        isCategoryReal = true;
                     }
 
                     String message = "Новых слов для добавления " +
@@ -537,6 +534,8 @@ public class MainActivity extends AppCompatActivity {
                                     }
 
                                     wordArrayList.addAll(sharingWordList);
+
+                                    callFragmentContentUpdate(CATEGORIES_FRAGMENT_KEY);
 
                                     iosDialog.dismiss();
                                 }
