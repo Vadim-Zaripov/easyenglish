@@ -438,7 +438,12 @@ public class WordCheckActivity extends AppCompatActivity {
                 }
             });
 
-            databaseReference.child(String.valueOf(checkingWord.getIndex())).child(Word.dateKey).setValue(new Date().getTime());
+            databaseReference
+                    .child(String.valueOf(checkingWord.getIndex()))
+                    .child(Word.dateKey)
+                    .setValue(
+                            new Date().getTime() + Word.CHECK_INTERVAL.get(value)
+                    );
         }
     }
 }
