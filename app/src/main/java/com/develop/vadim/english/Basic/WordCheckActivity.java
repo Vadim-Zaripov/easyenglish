@@ -243,6 +243,12 @@ public class WordCheckActivity extends AppCompatActivity {
 
                 Toast.makeText(WordCheckActivity.this, "Слово успешно удалено", Toast.LENGTH_LONG).show();
 
+                Intent intent = new Intent(MainActivity.BROADCAST_ACTION);
+                intent.putExtra(getString(R.string.changingWord), checkingWordsList.get(stage));
+                intent.putExtra(getString(R.string.removeWordKey), true);
+
+                sendBroadcast(intent);
+
                 continueChecking(stage);
             }
         };
