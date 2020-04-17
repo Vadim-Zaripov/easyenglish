@@ -84,7 +84,7 @@
     <string name="defaultCategory">defaultCategory</string>
     <string name="checkWord">Проверить</string>
     <string name="addWord">Добавить слово</string>
-    <string name="saveChanges">Сохранить изменения</string>
+    <string name="saveChanges">Сохранить</string>
     <string name="deleteWord">Удалить</string>
     <string name="deleteWordMessage">Вы уверены, что хотите удалить слово</string>
     <string name="repeatPassword">Повторите пароль</string>

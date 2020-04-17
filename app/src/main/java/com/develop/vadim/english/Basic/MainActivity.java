@@ -218,7 +218,6 @@ public class MainActivity extends AppCompatActivity {
                             intent.putStringArrayListExtra(getString(R.string.categoriesKey), categoryNames);
 
                             //ActivityOptions activityOptions = ActivityOptions.makeSceneTransitionAnimation(MainActivity.this);
-
                             startActivity(intent);
                         }
                         else {
@@ -422,7 +421,7 @@ public class MainActivity extends AppCompatActivity {
                         Date date = new Date();
                         long currentTime = date.getTime();
 
-                        Log.w(MAIN_ACTIVITY_TAG, currentTime + " is equals to " + word.getDate() + ": " + (currentTime == word.getDate()));
+                        Log.w(MAIN_ACTIVITY_TAG, currentTime + " is greater than " + word.getDate() + ": " + (currentTime > word.getDate()));
 
 
                         if(word.getLevel() == Word.LEVEL_ARCHIVED) {
@@ -529,6 +528,8 @@ public class MainActivity extends AppCompatActivity {
                                     if(!isCategoryReal) {
                                         FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid()).child("categories").child(String.valueOf(categoryNames.size())).setValue(category);
                                         categoryNames.add(category);
+
+                                        Toast.makeText(getApplicationContext(), getString(R.string.newWords), Toast.LENGTH_SHORT).show();
                                     }
 
                                     wordArrayList.addAll(sharingWordList);

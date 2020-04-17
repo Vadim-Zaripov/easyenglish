@@ -27,7 +27,6 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -137,7 +136,7 @@ public class AddNewWordFragment extends Fragment implements UpdateDataListener {
 
         timeSharedPreferences = getActivity().getSharedPreferences("Time Picker", Context.MODE_PRIVATE);
 
-        return inflater.inflate(R.layout.edit_new_word_layout, container, false);
+        return inflater.inflate(R.layout.add_new_word_layout, container, false);
     }
 
     @Override
@@ -149,7 +148,7 @@ public class AddNewWordFragment extends Fragment implements UpdateDataListener {
         categoryMaterialCardView = view.findViewById(R.id.categoryChooseCardView);
         categoryTextView = categoryMaterialCardView.findViewById(R.id.addNewWordCategoryTextView);
         headerTextView = view.findViewById(R.id.headerTextView);
-        categoriesTextView = view.findViewById(R.id.categoriesTextView);
+        categoriesTextView = view.findViewById(R.id.categoriesTextViewTitle);
         addWordToServiceTextView = view.findViewById(R.id.addWordToServiceTextView);
         categoriesChoosingMaterialMaterialCardView = view.findViewById(R.id.categoriesMaterialCardView);
         addWordToServiceImageView = view.findViewById(R.id.addWordToServiceImageView);
