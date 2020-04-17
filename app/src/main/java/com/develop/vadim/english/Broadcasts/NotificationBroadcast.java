@@ -13,6 +13,7 @@ import android.util.Log;
 
 import com.develop.vadim.english.Basic.MainActivity;
 import com.develop.vadim.english.R;
+import com.develop.vadim.english.Services.WordCheckService;
 
 import java.util.Calendar;
 
@@ -46,9 +47,11 @@ public class NotificationBroadcast extends BroadcastReceiver {
         Log.d(TAG, "MSG");
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
 
-        notificationManagerCompat.notify(200, builder.build());
+        //notificationManagerCompat.notify(200, builder.build());
 
         //Установка временного сервиса
+        Intent serviceIntent = new Intent(context, WordCheckService.class);
+        context.startService(serviceIntent);
 
 
     }

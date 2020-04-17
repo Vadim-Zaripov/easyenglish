@@ -71,8 +71,6 @@ public class AddNewWordFragment extends Fragment implements UpdateDataListener {
 
     private Transitioner transitioner;
 
-    private Calendar timePickerCalendar = Calendar.getInstance();
-
     private long ind;
 
     private DatabaseReference reference;

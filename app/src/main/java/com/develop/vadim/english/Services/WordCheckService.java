@@ -1,25 +1,39 @@
 package com.develop.vadim.english.Services;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.IBinder;
 import androidx.annotation.NonNull;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.develop.vadim.english.Basic.MainActivity;
+import com.develop.vadim.english.Broadcasts.NotificationBroadcast;
 import com.develop.vadim.english.R;
 import com.develop.vadim.english.Basic.Word;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import static com.develop.vadim.english.Broadcasts.NotificationBroadcast.notificationId;
 
 public class WordCheckService extends Service {
     public final static String SERVICE_TAG = "WordService";
@@ -34,18 +48,81 @@ public class WordCheckService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-
-        databaseReference = MainActivity.reference.child("words");
-        sharedPreferences = getSharedPreferences("Shared preferences for Words Service", MODE_PRIVATE);
+        Toast.makeText(this, "Polly", Toast.LENGTH_LONG).show();
 
         Log.d(SERVICE_TAG, "Service has been started");
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        new Thread(new WordCheckRunnable()).start();
+        Toast.makeText(this, "Polly", Toast.LENGTH_LONG).show();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid()).child("words");
 
-        return START_NOT_STICKY;
+        reference.addListenerForSingleValueEvent(new ValueEventListener() {
+            boolean isNeedToSendNotification = false;
+
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                long wordsCount = dataSnapshot.getChildrenCount();
+                for(int wordsCounter = 0;wordsCounter < (int) wordsCount; wordsCounter++) {
+                    Log.d(SERVICE_TAG, dataSnapshot.child(String.valueOf(wordsCounter)).child(Word.levelDatabaseKey).getValue().toString());
+                    Word word = new Word(wordsCounter);
+                    word.setWordInEnglish(Objects.requireNonNull(dataSnapshot.child(String.valueOf(wordsCounter)).child(Word.englishDatabaseKey).getValue()).toString());
+                    word.setWordInRussian(Objects.requireNonNull(dataSnapshot.child(String.valueOf(wordsCounter)).child(Word.russianDatabaseKey).getValue()).toString());
+                    word.setWordCategory(Objects.requireNonNull(dataSnapshot.child(String.valueOf(wordsCounter)).child(Word.categoryDatabaseKey).getValue()).toString());
+                    word.setLevel((long) Objects.requireNonNull(dataSnapshot.child(String.valueOf(wordsCounter)).child(Word.levelDatabaseKey)).getValue());
+                    word.setDate( Long.parseLong(
+                            Objects.requireNonNull(
+                                    dataSnapshot
+                                            .child(String.valueOf(wordsCounter))
+                                            .child(Word.dateKey)
+                                            .getValue()
+                            ).toString()));
+
+                    if(word.getLevel() == Word.LEVEL_ARCHIVED) {
+                        //TODO: Replace with normal checking
+                        isNeedToSendNotification  = true;
+
+                        break;
+                    }
+                }
+
+                if(isNeedToSendNotification) {
+                    createNotificationChannel();
+
+                    long when = System.currentTimeMillis();
+
+                    Intent notificationIntent = new Intent(WordCheckService.this, MainActivity.class);
+                    notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+
+                    //Вызов уведомления
+                    NotificationCompat.Builder builder = new NotificationCompat.Builder(WordCheckService.this, notificationId)
+                            .setSmallIcon(R.mipmap.ic_launcher)
+                            .setWhen(when)
+                            .setAutoCancel(false)
+                            .setContentTitle("Lett")
+                            .setContentText("Пора повторить слова!")
+                            .setPriority(NotificationCompat.PRIORITY_HIGH);
+
+                    Log.d(SERVICE_TAG, "MSG");
+                    NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(getApplicationContext());
+
+                    notificationManagerCompat.notify(200, builder.build());
+                }
+                else {
+                    Log.d(SERVICE_TAG, "NO WORDS");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.d(SERVICE_TAG, "ERROR");
+            }
+        });
+
+        return START_STICKY;
     }
 
     @Override
@@ -56,64 +133,22 @@ public class WordCheckService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return null;
     }
 
-    private class WordCheckRunnable implements Runnable {
-        Intent intent;
-        List<Word> neededWordsList = new ArrayList<>();
+    private void createNotificationChannel() {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "LettReminderChannel";
+            String description = "Notification channel for Lett Reminder";
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel channel = new NotificationChannel(NotificationBroadcast.notificationId, name, importance);
+            channel.enableLights(true);
+            channel.enableVibration(true);
+            channel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+            channel.setDescription(description);
 
-        WordCheckRunnable() {
-            intent = new Intent(MainActivity.BROADCAST_ACTION);
-        }
-
-        @Override
-        public void run() {
-            sendBroadcast(intent);
-
-            neededWordsList.clear();
-            databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    WordCheckService.this.databaseReferenceChildrenCount = dataSnapshot.getChildrenCount();
-
-                    for(int childrenOnReference = 0; childrenOnReference < databaseReferenceChildrenCount; childrenOnReference++) {
-                        if(isNeedChecking(childrenOnReference)) {
-                            Word word = new Word(childrenOnReference);
-                            word.setWordInEnglish(Objects.requireNonNull(dataSnapshot.child(String.valueOf((long) childrenOnReference)).child(Word.englishDatabaseKey).getValue()).toString());
-                            word.setWordInRussian(Objects.requireNonNull(dataSnapshot.child(String.valueOf((long) childrenOnReference)).child(Word.russianDatabaseKey).getValue()).toString());
-                            word.setWordCategory(Objects.requireNonNull(dataSnapshot.child(String.valueOf((long) childrenOnReference)).child(Word.categoryDatabaseKey).getValue()).toString());
-
-                            neededWordsList.add(word);
-                        }
-                    }
-
-                    saveData();
-
-                    Log.d(MainActivity.MAIN_ACTIVITY_TAG, MainActivity.BROADCAST_ACTION);
-                    LocalBroadcastManager.getInstance(WordCheckService.this).sendBroadcast(intent);
-
-                    sendBroadcast(intent);
-
-                    stopSelf();
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                }
-            });
-        }
-
-        private synchronized void saveData() {
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            Gson gson = new Gson();
-            String json = gson.toJson(neededWordsList);
-            editor.putString(getString(R.string.service_saved_indexes_key), json);
-            editor.apply();
-        }
-
-        private boolean isNeedChecking(long index) {
-            return true;
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
         }
     }
 }

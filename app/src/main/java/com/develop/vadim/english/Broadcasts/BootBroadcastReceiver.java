@@ -5,9 +5,13 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.util.Log;
 
+import androidx.annotation.RequiresApi;
+
 import com.develop.vadim.english.Basic.MainActivity;
+import com.develop.vadim.english.Services.WordCheckService;
 
 import java.util.Calendar;
 import java.util.Objects;
@@ -18,12 +22,15 @@ public class BootBroadcastReceiver extends BroadcastReceiver {
 
     public static final String TAG_BOOT_BROADCAST_RECEIVER = "BOOT_BROADCAST_RECEIVER";
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onReceive(Context context, Intent intent) {
-        if(Objects.equals(intent.getAction(), Intent.ACTION_BOOT_COMPLETED)) {
+        if(intent.getAction().equalsIgnoreCase(Intent.ACTION_BOOT_COMPLETED)) {
             Log.d("TAAG", "WORKS");
 
-            startServiceByAlarm(context);
+            Intent intent1 = new Intent(context, WordCheckService.class);
+            context.startForegroundService(intent1);
+            //startServiceByAlarm(context);
         }
     }
 

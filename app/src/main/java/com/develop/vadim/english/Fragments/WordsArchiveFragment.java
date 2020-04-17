@@ -123,66 +123,8 @@ public class WordsArchiveFragment extends Fragment implements UpdateDataListener
 
             final Word word = archivedWordsList.get(position);
 
-            String text = word.getWordInRussian();
-            holder.wordInEnglishTextView.setText(text);
+            holder.wordInEnglishTextView.setText(word.getWordInEnglish() + " - " + word.getWordInRussian());
             holder.position = position;
-            holder.wordInEnglishTextView.setOnClickListener(new View.OnClickListener() {
-                boolean isInRussian = true;
-
-                @Override
-                public void onClick(final View view) {
-                    final AlphaAnimation alphaAnimation = new AlphaAnimation(0f, 1f);
-                    alphaAnimation.setDuration(250);
-
-                    alphaAnimation.setAnimationListener(new Animation.AnimationListener() {
-                        @Override
-                        public void onAnimationStart(Animation animation) {
-                            view.setClickable(false);
-                        }
-
-                        @Override
-                        public void onAnimationEnd(Animation animation) {
-                            AlphaAnimation alphaAnimationBack = new AlphaAnimation(0f, 1f);
-                            alphaAnimationBack.setDuration(250);
-
-                            if(isInRussian) {
-                                holder.wordInEnglishTextView.setText(word.getWordInEnglish());
-
-                                isInRussian = false;
-                            }
-                            else {
-                                holder.wordInEnglishTextView.setText(word.getWordInRussian());
-
-                                isInRussian = true;
-                            }
-
-                            alphaAnimationBack.setAnimationListener(new Animation.AnimationListener() {
-                                @Override
-                                public void onAnimationStart(Animation animation) {
-
-                                }
-
-                                @Override
-                                public void onAnimationEnd(Animation animation) {
-                                    view.setClickable(true);
-                                }
-
-                                @Override
-                                public void onAnimationRepeat(Animation animation) {
-
-                                }
-                            });
-
-                            holder.wordInEnglishTextView.startAnimation(alphaAnimationBack);
-                        }
-
-                        @Override
-                        public void onAnimationRepeat(Animation animation) { }
-                    });
-
-                    holder.wordInEnglishTextView.startAnimation(alphaAnimation);
-                }
-            });
 
             holder.wordMaterialCardView.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.appear));
         }
