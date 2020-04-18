@@ -3,7 +3,6 @@ package com.develop.vadim.english.Basic;
 import android.annotation.SuppressLint;
 import android.app.ActivityOptions;
 import android.app.AlarmManager;
-import android.app.Dialog;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -54,15 +53,11 @@ import com.varunjohn1990.iosdialogs4android.IOSDialog;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Objects;
 
-import nl.dionsegijn.konfetti.Confetti;
 import nl.dionsegijn.konfetti.KonfettiView;
-import nl.dionsegijn.konfetti.ParticleSystem;
 import nl.dionsegijn.konfetti.models.Shape;
-import nl.dionsegijn.konfetti.models.Shape.Circle;
 import nl.dionsegijn.konfetti.models.Size;
 
 public class MainActivity extends AppCompatActivity {
@@ -249,7 +244,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        Log.d("BOB", "BIBS");
         SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.konfetti), MODE_PRIVATE);
         if(sharedPreferences.getBoolean(getString(R.string.konfettiKey), false)) {
             sharedPreferences.edit().putBoolean(getString(R.string.konfettiKey), false).apply();
@@ -312,6 +306,7 @@ public class MainActivity extends AppCompatActivity {
         calendar.set(Calendar.HOUR_OF_DAY, 12);
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
+
         Intent intent = new Intent(MainActivity.this, NotificationBroadcast.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this, 0,intent, PendingIntent.FLAG_UPDATE_CURRENT);
         AlarmManager am = (AlarmManager) MainActivity.this.getSystemService(ALARM_SERVICE);
