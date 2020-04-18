@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    android:layout_height="wrap_content"
-    android:layout_width="match_parent"
-    android:orientation="vertical"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
 
     <com.github.florent37.expansionpanel.ExpansionHeader
         android:id="@+id/categoryCellExpansionHeader"
@@ -13,37 +12,33 @@
         app:expansion_headerIndicator="@id/expansionHeaderIndicator">
 
         <com.google.android.material.card.MaterialCardView
-        android:layout_height="60dp"
-        android:layout_width="match_parent"
-        android:minHeight="60dp"
-        app:cardBackgroundColor="@color/WHITE_TRANSPARENT"
-        app:cardCornerRadius="40dp"
-        app:cardElevation="0dp"
-        android:tag="animation"
-        android:id="@+id/bob"
-        android:layout_marginTop="10dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        app:strokeColor="@color/colorWhite"
-        app:strokeWidth="3dp">
+            android:id="@+id/bob"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="10dp"
+            android:minHeight="60dp"
+            android:tag="animation"
+            app:cardBackgroundColor="@color/WHITE_TRANSPARENT"
+            app:cardCornerRadius="30dp"
+            app:cardElevation="0dp"
+            app:strokeColor="@color/colorWhite"
+            app:strokeWidth="3dp">
 
             <LinearLayout
                 android:id="@+id/bob2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_gravity="center_vertical">
-
-                <Space
-                    android:layout_width="match_parent"
-                    android:layout_height="5dp"/>
+                android:layout_gravity="center_vertical"
+                android:orientation="vertical">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
                     android:orientation="horizontal"
                     android:paddingStart="16dp"
-                    android:layout_gravity="center_vertical"
                     android:paddingEnd="30dp">
 
                     <TextView
@@ -54,32 +49,32 @@
 
                         android:gravity="start"
                         android:tag="animation3"
+                        android:text="Категория"
                         android:textColor="@color/colorWhite"
                         android:textSize="30sp" />
 
                     <ImageView
                         android:id="@+id/expansionHeaderIndicator"
                         android:layout_width="30dp"
-                        android:rotation="90"
                         android:layout_height="30dp"
                         android:layout_gravity="center_vertical|end"
                         android:layout_weight="0"
-                        android:tint="@color/colorWhite"
-                        android:src="@drawable/ic_expansion_header_indicator_grey_24dp">
-                    </ImageView>
+                        android:rotation="90"
+                        android:src="@drawable/ic_expansion_header_indicator_grey_24dp"
+                        android:tint="@color/colorWhite"></ImageView>
                 </LinearLayout>
 
-                
+
                 <Space
                     android:layout_width="match_parent"
-                    android:layout_height="10dp"/>
+                    android:layout_height="10dp" />
 
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
-                    android:paddingEnd="35dp"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:paddingEnd="35dp">
 
                     <TextView
                         android:id="@+id/learnWordsTextView"
@@ -87,11 +82,11 @@
                         android:layout_height="wrap_content"
                         android:text="@string/learnWords"
                         android:textColor="@color/colorWhite"
-                        android:textSize="20sp"/>
+                        android:textSize="20sp" />
 
                     <Space
                         android:layout_width="20dp"
-                        android:layout_height="match_parent"/>
+                        android:layout_height="match_parent" />
 
                     <TextView
                         android:id="@+id/shareWordsTextView"
@@ -99,43 +94,42 @@
                         android:layout_height="wrap_content"
                         android:text="@string/shareCategory"
                         android:textColor="@color/colorWhite"
-                        android:textSize="20sp"/>
+                        android:textSize="20sp" />
                 </LinearLayout>
             </LinearLayout>
-                
+
 
         </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.card.MaterialCardView
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-            android:minHeight="60dp"
-            app:cardBackgroundColor="@color/WHITE_TRANSPARENT"
-            app:cardCornerRadius="40dp"
-            app:cardElevation="0dp"
-            android:tag="animation"
             android:id="@+id/categoryCellMaterialCardViewPlaceHolder"
-            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
-            android:visibility="invisible"
+            android:layout_marginTop="10dp"
             android:layout_marginRight="10dp"
+            android:minHeight="60dp"
+            android:tag="animation"
+            android:visibility="invisible"
+            app:cardBackgroundColor="@color/WHITE_TRANSPARENT"
+            app:cardCornerRadius="30dp"
+            app:cardElevation="0dp"
             app:strokeColor="@color/colorWhite"
             app:strokeWidth="3dp">
-
 
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_gravity="center">
+                android:layout_gravity="center"
+                android:orientation="vertical">
 
                 <TextView
-                    android:paddingStart="16dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="start"
                     android:tag="animation3"
+                    android:text="Категория"
                     android:textColor="@color/colorWhite"
                     android:textSize="30sp" />
 
@@ -143,28 +137,28 @@
                     android:id="@+id/bob3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
                     android:layout_gravity="end"
+                    android:orientation="horizontal"
                     android:paddingEnd="30dp"
                     android:tag="animation2">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/colorWhite"
                         android:text="@string/learnWords"
-                        android:textSize="20sp"/>
+                        android:textColor="@color/colorWhite"
+                        android:textSize="20sp" />
 
                     <Space
                         android:layout_width="10dp"
-                        android:layout_height="match_parent"/>
+                        android:layout_height="match_parent" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/shareCategory"
-                        android:textSize="20sp"
-                        android:textColor="@color/colorWhite"/>
+                        android:textColor="@color/colorWhite"
+                        android:textSize="20sp" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -173,18 +167,18 @@
     </com.github.florent37.expansionpanel.ExpansionHeader>
 
     <com.github.florent37.expansionpanel.ExpansionLayout
+        android:id="@+id/categoryCellExpansionLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/categoryCellExpansionLayout">
+        android:layout_height="wrap_content">
 
         <LinearLayout
+            android:id="@+id/expandableRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:id="@+id/expandableRecyclerView"
             android:paddingStart="30dp"
-            android:paddingEnd="30dp"
-            android:paddingTop="10dp" />
+            android:paddingTop="10dp"
+            android:paddingEnd="30dp" />
 
     </com.github.florent37.expansionpanel.ExpansionLayout>
 

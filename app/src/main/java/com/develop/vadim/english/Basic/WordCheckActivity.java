@@ -72,7 +72,7 @@ public class WordCheckActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_check_word);
+        setContentView(R.layout.activity_check_word_new);
 
         databaseReference = MainActivity.reference.child("words");
         rightAnswerTextView = findViewById(R.id.rightAnswerTextView);

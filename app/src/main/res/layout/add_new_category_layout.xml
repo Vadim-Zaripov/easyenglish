@@ -18,7 +18,7 @@
             android:layout_height="wrap_content"
             android:text="@string/addNewCategory"
             android:layout_gravity="center_horizontal"
-            android:textSize="25sp"
+            android:textSize="@dimen/add_category_title_text_size"
             android:gravity="center_horizontal"
             android:textColor="@color/colorWhite"/>
 
@@ -28,6 +28,7 @@
             android:layout_height="wrap_content"
             android:textColor="@color/colorWhite"
             android:hint="@string/category"
+            android:textSize="@dimen/add_category_input_text_size"
             android:layout_gravity="center_horizontal"
             android:textColorHint="@color/WHITE_TRANSPARENT"
             android:backgroundTint="@color/colorWhite"/>
@@ -40,8 +41,8 @@
 
             <ImageView
                 android:id="@+id/addNewCategoryImageView"
-                android:layout_width="45dp"
-                android:layout_height="45dp"
+                android:layout_width="@dimen/add_category_save_image_view_size"
+                android:layout_height="@dimen/add_category_save_image_view_size"
                 android:layout_gravity="center_horizontal"
                 android:src="@drawable/arrow_small"
                 android:background="@drawable/continue_button_background"/>
@@ -50,7 +51,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/WHITE_TRANSPARENT"
-                android:textSize="12sp"
+                android:textSize="@dimen/add_category_secondary_text_text_size"
                 android:text="@string/_continue"/>
 
         </LinearLayout>

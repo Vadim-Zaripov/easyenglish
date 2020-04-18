@@ -68,7 +68,7 @@ public class ChangeWord extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_change_word);
+        setContentView(R.layout.activity_change_word_new);
 
         updateHasBeenDoneBroadcastReceiver = new BroadcastReceiver() {
             @Override

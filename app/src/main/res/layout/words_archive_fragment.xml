@@ -1,23 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:padding="@dimen/word_archive_root_view_padding">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/colorWhite"
-        android:text="@string/archive"
         android:layout_gravity="center"
         android:gravity="center"
-        android:textSize="25sp">
-    </TextView>
+        android:text="@string/archive"
+        android:textColor="@color/colorWhite"
+        android:textSize="@dimen/word_archive_title_text_size" />
 
     <Space
         android:layout_width="match_parent"
-        android:layout_height="10dp"/>
+        android:layout_height="10dp" />
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -25,23 +24,20 @@
 
         <TextView
             android:id="@+id/emptyContainerTextView"
-            android:textColor="@color/colorWhite"
-            android:textSize="28sp"
-            android:gravity="center"
-            android:text="@string/thereIsNoLearntWords"
-            android:visibility="invisible"
-            android:layout_gravity="start|center_horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            />
+            android:layout_gravity="start|center_horizontal"
+            android:gravity="center"
+            android:text="@string/thereIsNoLearntWords"
+            android:textColor="@color/colorWhite"
+            android:textSize="@dimen/word_archive_no_words_text_size"
+            android:visibility="invisible" />
 
         <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/archivedWordsRecyclerView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/archivedWordsRecyclerView">
-        </androidx.recyclerview.widget.RecyclerView>
+            android:layout_height="match_parent" />
     </FrameLayout>
-
 
 
 </LinearLayout>

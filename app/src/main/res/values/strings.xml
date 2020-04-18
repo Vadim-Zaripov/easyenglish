@@ -88,11 +88,11 @@
     <string name="deleteWord">Удалить</string>
     <string name="deleteWordMessage">Вы уверены, что хотите удалить слово</string>
     <string name="repeatPassword">Повторите пароль</string>
-    <string name="createAccount">Создайте аккаунт Lett!</string>
-    <string name="enterAccount">или войдите в существующий</string>
+    <string name="createAccount">Создайте аккаунт Lett</string>
+    <string name="enterAccount">Вход в аккаунт Lett</string>
     <string name="lettsGo">Вперед!</string>
     <string name="or">или</string>
-    <string name="googleSignUp">Войти через Google</string>
+    <string name="googleSignUp">Или войти через Google</string>
     <string name="undefinedError">Произошла неизвестная ошибка</string>
     <string name="isCategoryTheSame">Такая категория уже существует у вас, новые слова пополнили её!</string>
     <string name="newWords">Новые категория добавлена!</string>
