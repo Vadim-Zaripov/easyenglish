@@ -32,7 +32,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.develop.vadim.english.Basic.MainActivity;
-import com.develop.vadim.english.Broadcasts.NotificationBroadcast;
 import com.develop.vadim.english.R;
 import com.develop.vadim.english.Basic.Word;
 import com.github.chengang.library.TickView;
@@ -91,8 +90,6 @@ public class AddNewWordFragment extends Fragment implements UpdateDataListener {
                     Log.d("BOB", "new category");
                     break;
             }
-
-
 
             wordSendingProgressBar.setVisibility(View.INVISIBLE);
             tickView.setVisibility(View.VISIBLE);
@@ -229,11 +226,6 @@ public class AddNewWordFragment extends Fragment implements UpdateDataListener {
                         @Override
                         public void onCancelled(@NonNull DatabaseError databaseError) { }
                     });
-
-                   if(timeSharedPreferences.getBoolean(getString(R.string.firstRun), true)) {
-                       setUpService();
-                       timeSharedPreferences.edit().putBoolean(getString(R.string.firstRun), false).apply();
-                   }
                 }
                 else {
                     Toast.makeText(v.getContext(), "Заполни все поля", Toast.LENGTH_LONG).show();
@@ -288,20 +280,6 @@ public class AddNewWordFragment extends Fragment implements UpdateDataListener {
         return categoriesList;
     }
 
-    private void setUpService() {
-        Intent intent = new Intent(getContext(), NotificationBroadcast.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(), 0, intent, 0);
-
-        AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(ALARM_SERVICE);
-
-        Calendar wakeUpTimeCalendar = Calendar.getInstance();
-        wakeUpTimeCalendar.set(Calendar.HOUR_OF_DAY, timeSharedPreferences.getInt(getString(R.string.hourOfDay), 12));
-        wakeUpTimeCalendar.set(Calendar.MINUTE, timeSharedPreferences.getInt(getString(R.string.minute), 0));
-        wakeUpTimeCalendar.set(Calendar.SECOND, 0);
-
-        alarmManager.cancel(pendingIntent);
-        alarmManager.setExact(AlarmManager.RTC_WAKEUP, wakeUpTimeCalendar.getTimeInMillis(), pendingIntent);
-    }
 
     private void startAppearAnimation() {
         categoryMaterialCardView.setVisibility(View.VISIBLE);
@@ -442,17 +420,8 @@ public class AddNewWordFragment extends Fragment implements UpdateDataListener {
 
         @Override
         public void run() {
-
-
-            //Imitate loading
-            try {
-                Thread.sleep(2000);
-            }
-            catch(InterruptedException e) {
-                e.printStackTrace();
-            }
-
             word.setWordCategory(category);
+
             ((MainActivity)getActivity()).wordArrayList.add(word);
 
             if(getCategories().contains(category) || category.equals("Без категории")) {
@@ -460,7 +429,6 @@ public class AddNewWordFragment extends Fragment implements UpdateDataListener {
                wordSendingHandler.sendEmptyMessage(MainActivity.CATEGORIES_LOAD_END);
             }
             else {
-
                 MainActivity.reference.child("categories").child(String.valueOf(((MainActivity)getActivity()).categoryNames.size())).setValue(category);
 
                 ((MainActivity)getActivity()).categoryNames.add(category);

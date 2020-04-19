@@ -147,7 +147,7 @@ public class CategoriesFragment extends Fragment implements UpdateDataListener {
             holder.wordsInThisCategoryArrayList = wordsInCategoriesArrayList.get(position);
 
             if(wordsInCategoriesArrayList.get(position).size() != 0) {
-                for (int wordsInCategoriesCounter = 0; wordsInCategoriesCounter < wordsInCategoriesArrayList.get(position).size(); wordsInCategoriesCounter++) {
+                for(int wordsInCategoriesCounter = 0; wordsInCategoriesCounter < wordsInCategoriesArrayList.get(position).size(); wordsInCategoriesCounter++) {
 
                     final int localPosition = position;
                     final int currentWordIndex = wordsInCategoriesCounter;
