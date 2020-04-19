@@ -53,9 +53,9 @@ public class NotificationService extends Service {
 
         //THIS IS WHERE YOU SET NOTIFICATION TIME FOR CASES WHEN THE NOTIFICATION NEEDS TO BE RESCHEDULED
         myIntent = new Intent(this, NotificationBroadcastReceiver.class);
-        pendingIntent = PendingIntent.getBroadcast(this,0,myIntent,0);
+        pendingIntent = PendingIntent.getBroadcast(this,0,myIntent,PendingIntent.FLAG_UPDATE_CURRENT);
 
-        manager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+        manager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + AlarmManager.INTERVAL_DAY, pendingIntent);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)

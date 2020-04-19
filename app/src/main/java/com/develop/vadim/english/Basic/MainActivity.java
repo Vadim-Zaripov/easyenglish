@@ -319,9 +319,9 @@ public class MainActivity extends AppCompatActivity {
         calendar.set(Calendar.HOUR_OF_DAY, 12);
 
         myIntent = new Intent(MainActivity.this, NotificationBroadcastReceiver.class);
-        pendingIntent = PendingIntent.getBroadcast(this,0, myIntent, PendingIntent.FLAG_ONE_SHOT);
+        pendingIntent = PendingIntent.getBroadcast(this,0, myIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        manager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+        manager.setExact(AlarmManager.RTC_WAKEUP,System.currentTimeMillis() + AlarmManager.INTERVAL_DAY, pendingIntent);
     }
 
     private void initDefaultFiles() {

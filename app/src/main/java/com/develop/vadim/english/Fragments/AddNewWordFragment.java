@@ -212,8 +212,8 @@ public class AddNewWordFragment extends Fragment implements UpdateDataListener {
                             ind = dataSnapshot.getChildrenCount();
 
                             newWord = new Word(ind);
-                            newWord.setWordInEnglish(englishWordEditText.getText().toString().trim().toLowerCase());
-                            newWord.setWordInRussian(russianWordEditText.getText().toString().trim().toLowerCase());
+                            newWord.setWordInEnglish(englishWordEditText.getText().toString().trim().replace("\n", ""));
+                            newWord.setWordInRussian(russianWordEditText.getText().toString().trim().replace("\n", ""));
 
                             startDisappearingAnimation(newWord, categoryTextView.getText().toString().trim().toLowerCase());
 
@@ -371,13 +371,13 @@ public class AddNewWordFragment extends Fragment implements UpdateDataListener {
 
                         if(position == getItemCount() - 1) {
                             callChooseCategoryDialog();
+                            categoryTextView.setText("Без категории");
                         }
                         else {
                             categoryTextView.setText(categoryNameTextView.getText());
                         }
 
                         categoryTextView.setVisibility(View.VISIBLE);
-                        categoryTextView.setText(categoryNameTextView.getText());
                         categoryTextView.startAnimation(animation);
 
                         addWordToServiceImageView.animate().alphaBy(0).alpha(1).setDuration(420).start();
@@ -424,7 +424,7 @@ public class AddNewWordFragment extends Fragment implements UpdateDataListener {
 
             ((MainActivity)getActivity()).wordArrayList.add(word);
 
-            if(getCategories().contains(category) || category.equals("Без категории")) {
+            if(getCategories().contains(category.toLowerCase()) || category.toLowerCase().equals("без категории") || category.toLowerCase().equals("добавить")) {
                word.sentWordToService();
                wordSendingHandler.sendEmptyMessage(MainActivity.CATEGORIES_LOAD_END);
             }
