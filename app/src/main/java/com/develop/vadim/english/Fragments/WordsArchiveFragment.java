@@ -66,6 +66,7 @@ public class WordsArchiveFragment extends Fragment implements UpdateDataListener
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
+
                 ArrayList<Word> archivedWordsArrayList = ((MainActivity) Objects.requireNonNull(getActivity())).getArchivedWordsArrayList();
 
                 if(archivedWordsArrayList.size() == 0) {

@@ -146,7 +146,7 @@ public class WordCheckActivity extends AppCompatActivity {
     }
 
     private void startDisappearAnimation(final int stage) {
-        if(userAnswerEditText.getText().toString().trim().toLowerCase().equals(checkingWordsList.get(stage).getWordInEnglish())) {
+        if(userAnswerEditText.getText().toString().replace("\n", "").trim().toLowerCase().equals(checkingWordsList.get(stage).getWordInEnglish().toLowerCase())) {
             new Thread(new AnalyzeUserAnswerThread(stage, true)).start();
 
             AlphaAnimation alphaAnimation = new AlphaAnimation(1f, 0f);
@@ -301,6 +301,8 @@ public class WordCheckActivity extends AppCompatActivity {
                 changeWordIntent.putExtra(getString(R.string.changeWord), checkingWordsList.get(stage));
 
                 ActivityOptions activityOptions = ActivityOptions.makeSceneTransitionAnimation(WordCheckActivity.this);
+
+                startDisappearAnimation(stage);
 
                 startActivity(changeWordIntent, activityOptions.toBundle());
             }

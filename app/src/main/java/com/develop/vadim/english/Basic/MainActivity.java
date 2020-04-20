@@ -1,7 +1,6 @@
 package com.develop.vadim.english.Basic;
 
 import android.annotation.SuppressLint;
-import android.app.ActivityOptions;
 import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -17,18 +16,20 @@ import android.net.Uri;
 import android.os.Build;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.Toast;
 
-import com.develop.vadim.english.Broadcasts.NotificationBroadcast;
+import com.develop.vadim.english.Broadcasts.NotificationBroadcastReceiver;
 import com.develop.vadim.english.Fragments.AddNewWordFragment;
 import com.develop.vadim.english.Fragments.FragmentViewPagerAdapter;
 import com.develop.vadim.english.Fragments.WordsArchiveFragment;
@@ -110,8 +111,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         initDefaultFiles();
-        createNotificationChannel();
-        createNotification();
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            createNotificationChannel(MainActivity.this);
+            startAlarm();
+        }
 
         updateDataBroadcastReceiver = new BroadcastReceiver() {
             @Override
@@ -136,12 +140,6 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        fragmentViewPagerAdapter = new FragmentViewPagerAdapter(getSupportFragmentManager());
-
-        viewPager = findViewById(R.id.mainViewPagerId);
-        dotsIndicator = findViewById(R.id.dots_indicator);
-        spinKitView = findViewById(R.id.spinKit);
-        spinKitView.setIndeterminateDrawable(new DoubleBounce());
 
         loadingHandler = new Handler() {
             @Override
@@ -229,10 +227,24 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
+        fragmentViewPagerAdapter = new FragmentViewPagerAdapter(getSupportFragmentManager());
+
+        viewPager = findViewById(R.id.mainViewPagerId);
+        dotsIndicator = findViewById(R.id.dots_indicator);
+        spinKitView = findViewById(R.id.spinKit);
+        spinKitView.setIndeterminateDrawable(new DoubleBounce());
+
+
         Log.d(MAIN_ACTIVITY_TAG, "OnCreate");
         updateData(loadingHandler);
 
         registerReceiver(updateDataBroadcastReceiver, new IntentFilter(MainActivity.BROADCAST_ACTION));
+    }
+
+    @SuppressLint("HandlerLeak")
+    @Override
+    protected void onStart() {
+        super.onStart();
     }
 
     @Override
@@ -281,37 +293,35 @@ public class MainActivity extends AppCompatActivity {
 
                 break;
         }
-
-
     }
 
-    private void createNotificationChannel() {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = "LettReminderChannel";
-            String description = "Notification channel for Lett Reminder";
-            int importance = NotificationManager.IMPORTANCE_HIGH;
-            NotificationChannel channel = new NotificationChannel(NotificationBroadcast.notificationId, name, importance);
-            channel.enableLights(true);
-            channel.enableVibration(true);
-            channel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
-            channel.setDescription(description);
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void createNotificationChannel(Context c) {
+        CharSequence name = "LettReminderChannel";
+        String description = "Notification channel for Lett Reminder";
+        int importance = NotificationManager.IMPORTANCE_HIGH;
+        NotificationChannel channel = new NotificationChannel(NotificationBroadcastReceiver.NOTIFICATION_ID_KEY, name, importance);
+        channel.enableLights(true);
+        channel.enableVibration(true);
+        channel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+        channel.setDescription(description);
 
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-        }
+        NotificationManager notificationManager = c.getSystemService(NotificationManager.class);
+        notificationManager.createNotificationChannel(channel);
     }
 
-    private void createNotification() {
+    private void startAlarm() {
+        AlarmManager manager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+        Intent myIntent;
+        PendingIntent pendingIntent;
+
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY, 12);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
 
-        Intent intent = new Intent(MainActivity.this, NotificationBroadcast.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this, 0,intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        AlarmManager am = (AlarmManager) MainActivity.this.getSystemService(ALARM_SERVICE);
+        myIntent = new Intent(MainActivity.this, NotificationBroadcastReceiver.class);
+        pendingIntent = PendingIntent.getBroadcast(this,0, myIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        am.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+        manager.setExact(AlarmManager.RTC_WAKEUP,System.currentTimeMillis() + AlarmManager.INTERVAL_DAY, pendingIntent);
     }
 
     private void initDefaultFiles() {

@@ -147,7 +147,7 @@ public class CategoriesFragment extends Fragment implements UpdateDataListener {
             holder.wordsInThisCategoryArrayList = wordsInCategoriesArrayList.get(position);
 
             if(wordsInCategoriesArrayList.get(position).size() != 0) {
-                for (int wordsInCategoriesCounter = 0; wordsInCategoriesCounter < wordsInCategoriesArrayList.get(position).size(); wordsInCategoriesCounter++) {
+                for(int wordsInCategoriesCounter = 0; wordsInCategoriesCounter < wordsInCategoriesArrayList.get(position).size(); wordsInCategoriesCounter++) {
 
                     final int localPosition = position;
                     final int currentWordIndex = wordsInCategoriesCounter;
@@ -479,7 +479,6 @@ public class CategoriesFragment extends Fragment implements UpdateDataListener {
 
         class WordsCategoriesRecyclerViewHolder extends RecyclerView.ViewHolder {
             MaterialCardView materialCardView;
-            MaterialCardView materialCardViewPlaceHolder;
             TextView categoryTextView;
             LinearLayout wordInCategoryLinearLayout;
             LinearLayout linearLayoutF;
@@ -499,15 +498,14 @@ public class CategoriesFragment extends Fragment implements UpdateDataListener {
                 super(itemView);
 
                 wordInCategoryLinearLayout = itemView.findViewById(R.id.expandableRecyclerView);
-                materialCardView = itemView.findViewById(R.id.bob);
+                materialCardView = itemView.findViewById(R.id.categoryCellMaterialCardView);
 
                 learnTextView = itemView.findViewById(R.id.learnWordsTextView);
                 shareTextView = itemView.findViewById(R.id.shareWordsTextView);
-                materialCardViewPlaceHolder = itemView.findViewById(R.id.categoryCellMaterialCardViewPlaceHolder);
                 categoryTextView = itemView.findViewById(R.id.archiveWordInEnglishTextView);
                 expansionHeader = itemView.findViewById(R.id.categoryCellExpansionHeader);
                 expansionLayout = itemView.findViewById(R.id.categoryCellExpansionLayout);
-                linearLayoutF = itemView.findViewById(R.id.bob2);
+                linearLayoutF = itemView.findViewById(R.id.categoriesMaterialCardView);
                 expansionHeader.setExpansionLayout(expansionLayout);
 
                 expansionHeader.setOnClickListener(new View.OnClickListener() {
@@ -515,7 +513,7 @@ public class CategoriesFragment extends Fragment implements UpdateDataListener {
                     public void onClick(View view) {
                         if(expansionLayout.isExpanded()) {
                             expansionLayout.toggle(true);
-                            ValueAnimator valueAnimator = ValueAnimator.ofInt(275, height);
+                            ValueAnimator valueAnimator = ValueAnimator.ofInt(materialCardView.getMeasuredHeight(), (int) (materialCardView.getMeasuredHeight() / 1.7));
                             valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                                 @Override
                                 public void onAnimationUpdate(ValueAnimator animation) {
@@ -530,7 +528,7 @@ public class CategoriesFragment extends Fragment implements UpdateDataListener {
                         }
                         else {
                             expansionLayout.expand(true);
-                            ValueAnimator valueAnimator = ValueAnimator.ofInt(materialCardView.getMeasuredHeight(), 275);
+                            ValueAnimator valueAnimator = ValueAnimator.ofInt(materialCardView.getMeasuredHeight(), (int) (materialCardView.getMeasuredHeight() * 1.7));
                             valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                                 @Override
                                 public void onAnimationUpdate(ValueAnimator animation) {

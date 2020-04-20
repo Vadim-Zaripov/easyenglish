@@ -1,58 +1,50 @@
 package com.develop.vadim.english.Broadcasts;
 
-import android.app.AlarmManager;
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.util.Log;
+import android.widget.Toast;
+
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
-import android.util.Log;
 
 import com.develop.vadim.english.Basic.MainActivity;
 import com.develop.vadim.english.R;
-import com.develop.vadim.english.Services.WordCheckService;
+import com.develop.vadim.english.Services.NotificationService;
 
-import java.util.Calendar;
+public class NotificationBroadcastReceiver extends BroadcastReceiver {
 
-public class NotificationBroadcast extends BroadcastReceiver {
+    private static final int NOTIFICATION_ID = 211;
 
-    public static final String TAG = "ServiceAutoStart";
-
-    public static final String notificationId = "let'sCheckWordsNotify";
+    public static final String TAG = "Lett Notify";
+    public static final String NOTIFICATION_ID_KEY = "let'sCheckWordsNotify";
 
     @Override
     public void onReceive(Context context, Intent intent) {
-
-        long when = System.currentTimeMillis();
-
         Intent notificationIntent = new Intent(context, MainActivity.class);
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+
 
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0,
                 notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         //Вызов уведомления
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, notificationId)
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setWhen(when)
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, NOTIFICATION_ID_KEY)
+                .setSmallIcon(R.drawable.logolett2)
+                .setWhen(System.currentTimeMillis())
                 .setAutoCancel(false)
                 .setContentIntent(pendingIntent)
-                .setContentTitle("Lett")
                 .setContentText("Пора повторить слова!")
                 .setPriority(NotificationCompat.PRIORITY_HIGH);
 
-        Log.d(TAG, "MSG");
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
+        notificationManagerCompat.notify(200, builder.build());
 
-        //notificationManagerCompat.notify(200, builder.build());
-
-        //Установка временного сервиса
-        Intent serviceIntent = new Intent(context, WordCheckService.class);
-        context.startService(serviceIntent);
-
-
+        context.startService(new Intent(context, NotificationService.class));
     }
 }

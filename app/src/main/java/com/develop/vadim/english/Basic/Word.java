@@ -100,7 +100,7 @@ public class Word implements Parcelable {
         databaseReference.child(englishDatabaseKey).setValue(wordInEnglish);
         databaseReference.child(categoryDatabaseKey).setValue(wordCategory);
         databaseReference.child(levelDatabaseKey).setValue(level);
-        databaseReference.child(dateKey).setValue(date.getTime());
+        databaseReference.child(dateKey).setValue(date.getTime() + CHECK_INTERVAL.get(LEVEL_DAY));
     }
 
     public String getWordCategory() {
