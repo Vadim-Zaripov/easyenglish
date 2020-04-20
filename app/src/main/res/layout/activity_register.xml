@@ -126,7 +126,7 @@
     </LinearLayout>
 
     <TextView
-        android:id="@+id/registrationTextView"
+        android:id="@+id/loginTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Авторизация"

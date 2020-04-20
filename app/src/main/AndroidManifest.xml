@@ -12,8 +12,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
+
         <activity android:name=".Basic.ChangeWord" />
+
         <activity android:name=".Basic.WordCheckActivity" />
+
         <activity android:name=".Basic.MainActivity"
             android:windowSoftInputMode="adjustNothing">
             <intent-filter>
@@ -23,15 +26,19 @@
                     android:scheme="https" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".Basic.AuthenticationActivity"
             android:label="@string/auth">
+        </activity>
+
+        <activity android:name=".Basic.LoginActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".Basic.RegisterActivity" />
         <!--
         android:testOnly="false"
         android:debuggable="true"
