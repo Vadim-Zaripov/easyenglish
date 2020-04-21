@@ -489,7 +489,6 @@ public class CategoriesFragment extends Fragment implements UpdateDataListener {
 
             ArrayList<Word> wordsInThisCategoryArrayList;
 
-            int position;
             int height;
 
             boolean catchHeightFlag = true;
