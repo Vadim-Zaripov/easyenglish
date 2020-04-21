@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:installLocation="internalOnly"
     package="com.develop.vadim.english">
 
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <uses-permission android:name="android.permission.QUICKBOOT_POWERON" />
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -15,48 +12,33 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <receiver
-            android:name=".Broadcasts.NotificationBroadcastReceiver">
-        </receiver>
-
-        <service
-            android:name=".Services.NotificationService"
-            android:enabled="true"
-            android:exported="true" />
-
-        <receiver
-            android:name=".Broadcasts.BootBroadcastReceiver"
-            android:enabled="true"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-
-                <category android:name="android.intent.category.HOME" />
-            </intent-filter>
-    </receiver>
 
         <activity android:name=".Basic.ChangeWord" />
+
         <activity android:name=".Basic.WordCheckActivity" />
-        <activity
-            android:name=".Basic.MainActivity"
+
+        <activity android:name=".Basic.MainActivity"
             android:windowSoftInputMode="adjustNothing">
             <intent-filter>
                 <category android:name="android.intent.category.DEFAULT" />
-
                 <data
                     android:host="sharelett.page.link"
                     android:scheme="https" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".Basic.AuthenticationActivity"
             android:label="@string/auth">
+        </activity>
+
+        <activity android:name=".Basic.LoginActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".Basic.RegisterActivity" />
         <!--
         android:testOnly="false"
         android:debuggable="true"
@@ -65,6 +47,36 @@
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
 
+        <receiver
+            android:name=".Broadcasts.BootBroadcastReceiver"
+            android:enabled="true"
+            android:exported="false"
+            android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.PACKAGE_REPLACED" />
+                <data android:scheme="package" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.PACKAGE_ADDED" />
+                <data android:scheme="package" />
+            </intent-filter>
+
+        </receiver>
+
+        <receiver
+            android:name=".Broadcasts.NotificationBroadcast"
+            android:enabled="true"
+            android:exported="true" />
+
+        <service
+            android:name=".Services.WordCheckService"
+            android:enabled="true"
+            android:exported="true" />
     </application>
 
 </manifest>

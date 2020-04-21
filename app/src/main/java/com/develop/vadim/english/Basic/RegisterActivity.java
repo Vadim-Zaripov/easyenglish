@@ -3,9 +3,6 @@ package com.develop.vadim.english.Basic;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.util.Log;
 import android.view.View;
 import android.view.animation.AnimationUtils;
@@ -13,6 +10,9 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.develop.vadim.english.R;
 import com.google.android.gms.auth.api.Auth;
@@ -33,7 +33,8 @@ import com.shobhitpuri.custombuttons.GoogleSignInButton;
 
 import java.util.Calendar;
 
-public class AuthenticationActivity extends AppCompatActivity {
+public class RegisterActivity extends AppCompatActivity {
+
 
     private FirebaseAuth auth;
 
@@ -45,7 +46,6 @@ public class AuthenticationActivity extends AppCompatActivity {
     private EditText email;
     private EditText password;
     private EditText confirmPassword;
-    private TextView registrationTextView;
     private TextView loginTextView;
     private ImageView registerImageView;
     private GoogleSignInButton googleSignInButton;
@@ -58,7 +58,7 @@ public class AuthenticationActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_register);
+        setContentView(R.layout.activity_register);
 
         wordsCheckSharedPreferences = getSharedPreferences(getPackageName() + ".wordsCheckFlag", MODE_PRIVATE);
 
@@ -81,7 +81,6 @@ public class AuthenticationActivity extends AppCompatActivity {
         email = findViewById(R.id.emailEditView);
         password = findViewById(R.id.passwordEditText);
         confirmPassword = findViewById(R.id.confrimEditText);
-        registrationTextView = findViewById(R.id.registrationTextView);
         loginTextView = findViewById(R.id.loginTextView);
         registerImageView = findViewById(R.id.registerImageView);
         googleSignInButton = findViewById(R.id.signInWithGoogleButton);
@@ -101,17 +100,7 @@ public class AuthenticationActivity extends AppCompatActivity {
         loginTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                confirmPassword.setVisibility(View.INVISIBLE);
-                registerImageView.setOnClickListener(loginClickListener);
-            }
-        });
-
-        registrationTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                confirmPassword.setVisibility(View.VISIBLE);
-                confirmPassword.startAnimation(AnimationUtils.loadAnimation(v.getContext(), R.anim.appear));
-                registerImageView.setOnClickListener(registerClickListener);
+                finish();
             }
         });
 
@@ -153,20 +142,20 @@ public class AuthenticationActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            auth.getCurrentUser().sendEmailVerification().addOnCompleteListener(AuthenticationActivity.this, new OnCompleteListener<Void>() {
+                            auth.getCurrentUser().sendEmailVerification().addOnCompleteListener(RegisterActivity.this, new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
                                     if (task.isSuccessful()) {
-                                        Toast.makeText(AuthenticationActivity.this, "Письмо поттверждения отправлено на ваш E-mail", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(RegisterActivity.this, "Письмо поттверждения отправлено на ваш E-mail", Toast.LENGTH_SHORT).show();
 
                                         state = false;
                                     } else {
-                                        Toast.makeText(AuthenticationActivity.this, "Произошла ошибка при отправки письма на введнный E-mail", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(RegisterActivity.this, "Произошла ошибка при отправки письма на введнный E-mail", Toast.LENGTH_SHORT).show();
                                     }
                                 }
                             });
                         } else {
-                            Toast.makeText(AuthenticationActivity.this, "Произошла неизвестная ошибка", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(RegisterActivity.this, "Произошла неизвестная ошибка", Toast.LENGTH_SHORT).show();
                             doAfter(false);
                         }
                     }
@@ -175,30 +164,6 @@ public class AuthenticationActivity extends AppCompatActivity {
             else {
                 Toast.makeText(getApplicationContext(), "Пароли не совпадают", Toast.LENGTH_LONG).show();
             }
-        }
-    };
-
-    private View.OnClickListener loginClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            auth.signInWithEmailAndPassword(email.getText().toString(), password.getText().toString()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                @Override
-                public void onComplete(@NonNull Task<AuthResult> task) {
-                    if(task.isSuccessful()) {
-                        user = auth.getCurrentUser();
-                        if(!user.isEmailVerified()) {
-                            Toast.makeText(AuthenticationActivity.this, "Email не подтвержден!", Toast.LENGTH_SHORT).show();
-                        }
-                        else {
-                            doAfter(true);
-                        }
-                    }
-                    else {
-                        Toast.makeText(AuthenticationActivity.this, "Ошибка авторизации", Toast.LENGTH_SHORT).show();
-                        doAfter(false);
-                    }
-                }
-            });
         }
     };
 
@@ -255,5 +220,6 @@ public class AuthenticationActivity extends AppCompatActivity {
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
         startActivityForResult(signInIntent, 1);
     }
+
 
 }
