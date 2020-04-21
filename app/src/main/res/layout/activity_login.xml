@@ -33,18 +33,19 @@
         app:layout_constraintTop_toBottomOf="@+id/register_title">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:textSize="@dimen/register_input_text_size"
+            android:id="@+id/emailEditView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:backgroundTint="@color/colorWhite"
+            android:drawableLeft="@drawable/back"
+            android:ems="10"
+            android:hint="@string/email"
+            android:inputType="textEmailAddress"
             android:textColor="@color/colorWhite"
             android:textColorHighlight="@color/colorWhite"
-            android:textColorLink="@color/colorWhite"
-            android:id="@+id/emailEditView"
-            android:backgroundTint="@color/colorWhite"
-            android:hint="@string/email"
-            android:ems="10"
             android:textColorHint="@color/WHITE_TRANSPARENT"
-            android:inputType="textEmailAddress" />
+            android:textColorLink="@color/colorWhite"
+            android:textSize="@dimen/register_input_text_size" />
 
         <Space
             android:layout_width="match_parent"

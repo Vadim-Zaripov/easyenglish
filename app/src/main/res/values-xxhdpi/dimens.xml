@@ -86,7 +86,8 @@
 
     <dimen name="register_input_text_size">@dimen/edit_word_category_title_text_size</dimen>
     <dimen name="register_continue_button_height">@dimen/edit_word_save_button_height</dimen>
-    <dimen name="register_secondary_text_size">@dimen/edit_word_secondary_text_text_size</dimen>
 
+    <dimen name="register_google_button_size">110dp</dimen>
+    <dimen name="register_input_fields_margin_sides">32dp</dimen>
 
 </resources>

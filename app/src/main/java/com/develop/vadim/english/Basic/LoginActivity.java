@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,7 +30,6 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
-import com.shobhitpuri.custombuttons.GoogleSignInButton;
 
 import java.util.Calendar;
 
@@ -47,7 +47,7 @@ public class LoginActivity extends AppCompatActivity {
     private EditText password;
     private TextView registrationTextView;
     private ImageView loginImageView;
-    private GoogleSignInButton googleSignInButton;
+    private ImageButton googleSignInButton;
 
     private SharedPreferences sharedPreferences;
     private SharedPreferences wordsCheckSharedPreferences;
@@ -57,7 +57,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.activity_login_new);
 
         wordsCheckSharedPreferences = getSharedPreferences(getPackageName() + ".wordsCheckFlag", MODE_PRIVATE);
 
