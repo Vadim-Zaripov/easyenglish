@@ -1,5 +1,7 @@
 package com.develop.vadim.english.Fragments;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -48,6 +50,8 @@ import com.varunjohn1990.iosdialogs4android.IOSDialog;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+
+import kotlin.jvm.internal.Ref;
 
 public class CategoriesFragment extends Fragment implements UpdateDataListener {
 
@@ -210,13 +214,13 @@ public class CategoriesFragment extends Fragment implements UpdateDataListener {
                                     break;
                             }
 
-                            return true; //It must return true just because if it returns true it will not call OnClick method after dropping view
+                            return true; //It must return true just because if it returns "true" it will not call OnClick method after dropping view
                         }
                     });
 
                     wordInCategoryTextView.setText(wordsInCategoriesArrayList.get(position).get(wordsInCategoriesCounter).getWordInEnglish());
 
-                    wordInCategoryTextView.setOnClickListener(new View.OnClickListener() {
+                    view.setOnClickListener(new View.OnClickListener() {
                         boolean inEnglish = true;
 
                         @Override
@@ -371,13 +375,15 @@ public class CategoriesFragment extends Fragment implements UpdateDataListener {
                 @Override
                 public void onClick(View view){
 
+                    getView().setClickable(false);
+
                     final AlphaAnimation alphaAnimation = new AlphaAnimation(1f, 0f);
                     alphaAnimation.setDuration(250);
 
                     viewLayout.setClickable(false);
                     ((MainActivity)getActivity()).spinKitView.setVisibility(View.VISIBLE);
                     try {
-                        currentUri = appendQueryParameters("https://sharelett.page.link", "user", MainActivity.user.getUid());
+                        currentUri = appendQueryParameters("https://athene.page.link", "user", MainActivity.user.getUid());
                         currentUri = appendQueryParameters(currentUri.toString(), "category", categoryNamesList.get(currentPosition));
                     }
                     catch (URISyntaxException e) {
@@ -389,7 +395,7 @@ public class CategoriesFragment extends Fragment implements UpdateDataListener {
                             .getInstance()
                             .createDynamicLink()
                             .setLink(Uri.parse(currentUri.toString()))
-                            .setDomainUriPrefix("https://sharelett.page.link")
+                            .setDomainUriPrefix("https://athene.page.link")
                             .setAndroidParameters(
                                     new DynamicLink.AndroidParameters.Builder("com.develop.vadim.english").build()
                             )
@@ -397,6 +403,8 @@ public class CategoriesFragment extends Fragment implements UpdateDataListener {
                             .addOnSuccessListener(new OnSuccessListener<ShortDynamicLink>() {
                                 @Override
                                 public void onSuccess(ShortDynamicLink shortDynamicLink) {
+                                    getView().setClickable(true);
+
                                     final Intent shareIntent = new Intent(Intent.ACTION_SEND);
                                     shareIntent.setType("text/plain");
                                     String shareBody = shortDynamicLink.getShortLink().toString();
@@ -411,7 +419,7 @@ public class CategoriesFragment extends Fragment implements UpdateDataListener {
                                         public void onAnimationEnd(Animation animation) {
                                             ((MainActivity)getActivity()).spinKitView.setVisibility(View.INVISIBLE);
 
-                                            startActivity(Intent.createChooser(shareIntent, "Поделиться"));
+                                            startActivity(Intent.createChooser(shareIntent, "Поделиться категорией"));
                                         }
 
                                         @Override
@@ -425,6 +433,8 @@ public class CategoriesFragment extends Fragment implements UpdateDataListener {
                                 @Override
                                 public void onFailure(@NonNull Exception e) {
                                     Log.d("TAG", e.toString());
+
+                                    getView().setClickable(true);
 
                                     alphaAnimation.setAnimationListener(new Animation.AnimationListener() {
                                         @Override
@@ -508,33 +518,70 @@ public class CategoriesFragment extends Fragment implements UpdateDataListener {
                 expansionHeader.setExpansionLayout(expansionLayout);
 
                 expansionHeader.setOnClickListener(new View.OnClickListener() {
+                    boolean isFirstOpen = true;
+
+                    int notOpenedHeight;
+                    int openedHeight;
+
                     @Override
                     public void onClick(View view) {
+                        materialCardView.callOnClick();
+
+                        if(isFirstOpen) {
+                            notOpenedHeight = materialCardView.getMeasuredHeight();
+                            openedHeight = (int) (notOpenedHeight * 1.7);
+
+                            isFirstOpen = false;
+                        }
+
                         if(expansionLayout.isExpanded()) {
                             expansionLayout.toggle(true);
-                            ValueAnimator valueAnimator = ValueAnimator.ofInt(materialCardView.getMeasuredHeight(), (int) (materialCardView.getMeasuredHeight() / 1.7));
-                            valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+
+                            ValueAnimator valueAnimator = ValueAnimator.ofInt(openedHeight, notOpenedHeight);
+                            valueAnimator.addUpdateListener(animation -> {
+                                expansionLayout.setClickable(false);
+                                int val = (Integer) animation.getAnimatedValue();
+                                ViewGroup.LayoutParams layoutParams = materialCardView.getLayoutParams();
+                                layoutParams.height = val;
+                                materialCardView.setLayoutParams(layoutParams);
+                            });
+
+                            valueAnimator.addListener(new AnimatorListenerAdapter() {
                                 @Override
-                                public void onAnimationUpdate(ValueAnimator animation) {
-                                    int val = (Integer) animation.getAnimatedValue();
-                                    ViewGroup.LayoutParams layoutParams = materialCardView.getLayoutParams();
-                                    layoutParams.height = val;
-                                    materialCardView.setLayoutParams(layoutParams);
+                                public void onAnimationStart(Animator animation, boolean isReverse) {
+                                    expansionHeader.setClickable(false);
+                                }
+
+                                @Override
+                                public void onAnimationEnd(Animator animation, boolean isReverse) {
+                                    expansionHeader.setClickable(true);
                                 }
                             });
+
                             valueAnimator.setDuration(300);
                             valueAnimator.start();
                         }
                         else {
                             expansionLayout.expand(true);
-                            ValueAnimator valueAnimator = ValueAnimator.ofInt(materialCardView.getMeasuredHeight(), (int) (materialCardView.getMeasuredHeight() * 1.7));
+                            ValueAnimator valueAnimator = ValueAnimator.ofInt(notOpenedHeight,openedHeight);
                             valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                                 @Override
                                 public void onAnimationUpdate(ValueAnimator animation) {
                                     ViewGroup.LayoutParams layoutParams = materialCardView.getLayoutParams();
-                                    int val = (Integer) animation.getAnimatedValue();
-                                    layoutParams.height = val;
+                                    layoutParams.height = (int) (Integer) animation.getAnimatedValue();
                                     materialCardView.setLayoutParams(layoutParams);
+                                }
+                            });
+
+                            valueAnimator.addListener(new AnimatorListenerAdapter() {
+                                @Override
+                                public void onAnimationStart(Animator animation, boolean isReverse) {
+                                    expansionHeader.setClickable(false);
+                                }
+
+                                @Override
+                                public void onAnimationEnd(Animator animation, boolean isReverse) {
+                                    expansionHeader.setClickable(true);
                                 }
                             });
                             valueAnimator.setDuration(300);

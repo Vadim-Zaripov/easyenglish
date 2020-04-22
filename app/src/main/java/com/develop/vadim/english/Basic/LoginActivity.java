@@ -1,5 +1,7 @@
 package com.develop.vadim.english.Basic;
 
+import android.app.Activity;
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -15,6 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.develop.vadim.english.R;
+import com.github.ybq.android.spinkit.SpinKitView;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -48,6 +51,7 @@ public class LoginActivity extends AppCompatActivity {
     private TextView registrationTextView;
     private ImageView loginImageView;
     private GoogleSignInButton googleSignInButton;
+    private SpinKitView spinKitView;
 
     private SharedPreferences sharedPreferences;
     private SharedPreferences wordsCheckSharedPreferences;
@@ -82,25 +86,22 @@ public class LoginActivity extends AppCompatActivity {
         registrationTextView = findViewById(R.id.registrationTextView);
         loginImageView = findViewById(R.id.loginImageView);
         googleSignInButton = findViewById(R.id.signInWithGoogleButton);
+        spinKitView = findViewById(R.id.spinKit);
 
         auth = FirebaseAuth.getInstance();
         Log.d(TAG, "--started RegistrationActivity--");
-
-        if(sharedPreferences.getBoolean(getPackageName() + ".firstrun", false)) {
-            startActivity(new Intent(this, MainActivity.class));
-        }
-        else {
-            wordsCheckSharedPreferences.edit().putInt(getPackageName()  + ".wordsCheckFlag", Calendar.getInstance().get(Calendar.DAY_OF_YEAR)).apply();
-        }
 
         state = true;
 
         registrationTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(v.getContext(), RegisterActivity.class));
+                ActivityOptions activityOptions = ActivityOptions.makeSceneTransitionAnimation(LoginActivity.this);
+                startActivity(new Intent(v.getContext(), RegisterActivity.class), activityOptions.toBundle());
             }
         });
+
+        loginImageView.setOnClickListener(loginClickListener);
 
         googleSignInButton.setOnClickListener(view -> signInWithGoogle());
 
@@ -108,8 +109,24 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+
+        if(sharedPreferences.getBoolean(getPackageName() + ".firstrun", false)) {
+            ActivityOptions activityOptions = ActivityOptions.makeSceneTransitionAnimation(LoginActivity.this);
+            startActivity(new Intent(this, MainActivity.class), activityOptions.toBundle());
+        }
+        else {
+            wordsCheckSharedPreferences.edit().putInt(getPackageName()  + ".wordsCheckFlag", Calendar.getInstance().get(Calendar.DAY_OF_YEAR)).apply();
+        }
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        spinKitView.getRootView().setClickable(true);
+        spinKitView.setVisibility(View.INVISIBLE);
 
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
         if (requestCode == 1) {
@@ -130,9 +147,15 @@ public class LoginActivity extends AppCompatActivity {
     private View.OnClickListener loginClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            spinKitView.getRootView().setClickable(false);
+            spinKitView.setVisibility(View.VISIBLE);
+
             auth.signInWithEmailAndPassword(email.getText().toString(), password.getText().toString()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
+                    spinKitView.setVisibility(View.INVISIBLE);
+                    spinKitView.getRootView().setClickable(true);
+
                     if(task.isSuccessful()) {
                         user = auth.getCurrentUser();
                         if(!user.isEmailVerified()) {
@@ -155,19 +178,22 @@ public class LoginActivity extends AppCompatActivity {
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
         Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
+        spinKitView.setVisibility(View.VISIBLE);
 
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
         auth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
+                        spinKitView.setVisibility(View.INVISIBLE)
+                        ;
+                        if(task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
                             user = auth.getCurrentUser();
                             doAfter(true);
-
-                        } else {
+                        }
+                        else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
                             Toast.makeText(getApplicationContext(), "Ошибка решистрации", Toast.LENGTH_LONG).show();
@@ -180,7 +206,6 @@ public class LoginActivity extends AppCompatActivity {
     //####################################################
     public void doAfter(boolean res){
         if(res) {
-            //startActivity(new Intent(this, Main2Activity.class));
             Log.d(TAG, "--finished RegistrationActivity--");
             startActivity(new Intent(this, MainActivity.class));
             controlFirstRun();

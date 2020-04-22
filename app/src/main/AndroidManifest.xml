@@ -22,7 +22,7 @@
             <intent-filter>
                 <category android:name="android.intent.category.DEFAULT" />
                 <data
-                    android:host="sharelett.page.link"
+                    android:host="athene.page.link"
                     android:scheme="https" />
             </intent-filter>
         </activity>
@@ -39,10 +39,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".Basic.RegisterActivity" />
-        <!--
-        android:testOnly="false"
-        android:debuggable="true"
-        -->
+
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
@@ -50,8 +47,7 @@
         <receiver
             android:name=".Broadcasts.BootBroadcastReceiver"
             android:enabled="true"
-            android:exported="false"
-            android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -67,16 +63,6 @@
             </intent-filter>
 
         </receiver>
-
-        <receiver
-            android:name=".Broadcasts.NotificationBroadcast"
-            android:enabled="true"
-            android:exported="true" />
-
-        <service
-            android:name=".Services.WordCheckService"
-            android:enabled="true"
-            android:exported="true" />
     </application>
 
 </manifest>

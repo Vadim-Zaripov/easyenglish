@@ -61,6 +61,7 @@ public class AddNewWordFragment extends Fragment implements UpdateDataListener {
     private TextView headerTextView;
     private TextView addWordToServiceTextView;
     private TextView categoriesTextView;
+    private TextView addNewCategoryTextView;
     private ProgressBar wordSendingProgressBar;
     private RecyclerView choosingCategoryRecyclerView;
     private MaterialCardView categoryMaterialCardViewHolder;
@@ -148,9 +149,10 @@ public class AddNewWordFragment extends Fragment implements UpdateDataListener {
         categoriesChoosingMaterialMaterialCardView = view.findViewById(R.id.categoriesMaterialCardView);
         addWordToServiceImageView = view.findViewById(R.id.addWordToServiceImageView);
         wordSendingProgressBar = view.findViewById(R.id.spinKit);
+        addNewCategoryTextView = view.findViewById(R.id.addNewWordCategoryTextViewButton);
         categoryMaterialCardViewHolder = view.findViewById(R.id.categoryChooseCardViewHolder);
-
         tickView = view.findViewById(R.id.tickViewAccent);
+
 
         wordSendingProgressBar.setIndeterminateDrawable(new DoubleBounce());
 
@@ -162,12 +164,33 @@ public class AddNewWordFragment extends Fragment implements UpdateDataListener {
             @SuppressLint("HandlerLeak")
             @Override
             public void onClick(View v) {
+
+                getView().setClickable(true);
+
                 transitioner = new Transitioner(categoryMaterialCardView, categoriesChoosingMaterialMaterialCardView);
                 transitioner.animateTo(1f, (long) 400, new AccelerateDecelerateInterpolator());
 
                 categoryMaterialCardView.setCardBackgroundColor(Color.WHITE);
                 categoryTextView.setVisibility(View.INVISIBLE);
+                addNewCategoryTextView.setVisibility(View.VISIBLE);
                 categoryMaterialCardView.setClickable(false);
+
+                AlphaAnimation alphaAnimation = new AlphaAnimation(0f, 1f);
+                alphaAnimation.setDuration(600);
+                alphaAnimation.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) { }
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        addNewCategoryTextView.setClickable(true);
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) { }
+                });
+
+                addNewCategoryTextView.startAnimation(alphaAnimation);
 
                 addWordToServiceImageView.animate().alphaBy(1).alpha(0).setDuration(300).start();
 
@@ -175,7 +198,7 @@ public class AddNewWordFragment extends Fragment implements UpdateDataListener {
                     @Override
                     public void run() {
                         try {
-                            Thread.sleep(410);
+                            Thread.sleep(420);
                         }
                         catch(InterruptedException e) {
                             e.printStackTrace();
@@ -198,7 +221,6 @@ public class AddNewWordFragment extends Fragment implements UpdateDataListener {
                 };
             }
         });
-       // categoryEditText = view.findViewById(R.id.editTextCategory);
 
         addWordToServiceImageView.setOnClickListener(new View.OnClickListener() {
             Word newWord;
@@ -275,7 +297,6 @@ public class AddNewWordFragment extends Fragment implements UpdateDataListener {
         ArrayList<String> categoriesList = new ArrayList<>();
         categoriesList.add("Без категории");
         categoriesList.addAll(((MainActivity)getActivity()).getCategoryNamesList());
-        categoriesList.add("Добавить");
 
         return categoriesList;
     }
@@ -312,11 +333,10 @@ public class AddNewWordFragment extends Fragment implements UpdateDataListener {
         private Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.appear);
 
         private int[] materialCardsColors = new int[] {
-            R.color.LIGHT_GREEN_TRANSPARENT,
-            R.color.LIGHT_PURPLE_TRANSPARENT,
-            R.color.CASSANDORA_YELLOW,
-            R.color.JADE_DUST_TRANSPARENT,
-            R.color.JELLYFISH,
+            R.color.blue,
+            R.color.lightBlue,
+            R.color.lightPurple,
+            R.color.middlePurple
         };
 
         private CategoriesRecyclerViewAdapter(ArrayList<String> categories) {
@@ -338,10 +358,6 @@ public class AddNewWordFragment extends Fragment implements UpdateDataListener {
             holder.position = position;
 
             holder.materialCardView.startAnimation(animation);
-
-            if(position == getItemCount() - 1) {
-                holder.materialCardView.setCardBackgroundColor(getResources().getColor(R.color.DOUBLE_DRAGON_SKIN));
-            }
         }
 
         @Override
@@ -363,26 +379,64 @@ public class AddNewWordFragment extends Fragment implements UpdateDataListener {
                 itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Transitioner transitioner = new Transitioner(categoryMaterialCardView, categoryMaterialCardViewHolder);
-                        transitioner.animateTo(1f, (long) 400, new AccelerateDecelerateInterpolator());
-                        categoryMaterialCardView.setClickable(true);
-                        categoryMaterialCardView.setCardBackgroundColor(getResources().getColor(R.color.WHITE_TRANSPARENT));
-                        choosingCategoryRecyclerView.setVisibility(View.INVISIBLE);
-
-                        if(position == getItemCount() - 1) {
-                            callChooseCategoryDialog();
-                            categoryTextView.setText("Без категории");
-                        }
-                        else {
-                            categoryTextView.setText(categoryNameTextView.getText());
-                        }
-
-                        categoryTextView.setVisibility(View.VISIBLE);
-                        categoryTextView.startAnimation(animation);
-
-                        addWordToServiceImageView.animate().alphaBy(0).alpha(1).setDuration(420).start();
+                        startClosingAnimation(categoryNameTextView.getText().toString());
                     }
                 });
+
+                addNewCategoryTextView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        startClosingAnimation("Без категории");
+                        callChooseCategoryDialog();
+                    }
+                });
+
+                getView().setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        startClosingAnimation("Без категории");
+                    }
+                });
+            }
+
+            private void startClosingAnimation(String category) {
+                getView().setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) { }
+                });
+                Transitioner transitioner = new Transitioner(categoryMaterialCardView, categoryMaterialCardViewHolder);
+                transitioner.animateTo(1f, (long) 400, new AccelerateDecelerateInterpolator());
+                categoryMaterialCardView.setClickable(true);
+                categoryMaterialCardView.setCardBackgroundColor(getResources().getColor(R.color.WHITE_TRANSPARENT));
+                choosingCategoryRecyclerView.setVisibility(View.INVISIBLE);
+
+                categoryTextView.setText(category);
+
+                categoryTextView.setVisibility(View.VISIBLE);
+                categoryTextView.startAnimation(animation);
+
+                addWordToServiceImageView.animate().alphaBy(0).alpha(1).setDuration(420).start();
+
+                AlphaAnimation alphaAnimation  = new AlphaAnimation(1f, 0f);
+                alphaAnimation.setDuration(400);
+                alphaAnimation.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+                        addNewCategoryTextView.setClickable(false);
+                        choosingCategoryRecyclerView.setClickable(false);
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        addNewCategoryTextView.setVisibility(View.INVISIBLE);
+                        choosingCategoryRecyclerView.setClickable(true);
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) { }
+                });
+
+                addNewCategoryTextView.startAnimation(alphaAnimation);
             }
 
             private void callChooseCategoryDialog() {

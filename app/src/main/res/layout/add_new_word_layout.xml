@@ -4,7 +4,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/progress_bar"
     android:padding="@dimen/edit_word_root_view_padding">
 
 
@@ -183,13 +182,15 @@
             android:tag="animation2" />
 
         <TextView
+            android:id="@+id/addNewWordCategoryTextViewButton"
+            android:visibility="invisible"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/addNewCategory"
             android:textColor="@color/vinePurple"
-
             android:layout_gravity="center"
-            android:textSize="20sp"
+            android:textSize="18sp"
+            android:tag="animation4"
             android:background="@drawable/continue_button_background_purple"/>
 
     </com.google.android.material.card.MaterialCardView>
@@ -198,19 +199,17 @@
         android:id="@+id/categoriesMaterialCardView"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
         android:tag="animation"
         android:visibility="invisible"
         app:cardCornerRadius="20dp"
         app:contentPadding="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/categoriesTextViewTitle"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/categoriesTextViewTitle"
-        app:layout_constraintTop_toTopOf="@+id/categoryChooseCardViewHolder">
-
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:tag="animation4" />
+        app:layout_constraintTop_toTopOf="@+id/categoryChooseCardViewHolder"
+        app:layout_constraintVertical_bias="0.49">
 
         <TextView
             android:layout_width="match_parent"
@@ -222,6 +221,16 @@
             android:layout_height="match_parent"
             android:tag="animation2" />
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center_horizontal"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/continue_button_background_purple"
+            android:tag="animation4"
+            android:text="@string/addNewCategory"
+            android:textColor="@color/vinePurple"
+            android:textSize="18sp" />
     </com.google.android.material.card.MaterialCardView>
 
     <com.github.ybq.android.spinkit.SpinKitView

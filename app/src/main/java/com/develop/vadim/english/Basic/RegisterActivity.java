@@ -88,6 +88,8 @@ public class RegisterActivity extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
         Log.d(TAG, "--started RegistrationActivity--");
 
+        registerImageView.setOnClickListener(registerClickListener);
+
         if(sharedPreferences.getBoolean(getPackageName() + ".firstrun", false)) {
             startActivity(new Intent(this, MainActivity.class));
         }
@@ -137,7 +139,7 @@ public class RegisterActivity extends AppCompatActivity {
     private View.OnClickListener registerClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (password.getText().toString().equals(confirmPassword.getText().toString())) {
+            if(password.getText().toString().equals(confirmPassword.getText().toString())) {
                 auth.createUserWithEmailAndPassword(email.getText().toString(), password.getText().toString()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Lett</string>
+    <string name="app_name">Athene</string>
 
     <string name="settings">Настройки</string>
     <string name="end_of_words">Слов больше нет</string>
@@ -15,7 +15,7 @@
     <string name="registration">Регистрация</string>
 
     <!-- Activity names-->
-    <string name="auth">Lett</string>
+    <string name="auth">Вход</string>
     <string name="title_activity_main">Слова</string>
     <string name="tutorial">Обучение</string>
     <string name="enter_act">Вход</string>
@@ -88,8 +88,8 @@
     <string name="deleteWord">Удалить</string>
     <string name="deleteWordMessage">Вы уверены, что хотите удалить слово</string>
     <string name="repeatPassword">Повторите пароль</string>
-    <string name="createAccount">Создайте аккаунт Lett</string>
-    <string name="enterAccount">Вход в аккаунт Lett</string>
+    <string name="createAccount">Создайте аккаунт Athene</string>
+    <string name="enterAccount">Вход в аккаунт Athene</string>
     <string name="lettsGo">Вперед!</string>
     <string name="or">или</string>
     <string name="googleSignUp">Или войти через Google</string>
@@ -97,7 +97,7 @@
     <string name="isCategoryTheSame">Такая категория уже существует у вас, новые слова пополнили её!</string>
     <string name="newWords">Новые категория добавлена!</string>
     <string name="category">Категория</string>
-    <string name="addNewCategory">Добавить кстегорию</string>
+    <string name="addNewCategory">Добавить категорию</string>
     <string name="archivedWordsSharedPreferences">archive</string>
     <string name="learnWords">Изучить</string>
     <string name="shareCategory">Поделиться</string>

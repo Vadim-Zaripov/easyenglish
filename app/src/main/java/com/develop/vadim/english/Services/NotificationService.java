@@ -27,7 +27,7 @@ public class NotificationService extends Service {
         super.onCreate();
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             createNotificationChannel(NotificationService.this);
-            startAlarm(true, true);
+            startAlarm();
         }
 
         stopSelf();
@@ -43,7 +43,7 @@ public class NotificationService extends Service {
         return null;
     }
 
-    private void startAlarm(boolean isNotification, boolean isRepeat) {
+    private void startAlarm() {
         AlarmManager manager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
         Intent myIntent;
         PendingIntent pendingIntent;
@@ -55,7 +55,7 @@ public class NotificationService extends Service {
         myIntent = new Intent(this, NotificationBroadcastReceiver.class);
         pendingIntent = PendingIntent.getBroadcast(this,0,myIntent,PendingIntent.FLAG_UPDATE_CURRENT);
 
-        manager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + AlarmManager.INTERVAL_DAY, pendingIntent);
+        manager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)

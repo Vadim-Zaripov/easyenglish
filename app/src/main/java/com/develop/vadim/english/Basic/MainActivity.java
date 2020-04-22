@@ -1,6 +1,7 @@
 package com.develop.vadim.english.Basic;
 
 import android.annotation.SuppressLint;
+import android.app.ActivityOptions;
 import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -205,13 +206,15 @@ public class MainActivity extends AppCompatActivity {
                                     }
                                 });
 
+
                         if(wordsCheckWordsArrayList.size() != 0) {
                             Intent intent = new Intent(getApplicationContext(), WordCheckActivity.class);
                             intent.putParcelableArrayListExtra(getString(R.string.wordsToCheckingKey), wordsCheckWordsArrayList);
+                            Log.d("BIBA", categoryNames.toString());
                             intent.putStringArrayListExtra(getString(R.string.categoriesKey), categoryNames);
 
-                            //ActivityOptions activityOptions = ActivityOptions.makeSceneTransitionAnimation(MainActivity.this);
-                            startActivity(intent);
+                            ActivityOptions activityOptions = ActivityOptions.makeSceneTransitionAnimation(MainActivity.this);
+                            startActivity(intent, activityOptions.toBundle());
                         }
                         else {
                             Toast.makeText(getApplicationContext(), "Пока что слов для повторений нет", Toast.LENGTH_LONG).show();
@@ -253,6 +256,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onBackPressed() {
+        Intent startMain = new Intent(Intent.ACTION_MAIN);
+        startMain.addCategory(Intent.CATEGORY_HOME);
+        startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(startMain);
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
 
@@ -262,7 +273,7 @@ public class MainActivity extends AppCompatActivity {
 
             KonfettiView konfettiView = findViewById(R.id.viewKonfetti);
             konfettiView.build()
-                    .addColors(Color.MAGENTA, Color.YELLOW, getResources().getColor(R.color.purple))
+                    .addColors(Color.MAGENTA, Color.YELLOW, getResources().getColor(R.color.lightPurple))
                     .setDirection(0.0, 359.0)
                     .setSpeed(1f, 5f)
                     .setFadeOutEnabled(true)
@@ -321,7 +332,7 @@ public class MainActivity extends AppCompatActivity {
         myIntent = new Intent(MainActivity.this, NotificationBroadcastReceiver.class);
         pendingIntent = PendingIntent.getBroadcast(this,0, myIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        manager.setExact(AlarmManager.RTC_WAKEUP,System.currentTimeMillis() + AlarmManager.INTERVAL_DAY, pendingIntent);
+        manager.setRepeating(AlarmManager.RTC_WAKEUP,calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
     }
 
     private void initDefaultFiles() {
@@ -415,6 +426,34 @@ public class MainActivity extends AppCompatActivity {
                             }
 
                             handler.sendEmptyMessage(CATEGORIES_LOAD_END);
+
+                            for(Word word : wordArrayList) {
+                                Date date = new Date();
+                                long currentTime = date.getTime();
+
+                                Log.w(MAIN_ACTIVITY_TAG, currentTime + " is greater than " + word.getDate() + ": " + (currentTime > word.getDate()));
+
+
+                                if(word.getLevel() == Word.LEVEL_ARCHIVED) {
+                                    archivedWordsArrayList.add(word);
+
+                                    continue;
+                                }
+
+                                if(currentTime > word.getDate()) {
+                                    if(word.getLevel() == Word.LEVEL_DAY || word.getLevel() == Word.LEVEL_WEEK) {
+                                        if(currentTime - word.getDate() > Word.CHECK_INTERVAL.get(Word.LEVEL_DAY) * 3) {
+                                            word.setLevel(Word.LEVEL_DAY);
+                                        }
+                                    }
+
+                                    wordsCheckWordsArrayList.add(word);
+                                }
+                            }
+
+                            Log.d("BI", categoryNames.toString());
+
+                            handler.sendEmptyMessage(MainActivity.WORDS_ANALYNG_WND);
                         }
 
                         @Override
@@ -422,31 +461,6 @@ public class MainActivity extends AppCompatActivity {
                     });
 
                     //Filter words
-                    for(Word word : wordArrayList) {
-                        Date date = new Date();
-                        long currentTime = date.getTime();
-
-                        Log.w(MAIN_ACTIVITY_TAG, currentTime + " is greater than " + word.getDate() + ": " + (currentTime > word.getDate()));
-
-
-                        if(word.getLevel() == Word.LEVEL_ARCHIVED) {
-                            archivedWordsArrayList.add(word);
-
-                            continue;
-                        }
-
-                        if(currentTime > word.getDate()) {
-                            if(word.getLevel() == Word.LEVEL_DAY || word.getLevel() == Word.LEVEL_WEEK) {
-                                if(currentTime - word.getDate() > Word.CHECK_INTERVAL.get(Word.LEVEL_DAY) * 3) {
-                                    word.setLevel(Word.LEVEL_DAY);
-                                }
-                            }
-
-                            wordsCheckWordsArrayList.add(word);
-                        }
-                    }
-
-                    handler.sendEmptyMessage(MainActivity.WORDS_ANALYNG_WND);
                 }
 
                 @Override

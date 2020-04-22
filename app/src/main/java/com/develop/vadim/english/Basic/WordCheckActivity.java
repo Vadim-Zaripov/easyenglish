@@ -13,7 +13,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
@@ -56,6 +55,7 @@ public class WordCheckActivity extends AppCompatActivity {
     private Handler removingWordHandler;
 
     private boolean widthFlag = true;
+    private boolean isGoneToChange = false;
 
     @SuppressLint("HandlerLeak")
     @Override
@@ -81,12 +81,13 @@ public class WordCheckActivity extends AppCompatActivity {
         setUpLesson(0);
     }
 
-    private void setUpLesson(final int stage) {
-        if(checkingWordsList == null || checkingWordsList.size() == 0) {
-            onBackPressed();
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
 
-            return;
-        }
+    private void setUpLesson(final int stage) {
+        endWordsArrayChecking();
 
         Animation appearAnimation = new AlphaAnimation(0f, 1f);
         appearAnimation.setDuration(200);
@@ -143,6 +144,14 @@ public class WordCheckActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+    }
+
+    private void endWordsArrayChecking() {
+        if(checkingWordsList == null || checkingWordsList.size() == 0) {
+            onBackPressed();
+
+            return;
+        }
     }
 
     private void startDisappearAnimation(final int stage) {
@@ -302,8 +311,6 @@ public class WordCheckActivity extends AppCompatActivity {
 
                 ActivityOptions activityOptions = ActivityOptions.makeSceneTransitionAnimation(WordCheckActivity.this);
 
-                startDisappearAnimation(stage);
-
                 startActivity(changeWordIntent, activityOptions.toBundle());
             }
         });
@@ -342,7 +349,10 @@ public class WordCheckActivity extends AppCompatActivity {
         });
     }
 
+
     private void continueChecking(final int stage) {
+        endWordsArrayChecking();
+
         Animation animationAppear = new AlphaAnimation(0f, 1f);
         animationAppear.setDuration(animationDuration);
         Animation disappearAnimation = new AlphaAnimation(1f, 0f);
