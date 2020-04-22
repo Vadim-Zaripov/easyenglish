@@ -5,6 +5,8 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -52,12 +54,16 @@ public class RegisterActivity extends AppCompatActivity {
     private SharedPreferences sharedPreferences;
     private SharedPreferences wordsCheckSharedPreferences;
 
+    private Animation animation;
+
     private GoogleApiClient googleApiClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
+
+        animation = AnimationUtils.loadAnimation(this, R.anim.click);
 
         wordsCheckSharedPreferences = getSharedPreferences(getPackageName() + ".wordsCheckFlag", MODE_PRIVATE);
 
@@ -96,7 +102,11 @@ public class RegisterActivity extends AppCompatActivity {
 
         state = true;
 
-        loginTextView.setOnClickListener(view -> finish());
+        loginTextView.setOnClickListener(view -> {
+            view.startAnimation(animation);
+
+            onBackPressed();
+        });
         registerImageView.setOnClickListener(registerClickListener);
         googleSignInButton.setOnClickListener(view -> signInWithGoogle());
 
@@ -124,27 +134,40 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private View.OnClickListener registerClickListener = v -> {
-        if(password.getText().toString().equals(confirmPassword.getText().toString())) {
-            auth.createUserWithEmailAndPassword(email.getText().toString(), password.getText().toString())
-                    .addOnSuccessListener(task ->
-                            Objects.requireNonNull(auth.getCurrentUser())
-                                    .sendEmailVerification()
-                                    .addOnSuccessListener(view -> {
-                                        Toast.makeText(RegisterActivity.this, "Письмо поттверждения отправлено на ваш E-mail", Toast.LENGTH_SHORT).show();
-                                        state = false;
-                                        finish();
-                                    })
-                                    .addOnFailureListener(e ->
-                                            Toast.makeText(RegisterActivity.this, "Произошла ошибка при отправки письма на введнный E-mail", Toast.LENGTH_SHORT).show()
-                                    )
-                    )
-                    .addOnFailureListener(e -> {
-                        Toast.makeText(RegisterActivity.this, "Произошла неизвестная ошибка", Toast.LENGTH_SHORT).show();
-                        doAfter(false);
-                    });
+
+        v.startAnimation(animation);
+
+        if(!password.getText().toString().trim().equals("") && !confirmPassword.getText().toString().trim().equals("") &&   !email.getText().toString().trim().equals("")) {
+            if(password.getText().toString().equals(confirmPassword.getText().toString())) {
+                v.setClickable(false);
+
+                auth.createUserWithEmailAndPassword(email.getText().toString(), password.getText().toString())
+                        .addOnSuccessListener(task ->
+                                Objects.requireNonNull(auth.getCurrentUser())
+                                        .sendEmailVerification()
+                                        .addOnSuccessListener(view -> {
+                                            v.setClickable(true);
+
+                                            Toast.makeText(RegisterActivity.this, "Письмо поттверждения отправлено на ваш E-mail", Toast.LENGTH_SHORT).show();
+                                            state = false;
+                                            finish();
+                                        })
+                                        .addOnFailureListener(e -> {
+
+                                            v.setClickable(true);
+                                            Toast.makeText(RegisterActivity.this, "Произошла ошибка при отправки письма на введнный E-mail", Toast.LENGTH_SHORT).show();
+                                        })
+                        )
+                        .addOnFailureListener(e -> {
+                            Toast.makeText(RegisterActivity.this, "Произошла неизвестная ошибка", Toast.LENGTH_SHORT).show();
+                            doAfter(false);
+                        });
+            } else {
+                Toast.makeText(getApplicationContext(), "Пароли не совпадают", Toast.LENGTH_LONG).show();
+            }
         }
         else {
-            Toast.makeText(getApplicationContext(), "Пароли не совпадают", Toast.LENGTH_LONG).show();
+            Toast.makeText(RegisterActivity.this, "Вы заполнили не все поля", Toast.LENGTH_LONG).show();
         }
     };
 

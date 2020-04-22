@@ -53,6 +53,7 @@ public class WordCheckActivity extends AppCompatActivity {
     private int width;
 
     private Handler removingWordHandler;
+    private int stage = 0;
 
     private boolean widthFlag = true;
     private boolean isGoneToChange = false;
@@ -84,6 +85,13 @@ public class WordCheckActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
+        if(isGoneToChange) {
+
+            continueChecking(stage);
+
+            isGoneToChange = false;
+        }
     }
 
     private void setUpLesson(final int stage) {
@@ -267,6 +275,7 @@ public class WordCheckActivity extends AppCompatActivity {
 
             widthFlag = false;
         }
+
         ValueAnimator valueAnimator = ValueAnimator.ofInt(continueImageView.getMeasuredWidth(), continueImageView.getMeasuredHeight());
         valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
@@ -308,6 +317,9 @@ public class WordCheckActivity extends AppCompatActivity {
                 Intent changeWordIntent = new Intent(v.getContext(), ChangeWord.class);
                 changeWordIntent.putStringArrayListExtra(getString(R.string.categoriesToChangeWordActivity), getCategoriesToCheckWordActivityList());
                 changeWordIntent.putExtra(getString(R.string.changeWord), checkingWordsList.get(stage));
+
+                WordCheckActivity.this.stage = stage;
+                isGoneToChange = true;
 
                 ActivityOptions activityOptions = ActivityOptions.makeSceneTransitionAnimation(WordCheckActivity.this);
 

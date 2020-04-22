@@ -116,4 +116,15 @@
         app:layout_constraintVertical_bias="0.39"
         app:srcCompat="@drawable/google" />
 
+    <com.github.ybq.android.spinkit.SpinKitView
+        android:id="@+id/spinKit"
+        style="@style/SpinKitView.DoubleBounce"
+        android:layout_width="155dp"
+        android:visibility="invisible"
+        android:layout_height="155dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

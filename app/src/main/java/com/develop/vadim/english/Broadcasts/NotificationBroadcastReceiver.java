@@ -28,7 +28,7 @@ public class NotificationBroadcastReceiver extends BroadcastReceiver {
         Intent notificationIntent = new Intent(context, MainActivity.class);
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-
+        Toast.makeText(context, "BOB", Toast.LENGTH_LONG).show();
 
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0,
                 notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);

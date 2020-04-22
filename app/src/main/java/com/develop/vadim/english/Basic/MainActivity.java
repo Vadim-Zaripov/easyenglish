@@ -327,12 +327,14 @@ public class MainActivity extends AppCompatActivity {
         PendingIntent pendingIntent;
 
         Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
         calendar.set(Calendar.HOUR_OF_DAY, 12);
 
         myIntent = new Intent(MainActivity.this, NotificationBroadcastReceiver.class);
         pendingIntent = PendingIntent.getBroadcast(this,0, myIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        manager.setRepeating(AlarmManager.RTC_WAKEUP,calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+        manager.cancel(pendingIntent);
+        manager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
     }
 
     private void initDefaultFiles() {
@@ -450,8 +452,6 @@ public class MainActivity extends AppCompatActivity {
                                     wordsCheckWordsArrayList.add(word);
                                 }
                             }
-
-                            Log.d("BI", categoryNames.toString());
 
                             handler.sendEmptyMessage(MainActivity.WORDS_ANALYNG_WND);
                         }

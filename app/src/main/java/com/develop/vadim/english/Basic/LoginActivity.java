@@ -1,10 +1,13 @@
 package com.develop.vadim.english.Basic;
 
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -15,6 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.develop.vadim.english.R;
+import com.github.ybq.android.spinkit.SpinKitView;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -47,6 +51,9 @@ public class LoginActivity extends AppCompatActivity {
     private TextView registrationTextView;
     private ImageView loginImageView;
     private ImageButton googleSignInButton;
+    private SpinKitView spinKitView;
+
+    public Animation animation;
 
     private SharedPreferences sharedPreferences;
     private SharedPreferences wordsCheckSharedPreferences;
@@ -57,6 +64,8 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        animation = AnimationUtils.loadAnimation(this, R.anim.click);
 
         wordsCheckSharedPreferences = getSharedPreferences(getPackageName() + ".wordsCheckFlag", MODE_PRIVATE);
 
@@ -81,6 +90,7 @@ public class LoginActivity extends AppCompatActivity {
         registrationTextView = findViewById(R.id.registrationTextView);
         loginImageView = findViewById(R.id.loginImageView);
         googleSignInButton = findViewById(R.id.signInWithGoogleButton);
+        spinKitView = findViewById(R.id.spinKit);
 
         auth = FirebaseAuth.getInstance();
         Log.d(TAG, "--started RegistrationActivity--");
@@ -94,7 +104,13 @@ public class LoginActivity extends AppCompatActivity {
 
         state = true;
 
-        registrationTextView.setOnClickListener(view -> startActivity(new Intent(view.getContext(), RegisterActivity.class)));
+        registrationTextView.setOnClickListener(view -> {
+            view.startAnimation(animation);
+
+            ActivityOptions activityOptions = ActivityOptions.makeSceneTransitionAnimation(LoginActivity.this);
+            startActivity(new Intent(view.getContext(), RegisterActivity.class), activityOptions.toBundle());
+        });
+
         loginImageView.setOnClickListener(loginClickListener);
         googleSignInButton.setOnClickListener(view -> signInWithGoogle());
 
@@ -124,24 +140,33 @@ public class LoginActivity extends AppCompatActivity {
     private View.OnClickListener loginClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            auth.signInWithEmailAndPassword(email.getText().toString(), password.getText().toString()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                @Override
-                public void onComplete(@NonNull Task<AuthResult> task) {
-                    if(task.isSuccessful()) {
-                        user = auth.getCurrentUser();
-                        if(!user.isEmailVerified()) {
-                            Toast.makeText(LoginActivity.this, "Email не подтвержден!", Toast.LENGTH_SHORT).show();
-                        }
-                        else {
-                            doAfter(true);
+            v.startAnimation(animation);
+
+            v.setClickable(false);
+            if(email.getText().toString().trim().equals("") || password.getText().toString().trim().equals("")) {
+                Toast.makeText(LoginActivity.this, "Вы заполниил не все поля", Toast.LENGTH_LONG).show();
+                v.setClickable(true);
+            }
+            else {
+                auth.signInWithEmailAndPassword(email.getText().toString(), password.getText().toString()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        v.setClickable(true);
+
+                        if (task.isSuccessful()) {
+                            user = auth.getCurrentUser();
+                            if (!user.isEmailVerified()) {
+                                Toast.makeText(LoginActivity.this, "Email не подтвержден!", Toast.LENGTH_SHORT).show();
+                            } else {
+                                doAfter(true);
+                            }
+                        } else {
+                            Toast.makeText(LoginActivity.this, "Ошибка авторизации", Toast.LENGTH_SHORT).show();
+                            doAfter(false);
                         }
                     }
-                    else {
-                        Toast.makeText(LoginActivity.this, "Ошибка авторизации", Toast.LENGTH_SHORT).show();
-                        doAfter(false);
-                    }
-                }
-            });
+                });
+            }
         }
     };
 
