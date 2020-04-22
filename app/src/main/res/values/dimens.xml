@@ -59,24 +59,30 @@
     <dimen name="check_word_continue_button_height">40dp</dimen>
     <dimen name="check_word_forget_text_text_size">14sp</dimen>
 
+
     <!-- Word Archive Layout -->
     <dimen name="word_archive_root_view_padding">@dimen/edit_word_root_view_padding</dimen>
     <dimen name="word_archive_title_text_size">@dimen/edit_word_title_text_size</dimen>
     <dimen name="word_archive_no_words_text_size">@dimen/edit_word_category_title_text_size</dimen>
 
+
     <!-- Categories List Layout -->
     <dimen name="categories_list_root_view_padding">@dimen/edit_word_root_view_padding</dimen>
+    <dimen name="categories_list_root_view_padding_sides">16dp</dimen>
     <dimen name="categories_list_title_text_size">@dimen/edit_word_title_text_size</dimen>
     <dimen name="categories_list_no_categories_text_size">@dimen/edit_word_category_title_text_size</dimen>
 
+
     <!-- Categories Choosing Layout -->
     <dimen name="categories_choosing_title_text_size">18sp</dimen>
+
 
     <!-- Add Category Layout -->
     <dimen name="add_category_title_text_size">@dimen/edit_word_title_text_size</dimen>
     <dimen name="add_category_input_text_size">@dimen/edit_word_category_title_text_size</dimen>
     <dimen name="add_category_save_image_view_size">@dimen/edit_word_edit_image_view_size</dimen>
     <dimen name="add_category_secondary_text_text_size">@dimen/edit_word_secondary_text_text_size</dimen>
+
 
     <!-- Register Layout -->
     <dimen name="register_root_view_padding">@dimen/edit_word_root_view_padding</dimen>

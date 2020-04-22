@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -32,6 +31,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
 import java.util.Calendar;
+import java.util.Objects;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -57,7 +57,7 @@ public class RegisterActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_register_new);
+        setContentView(R.layout.activity_register);
 
         wordsCheckSharedPreferences = getSharedPreferences(getPackageName() + ".wordsCheckFlag", MODE_PRIVATE);
 
@@ -87,8 +87,6 @@ public class RegisterActivity extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
         Log.d(TAG, "--started RegistrationActivity--");
 
-        registerImageView.setOnClickListener(registerClickListener);
-
         if(sharedPreferences.getBoolean(getPackageName() + ".firstrun", false)) {
             startActivity(new Intent(this, MainActivity.class));
         }
@@ -98,13 +96,8 @@ public class RegisterActivity extends AppCompatActivity {
 
         state = true;
 
-        loginTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
-
+        loginTextView.setOnClickListener(view -> finish());
+        registerImageView.setOnClickListener(registerClickListener);
         googleSignInButton.setOnClickListener(view -> signInWithGoogle());
 
         Log.d(TAG, "--started RegistrationActivity--");
@@ -130,36 +123,28 @@ public class RegisterActivity extends AppCompatActivity {
         }
     }
 
-    private View.OnClickListener registerClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            if(password.getText().toString().equals(confirmPassword.getText().toString())) {
-                auth.createUserWithEmailAndPassword(email.getText().toString(), password.getText().toString()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            auth.getCurrentUser().sendEmailVerification().addOnCompleteListener(RegisterActivity.this, new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    if (task.isSuccessful()) {
+    private View.OnClickListener registerClickListener = v -> {
+        if(password.getText().toString().equals(confirmPassword.getText().toString())) {
+            auth.createUserWithEmailAndPassword(email.getText().toString(), password.getText().toString())
+                    .addOnSuccessListener(task ->
+                            Objects.requireNonNull(auth.getCurrentUser())
+                                    .sendEmailVerification()
+                                    .addOnSuccessListener(view -> {
                                         Toast.makeText(RegisterActivity.this, "Письмо поттверждения отправлено на ваш E-mail", Toast.LENGTH_SHORT).show();
-
                                         state = false;
-                                    } else {
-                                        Toast.makeText(RegisterActivity.this, "Произошла ошибка при отправки письма на введнный E-mail", Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-                            });
-                        } else {
-                            Toast.makeText(RegisterActivity.this, "Произошла неизвестная ошибка", Toast.LENGTH_SHORT).show();
-                            doAfter(false);
-                        }
-                    }
-                });
-            }
-            else {
-                Toast.makeText(getApplicationContext(), "Пароли не совпадают", Toast.LENGTH_LONG).show();
-            }
+                                        finish();
+                                    })
+                                    .addOnFailureListener(e ->
+                                            Toast.makeText(RegisterActivity.this, "Произошла ошибка при отправки письма на введнный E-mail", Toast.LENGTH_SHORT).show()
+                                    )
+                    )
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(RegisterActivity.this, "Произошла неизвестная ошибка", Toast.LENGTH_SHORT).show();
+                        doAfter(false);
+                    });
+        }
+        else {
+            Toast.makeText(getApplicationContext(), "Пароли не совпадают", Toast.LENGTH_LONG).show();
         }
     };
 

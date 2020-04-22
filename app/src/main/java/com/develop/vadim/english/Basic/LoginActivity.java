@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -57,7 +56,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login_new);
+        setContentView(R.layout.activity_login);
 
         wordsCheckSharedPreferences = getSharedPreferences(getPackageName() + ".wordsCheckFlag", MODE_PRIVATE);
 
@@ -95,13 +94,8 @@ public class LoginActivity extends AppCompatActivity {
 
         state = true;
 
-        registrationTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(v.getContext(), RegisterActivity.class));
-            }
-        });
-
+        registrationTextView.setOnClickListener(view -> startActivity(new Intent(view.getContext(), RegisterActivity.class)));
+        loginImageView.setOnClickListener(loginClickListener);
         googleSignInButton.setOnClickListener(view -> signInWithGoogle());
 
         Log.d(TAG, "--started RegistrationActivity--");

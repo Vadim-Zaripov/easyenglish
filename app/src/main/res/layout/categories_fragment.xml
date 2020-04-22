@@ -2,7 +2,10 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="@dimen/categories_list_root_view_padding">
+    android:background="@drawable/progress_bar"
+    android:padding="@dimen/categories_list_root_view_padding"
+    android:paddingStart="@dimen/categories_list_root_view_padding_sides"
+    android:paddingEnd="@dimen/categories_list_root_view_padding_sides">
 
     <LinearLayout
         android:layout_width="match_parent"

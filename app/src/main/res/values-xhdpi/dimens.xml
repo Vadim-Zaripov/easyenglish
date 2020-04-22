@@ -69,6 +69,7 @@
 
     <!-- Categories List Layout -->
     <dimen name="categories_list_root_view_padding">@dimen/edit_word_root_view_padding</dimen>
+    <dimen name="categories_list_root_view_padding_sides">16dp</dimen>
     <dimen name="categories_list_title_text_size">@dimen/edit_word_title_text_size</dimen>
     <dimen name="categories_list_no_categories_text_size">@dimen/edit_word_category_title_text_size</dimen>
 
