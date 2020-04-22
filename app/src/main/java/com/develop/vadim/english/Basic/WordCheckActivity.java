@@ -430,7 +430,6 @@ public class WordCheckActivity extends AppCompatActivity {
         ArrayList<String> arrayList = new ArrayList<>();
         arrayList.add("Без категории");
         arrayList.addAll(categoriesList);
-        arrayList.add("Добавить");
 
         return arrayList;
     }

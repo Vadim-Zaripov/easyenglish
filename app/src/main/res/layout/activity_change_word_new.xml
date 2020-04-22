@@ -93,16 +93,6 @@
         app:layout_constraintStart_toStartOf="@+id/categoriesTextViewTitle"
         app:layout_constraintTop_toBottomOf="@+id/categoriesTextViewTitle">
 
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:tag="animation4"
-            android:textColor="@color/colorWhite"
-            android:textColorHint="@color/colorWhite" />
-
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -112,6 +102,16 @@
             android:text="xenous"
             android:textColor="@android:color/white"
             android:textSize="@dimen/edit_word_category_title_text_size" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:tag="animation4"
+            android:textColor="@color/colorWhite"
+            android:textColorHint="@color/colorWhite" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:layout_width="match_parent"
@@ -140,7 +140,6 @@
             android:layout_gravity="center"
             android:gravity="center"
             android:tag="animation3"
-            android:text="xenous"
             android:textColor="@android:color/white"
             android:textSize="@dimen/edit_word_category_title_text_size"
             android:visibility="visible" />
@@ -150,6 +149,18 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:tag="animation2" />
+
+        <TextView
+            android:id="@+id/addNewWordCategoryTextViewButton"
+            android:visibility="invisible"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/addNewCategory"
+            android:textColor="@color/vinePurple"
+            android:layout_gravity="center"
+            android:textSize="18sp"
+            android:tag="animation4"
+            android:background="@drawable/continue_button_background_purple"/>
 
     </com.google.android.material.card.MaterialCardView>
 
@@ -166,11 +177,6 @@
         app:layout_constraintStart_toStartOf="@+id/categoriesTextViewTitle"
         app:layout_constraintTop_toTopOf="@+id/categoryChooseCardViewHolder">
 
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:tag="animation4" />
-
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -181,6 +187,17 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:tag="animation2" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center_horizontal"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/continue_button_background_purple"
+            android:tag="animation4"
+            android:text="@string/addNewCategory"
+            android:textColor="@color/vinePurple"
+            android:textSize="18sp" />
 
     </com.google.android.material.card.MaterialCardView>
 
@@ -255,19 +272,5 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.36" />
-
-    <com.github.chengang.library.TickView
-        android:id="@+id/tickViewAccent"
-        android:layout_width="148dp"
-        android:layout_height="148dp"
-        android:visibility="invisible"
-        app:check_base_color="@color/rightWordGreen"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.36"
-        app:radius="40dp"
-        app:rate="normal" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

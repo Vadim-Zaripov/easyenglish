@@ -107,6 +107,7 @@ public class RegisterActivity extends AppCompatActivity {
 
             onBackPressed();
         });
+
         registerImageView.setOnClickListener(registerClickListener);
         googleSignInButton.setOnClickListener(view -> signInWithGoogle());
 

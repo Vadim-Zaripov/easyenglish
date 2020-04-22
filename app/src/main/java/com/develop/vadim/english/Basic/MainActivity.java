@@ -442,6 +442,10 @@ public class MainActivity extends AppCompatActivity {
                                     continue;
                                 }
 
+                                if(word.getLevel() == Word.LEVEL_ADDED) {
+                                    continue;
+                                }
+
                                 if(currentTime > word.getDate()) {
                                     if(word.getLevel() == Word.LEVEL_DAY || word.getLevel() == Word.LEVEL_WEEK) {
                                         if(currentTime - word.getDate() > Word.CHECK_INTERVAL.get(Word.LEVEL_DAY) * 3) {

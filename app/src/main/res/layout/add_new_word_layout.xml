@@ -231,6 +231,7 @@
             android:text="@string/addNewCategory"
             android:textColor="@color/vinePurple"
             android:textSize="18sp" />
+
     </com.google.android.material.card.MaterialCardView>
 
     <com.github.ybq.android.spinkit.SpinKitView

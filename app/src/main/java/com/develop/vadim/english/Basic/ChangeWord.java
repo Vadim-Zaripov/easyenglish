@@ -22,6 +22,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.AnticipateInterpolator;
@@ -48,12 +49,14 @@ public class ChangeWord extends AppCompatActivity {
 
     private EditText originalWordEditText;
     private EditText translatedWordEditText;
-
     private MaterialCardView categoriesMaterialCardView;
     private MaterialCardView categoriesMaterialCardViewPlaceHolder;
     private MaterialCardView categoriesMaterialCardViewComeBackPlaceHolder;
     private RecyclerView categoriesRecyclerView;
     private TextView categoriesTextView;
+    private TextView addNewCategoryTextView;
+    private ImageView deleteWordImageView;
+    private ImageView saveChangesImageView;
 
     private BroadcastReceiver updateHasBeenDoneBroadcastReceiver;
 
@@ -112,15 +115,16 @@ public class ChangeWord extends AppCompatActivity {
 
         category = changingWord.getWordCategory();
 
-        ImageView saveChangesImageView = findViewById(R.id.saveChangesImageView);
+        saveChangesImageView = findViewById(R.id.saveChangesImageView);
         originalWordEditText = findViewById(R.id.editTextRussian);
         translatedWordEditText = findViewById(R.id.editTextEnglish);
-        ImageView deleteWordImageView = findViewById(R.id.deleteWordImageView);
+        deleteWordImageView = findViewById(R.id.deleteWordImageView);
         categoriesRecyclerView = findViewById(R.id.categoriesWhileAddingWordRecyclerView);
         categoriesMaterialCardView = findViewById(R.id.categoryChooseCardView);
         categoriesMaterialCardViewPlaceHolder = findViewById(R.id.categoriesMaterialCardView);
         categoriesTextView = findViewById(R.id.addNewWordCategoryTextView);
         categoriesMaterialCardViewComeBackPlaceHolder = findViewById(R.id.categoryChooseCardViewHolder);
+        addNewCategoryTextView = findViewById(R.id.addNewWordCategoryTextViewButton);
 
         categoriesTextView.setText(changingWord.getWordCategory());
 
@@ -128,10 +132,37 @@ public class ChangeWord extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 categoriesTextView.setVisibility(View.INVISIBLE);
+                addNewCategoryTextView.setVisibility(View.VISIBLE);
+                addNewCategoryTextView.setClickable(true);
+
+                categoriesMaterialCardView.setClickable(false);
+
+                deleteWordImageView.animate().alphaBy(1).alpha(0).setDuration(200).start();
+                deleteWordImageView.setClickable(false);
+
+                saveChangesImageView.animate().alphaBy(1).alpha(0).setDuration(200).start();
+                saveChangesImageView.setClickable(false);
 
                 Transitioner transitioner = new Transitioner(categoriesMaterialCardView, categoriesMaterialCardViewPlaceHolder);
                 transitioner.animateTo(1f, (long) 400, new AccelerateDecelerateInterpolator());
                 categoriesMaterialCardView.setCardBackgroundColor(getResources().getColor(R.color.colorWhite));
+
+                AlphaAnimation alphaAnimation = new AlphaAnimation(0f, 1f);
+                alphaAnimation.setDuration(600);
+                alphaAnimation.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) { }
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        addNewCategoryTextView.setClickable(true);
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) { }
+                });
+
+                addNewCategoryTextView.startAnimation(alphaAnimation);
 
                 new Handler().postDelayed(new Runnable() {
                     @Override
@@ -162,7 +193,6 @@ public class ChangeWord extends AppCompatActivity {
                             public void onClick(IOSDialog iosDialog) {
                                 changingWord.removeWordFromService(removingWordHandler);
                                 iosDialog.dismiss();
-
                             }
                         })
                         .build()
@@ -173,6 +203,9 @@ public class ChangeWord extends AppCompatActivity {
         saveChangesImageView.setOnClickListener(new ImageView.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Animation animation = AnimationUtils.loadAnimation(view.getContext(), R.anim.click);
+                view.startAnimation(animation);
+
                 category = categoriesTextView.getText().toString();
 
                 saveChanges();
@@ -262,11 +295,10 @@ public class ChangeWord extends AppCompatActivity {
         private Animation animation = AnimationUtils.loadAnimation(ChangeWord.this, R.anim.appear);
 
         private int[] materialCardsColors = new int[] {
-                R.color.LIGHT_GREEN_TRANSPARENT,
-                R.color.LIGHT_PURPLE_TRANSPARENT,
-                R.color.CASSANDORA_YELLOW,
-                R.color.JADE_DUST_TRANSPARENT,
-                R.color.JELLYFISH,
+                R.color.purple,
+                R.color.lightPurple,
+                R.color.lightBlue,
+                R.color.blue
         };
 
 
@@ -289,32 +321,70 @@ public class ChangeWord extends AppCompatActivity {
             holder.categoryTextView.setText(categories.get(position));
             holder.materialCardView.setCardBackgroundColor(getResources().getColor(materialCardsColors[new Random().nextInt(materialCardsColors.length)]));
 
-            if(position == getItemCount() - 1) {
-                holder.materialCardView.setCardBackgroundColor(getResources().getColor(R.color.DOUBLE_DRAGON_SKIN));
-            }
-
             holder.materialCardView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Transitioner transitioner = new Transitioner(categoriesMaterialCardView, categoriesMaterialCardViewComeBackPlaceHolder);
-                    transitioner.animateTo(1f, (long) 400, new AccelerateDecelerateInterpolator());
-                    categoriesMaterialCardView.setCardBackgroundColor(getResources().getColor(R.color.WHITE_TRANSPARENT));
-
-                    categoriesRecyclerView.setVisibility(View.INVISIBLE);
-
-                    categoriesTextView.setText(categories.get(currentPosition));
-                    categoriesTextView.setVisibility(View.VISIBLE);
-
-                    if(currentPosition == getItemCount() - 1) {
-                        callChooseCategoryDialog();
-                    }
-
-                    category = categories.get(currentPosition);
+                    closeAnimation(currentPosition, categories.get(currentPosition));
                 }
             });
 
             holder.materialCardView.startAnimation(animation);
 
+            addNewCategoryTextView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    callChooseCategoryDialog();
+                    closeAnimation(currentPosition, "Без категории");
+                }
+            });
+        }
+
+        private void closeAnimation(int currentPosition, String c) {
+
+
+            Transitioner transitioner = new Transitioner(categoriesMaterialCardView, categoriesMaterialCardViewComeBackPlaceHolder);
+            transitioner.animateTo(1f, (long) 400, new AccelerateDecelerateInterpolator());
+            categoriesMaterialCardView.setCardBackgroundColor(getResources().getColor(R.color.WHITE_TRANSPARENT));
+
+            deleteWordImageView.setClickable(true);
+            deleteWordImageView.animate().alphaBy(0).alpha(1).setDuration(200).start();
+
+            saveChangesImageView.setClickable(true);
+            saveChangesImageView.animate().alphaBy(0).alpha(1).setDuration(200).start();
+
+            AlphaAnimation alphaAnimation = new AlphaAnimation(1f, 0f);
+            alphaAnimation.setDuration(410);
+            alphaAnimation.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+                    addNewCategoryTextView.setClickable(false);
+                    categoriesRecyclerView.setClickable(false);
+                    categoriesMaterialCardView.setClickable(false);
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    categoriesRecyclerView.setClickable(true);
+
+                    categoriesMaterialCardView.setClickable(true);
+                    addNewCategoryTextView.setVisibility(View.INVISIBLE);
+                    categoriesMaterialCardView.setClickable(true);
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+
+                }
+            });
+
+            addNewCategoryTextView.startAnimation(alphaAnimation);
+
+            categoriesRecyclerView.setVisibility(View.INVISIBLE);
+
+            categoriesTextView.setText(c);
+            categoriesTextView.setVisibility(View.VISIBLE);
+
+            category = categories.get(currentPosition);
         }
 
         private void callChooseCategoryDialog() {
@@ -324,23 +394,6 @@ public class ChangeWord extends AppCompatActivity {
             final ImageView continueImageView = dialog.findViewById(R.id.addNewCategoryImageView);
 
             dialog.show();
-
-            editText.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-                }
-
-                @Override
-                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                    categoriesTextView.setText(charSequence);
-                }
-
-                @Override
-                public void afterTextChanged(Editable editable) {
-
-                }
-            });
 
             continueImageView.setOnClickListener(new ImageView.OnClickListener() {
                 @Override

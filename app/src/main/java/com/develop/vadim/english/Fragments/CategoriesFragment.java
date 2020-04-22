@@ -525,7 +525,6 @@ public class CategoriesFragment extends Fragment implements UpdateDataListener {
 
                     @Override
                     public void onClick(View view) {
-                        materialCardView.callOnClick();
 
                         if(isFirstOpen) {
                             notOpenedHeight = materialCardView.getMeasuredHeight();
