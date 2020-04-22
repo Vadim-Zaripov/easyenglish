@@ -205,9 +205,8 @@
         app:cardCornerRadius="20dp"
         app:contentPadding="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/categoriesTextViewTitle"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/categoriesTextViewTitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/categoryChooseCardViewHolder"
         app:layout_constraintVertical_bias="0.49">
 

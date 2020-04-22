@@ -21,6 +21,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -139,7 +140,6 @@ public class CategoriesFragment extends Fragment implements UpdateDataListener {
         @NonNull
         @Override
         public WordsCategoriesRecyclerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-
             return new WordsCategoriesRecyclerViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.category_cell, parent, false));
         }
 
@@ -476,10 +476,6 @@ public class CategoriesFragment extends Fragment implements UpdateDataListener {
                     return newUri;
                 }
             });
-
-
-            Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.appear);
-            holder.materialCardView.startAnimation(animation);
         }
 
         @Override
@@ -517,21 +513,71 @@ public class CategoriesFragment extends Fragment implements UpdateDataListener {
                 linearLayoutF = itemView.findViewById(R.id.categoriesMaterialCardView);
                 expansionHeader.setExpansionLayout(expansionLayout);
 
-                expansionHeader.setOnClickListener(new View.OnClickListener() {
-                    boolean isFirstOpen = true;
+                expansionHeader.setOnClickListener(view -> {
+                        expansionLayout.toggle(true);
+                        expansionHeader.setClickable(false);
 
+                        if(expansionLayout.isExpanded()) {
+                            LinearLayout categoryActionsLinearLayout =
+                                    expansionHeader.findViewById(R.id.category_actions_linearlayout);
+
+                            categoryActionsLinearLayout.measure(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                            final int targetHeight = categoryActionsLinearLayout.getMeasuredHeight();
+                            categoryActionsLinearLayout.getLayoutParams().height = 0;
+                            categoryActionsLinearLayout.setVisibility(View.VISIBLE);
+
+                            ValueAnimator anim =
+                                    ValueAnimator.ofInt(categoryActionsLinearLayout.getMeasuredHeight(), targetHeight);
+                            anim.setInterpolator(new AccelerateInterpolator());
+                            anim.setDuration(250);
+                            anim.addUpdateListener(animation -> {
+                                ViewGroup.LayoutParams layoutParams = categoryActionsLinearLayout.getLayoutParams();
+                                layoutParams.height = (int) (targetHeight * animation.getAnimatedFraction());
+                                categoryActionsLinearLayout.setLayoutParams(layoutParams);
+                            });
+                            anim.addListener(new AnimatorListenerAdapter() {
+                                @Override
+                                public void onAnimationEnd(Animator animation) {
+                                    ViewGroup.LayoutParams layoutParams = categoryActionsLinearLayout.getLayoutParams();
+                                    layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                                    expansionHeader.setClickable(true);
+                                }
+                            });
+                            anim.start();
+                        }
+                        else {
+                            LinearLayout categoryActionsLinearLayout =
+                                    expansionHeader.findViewById(R.id.category_actions_linearlayout);
+
+                            final int targetHeight = categoryActionsLinearLayout.getMeasuredHeight();
+                            categoryActionsLinearLayout.getLayoutParams().height = categoryActionsLinearLayout.getMeasuredHeight();
+
+                            ValueAnimator anim =
+                                    ValueAnimator.ofInt(categoryActionsLinearLayout.getMeasuredHeight(), targetHeight);
+                            anim.setInterpolator(new AccelerateInterpolator());
+                            anim.setDuration(250);
+                            anim.addUpdateListener(animation -> {
+                                ViewGroup.LayoutParams layoutParams = categoryActionsLinearLayout.getLayoutParams();
+                                layoutParams.height = (int) (targetHeight * (1 - animation.getAnimatedFraction()));
+                                categoryActionsLinearLayout.setLayoutParams(layoutParams);
+                            });
+                            anim.addListener(new AnimatorListenerAdapter() {
+                                @Override
+                                public void onAnimationEnd(Animator animation) {
+                                    categoryActionsLinearLayout.setVisibility(View.GONE);
+                                    expansionHeader.setClickable(true);
+                                }
+                            });
+                            anim.start();
+                        }
+                });
+                /*expansionHeader.setOnClickListener(new View.OnClickListener() {
+                    boolean isFirstOpen = true;
                     int notOpenedHeight;
                     int openedHeight;
 
                     @Override
                     public void onClick(View view) {
-
-                        if(isFirstOpen) {
-                            notOpenedHeight = materialCardView.getMeasuredHeight();
-                            openedHeight = (int) (notOpenedHeight * 1.7);
-
-                            isFirstOpen = false;
-                        }
 
                         if(expansionLayout.isExpanded()) {
                             expansionLayout.toggle(true);
@@ -593,7 +639,7 @@ public class CategoriesFragment extends Fragment implements UpdateDataListener {
                             catchHeightFlag = false;
                         }
                     }
-                });
+                });*/
 
             }
 

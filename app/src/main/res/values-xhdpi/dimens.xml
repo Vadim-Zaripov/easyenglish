@@ -73,6 +73,9 @@
     <dimen name="categories_list_title_text_size">@dimen/edit_word_title_text_size</dimen>
     <dimen name="categories_list_no_categories_text_size">@dimen/edit_word_category_title_text_size</dimen>
 
+    <dimen name="categories_list_cell_padding_vertical">8dp</dimen>
+    <dimen name="categories_list_cell_padding_sides">16dp</dimen>
+
 
     <!-- Categories Choosing Layout -->
     <dimen name="categories_choosing_title_text_size">18sp</dimen>
