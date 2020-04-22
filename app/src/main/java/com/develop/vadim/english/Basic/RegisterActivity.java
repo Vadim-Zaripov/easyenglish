@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,12 +30,10 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
-import com.shobhitpuri.custombuttons.GoogleSignInButton;
 
 import java.util.Calendar;
 
 public class RegisterActivity extends AppCompatActivity {
-
 
     private FirebaseAuth auth;
 
@@ -48,7 +47,7 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText confirmPassword;
     private TextView loginTextView;
     private ImageView registerImageView;
-    private GoogleSignInButton googleSignInButton;
+    private ImageButton googleSignInButton;
 
     private SharedPreferences sharedPreferences;
     private SharedPreferences wordsCheckSharedPreferences;
@@ -58,7 +57,7 @@ public class RegisterActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_register);
+        setContentView(R.layout.activity_register_new);
 
         wordsCheckSharedPreferences = getSharedPreferences(getPackageName() + ".wordsCheckFlag", MODE_PRIVATE);
 
@@ -106,12 +105,7 @@ public class RegisterActivity extends AppCompatActivity {
             }
         });
 
-        googleSignInButton.setOnClickListener(new GoogleSignInButton.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                signInWithGoogle();
-            }
-        });
+        googleSignInButton.setOnClickListener(view -> signInWithGoogle());
 
         Log.d(TAG, "--started RegistrationActivity--");
     }
