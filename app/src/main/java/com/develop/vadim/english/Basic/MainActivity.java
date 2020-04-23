@@ -55,6 +55,7 @@ import com.varunjohn1990.iosdialogs4android.IOSDialog;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Objects;
 
@@ -326,15 +327,17 @@ public class MainActivity extends AppCompatActivity {
         Intent myIntent;
         PendingIntent pendingIntent;
 
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(System.currentTimeMillis());
+        Calendar calendar = new GregorianCalendar();
         calendar.set(Calendar.HOUR_OF_DAY, 12);
+        calendar.set(Calendar.MINUTE, 0);
 
-        myIntent = new Intent(MainActivity.this, NotificationBroadcastReceiver.class);
-        pendingIntent = PendingIntent.getBroadcast(this,0, myIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        if( new Date().getTime() <= calendar.getTimeInMillis() ) {
+            myIntent = new Intent(MainActivity.this, NotificationBroadcastReceiver.class);
+            pendingIntent = PendingIntent.getBroadcast(this,0, myIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        manager.cancel(pendingIntent);
-        manager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+            manager.cancel(pendingIntent);
+            manager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+        }
     }
 
     private void initDefaultFiles() {
@@ -571,4 +574,5 @@ public class MainActivity extends AppCompatActivity {
             });
         }
     }
+
 }

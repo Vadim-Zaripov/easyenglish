@@ -16,7 +16,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,13 +26,13 @@ public class Word implements Parcelable {
 
     public static final int LEVEL_ADDED = -2;
     public static final int LEVEL_ARCHIVED = -1;
-    static final int LEVEL_DAY = 0;
-    static final int LEVEL_WEEK = 1;
-    static final int LEVEL_MONTH = 2;
-    static final int LEVEL_QUARTER = 3;
-    static final int LEVEL_HALF = 4;
-    static final int LEVEL_YEAR = 5;
-    static final HashMap<Integer, Long> CHECK_INTERVAL = new HashMap<Integer, Long>() {{
+    public static final int LEVEL_DAY = 0;
+    public static final int LEVEL_WEEK = 1;
+    public static final int LEVEL_MONTH = 2;
+    public static final int LEVEL_QUARTER = 3;
+    public static final int LEVEL_HALF = 4;
+    public static final int LEVEL_YEAR = 5;
+    public static final HashMap<Integer, Long> CHECK_INTERVAL = new HashMap<Integer, Long>() {{
         put(LEVEL_DAY, 86400000L);
         put(LEVEL_WEEK, 604800000L);
         put(LEVEL_MONTH, 2592000000L);
@@ -93,14 +95,18 @@ public class Word implements Parcelable {
 
     public void sentWordToService() {
         Log.d(WORD_TAG, "Word : starting writing data to database");
-        Date date = new Date();
+        Calendar cal = new GregorianCalendar();
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+
 
         DatabaseReference databaseReference = MainActivity.reference.child("words").child(ind);
         databaseReference.child(russianDatabaseKey).setValue(wordInRussian);
         databaseReference.child(englishDatabaseKey).setValue(wordInEnglish);
         databaseReference.child(categoryDatabaseKey).setValue(wordCategory);
         databaseReference.child(levelDatabaseKey).setValue(level);
-        databaseReference.child(dateKey).setValue(date.getTime() + CHECK_INTERVAL.get(LEVEL_DAY));
+        databaseReference.child(dateKey).setValue(cal.getTimeInMillis() + Word.CHECK_INTERVAL.get(LEVEL_DAY));
     }
 
     public String getWordCategory() {

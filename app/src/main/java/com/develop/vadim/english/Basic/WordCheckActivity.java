@@ -29,7 +29,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.varunjohn1990.iosdialogs4android.IOSDialog;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 public class WordCheckActivity extends AppCompatActivity {
     private EditText userAnswerEditText;
@@ -467,11 +469,17 @@ public class WordCheckActivity extends AppCompatActivity {
                 }
             });
 
+
+            Calendar cal = new GregorianCalendar();
+            cal.set(Calendar.HOUR_OF_DAY, 0);
+            cal.set(Calendar.MINUTE, 0);
+            cal.set(Calendar.SECOND, 0);
+
             databaseReference
                     .child(String.valueOf(checkingWord.getIndex()))
                     .child(Word.dateKey)
                     .setValue(
-                            new Date().getTime() + Word.CHECK_INTERVAL.get((int) value)
+                            cal.getTimeInMillis() + Word.CHECK_INTERVAL.get((int)value)
                     );
         }
     }

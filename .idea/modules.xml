@@ -2,11 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Lett.iml" filepath="$PROJECT_DIR$/Lett.iml" group="Lett" />
-      <module fileurl="file://$PROJECT_DIR$/app/Lett-app.iml" filepath="$PROJECT_DIR$/app/Lett-app.iml" group="Lett/app" />
+      <module fileurl="file://$PROJECT_DIR$/Lett.iml" filepath="$PROJECT_DIR$/Lett.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/easyenglish2.iml" filepath="$PROJECT_DIR$/easyenglish2.iml" group="easyenglish2" />
-      <module fileurl="file://$PROJECT_DIR$/app/easyenglish2-app.iml" filepath="$PROJECT_DIR$/app/easyenglish2-app.iml" group="easyenglish2/app" />
+      <module fileurl="file://$PROJECT_DIR$/easyenglish.iml" filepath="$PROJECT_DIR$/easyenglish.iml" group="easyenglish" />
+      <module fileurl="file://$PROJECT_DIR$/app/easyenglish-app.iml" filepath="$PROJECT_DIR$/app/easyenglish-app.iml" group="easyenglish/app" />
     </modules>
   </component>
 </project>

@@ -75,8 +75,6 @@ public class AddNewWordFragment extends Fragment implements UpdateDataListener {
 
     private DatabaseReference reference;
 
-    private SharedPreferences timeSharedPreferences;
-
     @SuppressLint("HandlerLeak")
     private Handler wordSendingHandler = new Handler() {
         @Override
@@ -129,8 +127,6 @@ public class AddNewWordFragment extends Fragment implements UpdateDataListener {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         reference = MainActivity.reference.child("words");
         reference.keepSynced(true);
-
-        timeSharedPreferences = getActivity().getSharedPreferences("Time Picker", Context.MODE_PRIVATE);
 
         return inflater.inflate(R.layout.add_new_word_layout, container, false);
     }
@@ -250,7 +246,7 @@ public class AddNewWordFragment extends Fragment implements UpdateDataListener {
                     });
                 }
                 else {
-                    Toast.makeText(v.getContext(), "Заполни все поля", Toast.LENGTH_LONG).show();
+                    Toast.makeText(v.getContext(), "Заполните все поля!", Toast.LENGTH_LONG).show();
                 }
             }
 

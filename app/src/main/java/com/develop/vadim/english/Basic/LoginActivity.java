@@ -38,7 +38,6 @@ import java.util.Calendar;
 
 public class LoginActivity extends AppCompatActivity {
 
-
     private FirebaseAuth auth;
 
     private final String TAG = "Authentication";
@@ -59,6 +58,19 @@ public class LoginActivity extends AppCompatActivity {
     private SharedPreferences wordsCheckSharedPreferences;
 
     private GoogleApiClient googleApiClient;
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        try {
+            Log.w(TAG, currentUser.toString());
+        }
+        catch(NullPointerException e) {
+            Log.w(TAG, "User is null");
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -199,7 +211,6 @@ public class LoginActivity extends AppCompatActivity {
     //####################################################
     public void doAfter(boolean res){
         if(res) {
-            //startActivity(new Intent(this, Main2Activity.class));
             Log.d(TAG, "--finished RegistrationActivity--");
             startActivity(new Intent(this, MainActivity.class));
             controlFirstRun();

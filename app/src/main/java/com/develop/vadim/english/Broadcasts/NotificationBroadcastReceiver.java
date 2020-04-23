@@ -1,5 +1,6 @@
 package com.develop.vadim.english.Broadcasts;
 
+import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -13,8 +14,12 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
 import com.develop.vadim.english.Basic.MainActivity;
+import com.develop.vadim.english.Basic.Word;
 import com.develop.vadim.english.R;
 import com.develop.vadim.english.Services.NotificationService;
+
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 public class NotificationBroadcastReceiver extends BroadcastReceiver {
 
@@ -25,13 +30,33 @@ public class NotificationBroadcastReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        {
+            AlarmManager manager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
+            Intent myIntent;
+            PendingIntent pendingIntent;
+
+
+            Calendar calendar = new GregorianCalendar();
+            calendar.set(Calendar.HOUR_OF_DAY, 12);
+            calendar.set(Calendar.MINUTE, 0);
+
+            myIntent = new Intent(context, NotificationBroadcastReceiver.class);
+            pendingIntent = PendingIntent.getBroadcast(context,0, myIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+            manager.cancel(pendingIntent);
+            manager.set(
+                    AlarmManager.RTC_WAKEUP,
+                    calendar.getTimeInMillis() + Word.CHECK_INTERVAL.get(Word.LEVEL_DAY),
+                    pendingIntent
+            );
+        }
+
         Intent notificationIntent = new Intent(context, MainActivity.class);
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-        Toast.makeText(context, "BOB", Toast.LENGTH_LONG).show();
-
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0,
                 notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
 
         //Вызов уведомления
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, NOTIFICATION_ID_KEY)
