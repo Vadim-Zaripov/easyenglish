@@ -195,8 +195,6 @@ public class WordCheckActivity extends AppCompatActivity {
             userAnswerEditText.startAnimation(alphaAnimation);
             userQuestionTextView.startAnimation(alphaAnimation);
             forgetWordTextView.startAnimation(alphaAnimation);
-
-
         }
         else {
             userAnswerEditText.setTextColor(getResources().getColor(R.color.wrongWordRed));
