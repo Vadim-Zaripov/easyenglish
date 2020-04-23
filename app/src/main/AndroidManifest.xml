@@ -4,6 +4,7 @@
     package="com.develop.vadim.english">
 
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -13,11 +14,16 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
 
-        <activity android:name=".Basic.ChangeWord" />
+        <activity
+            android:name=".Basic.ChangeWord"
+            android:screenOrientation="portrait" />
 
-        <activity android:name=".Basic.WordCheckActivity" />
+        <activity
+            android:name=".Basic.WordCheckActivity"
+            android:screenOrientation="portrait" />
 
         <activity android:name=".Basic.MainActivity"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustNothing">
             <intent-filter>
                 <category android:name="android.intent.category.DEFAULT" />
@@ -29,16 +35,22 @@
 
         <activity
             android:name=".Basic.AuthenticationActivity"
+            android:screenOrientation="portrait"
             android:label="@string/auth">
         </activity>
 
-        <activity android:name=".Basic.LoginActivity" >
+        <activity
+            android:name=".Basic.LoginActivity"
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Basic.RegisterActivity" />
+
+        <activity
+            android:name=".Basic.RegisterActivity"
+            android:screenOrientation="portrait" />
 
         <meta-data
             android:name="preloaded_fonts"
@@ -63,9 +75,10 @@
             </intent-filter>
 
         </receiver>
+
         <receiver android:name=".Broadcasts.NotificationBroadcastReceiver" />
 
         <service android:name=".Services.NotificationService" />
-    </application>
 
+    </application>
 </manifest>

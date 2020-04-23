@@ -1,24 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/categoriesChoosingCellCardView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginRight="10dp"
-    android:layout_marginLeft="10dp"
+    android:layout_marginLeft="8dp"
+    android:layout_marginRight="8dp"
+    android:layout_marginBottom="16dp"
     app:cardCornerRadius="20dp"
-    app:contentPadding="5dp"
     app:cardElevation="0dp"
-    android:layout_marginBottom="12dp"
-    android:id="@+id/categoriesChoosingCellCardView">
+    app:contentPadding="5dp">
 
     <TextView
+        android:id="@+id/categoriesChoosingCellTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="@dimen/categories_choosing_title_text_size"
-        android:tag="animatedTagOne"
         android:layout_gravity="center"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:tag="animatedTagOne"
         android:textColor="@android:color/white"
-        android:id="@+id/categoriesChoosingCellTextView" />
+        android:textSize="@dimen/categories_choosing_title_text_size" />
 
 </com.google.android.material.card.MaterialCardView>
