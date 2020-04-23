@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/progress_bar"
+    tools:context=".Basic.WordCheckActivity"
+    android:padding="@dimen/check_word_root_view_padding">
+
+    <TextView
+        android:id="@+id/headerTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/check_word_title_margin_top"
+        android:gravity="center"
+        android:text="@string/checkingWord"
+        android:textColor="@color/colorWhite"
+        android:textSize="@dimen/check_word_title_text_size"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/check_word_translations_linear_layout_margin_top"
+        android:layout_marginStart="@dimen/check_word_translations_linear_layout_margin_sides"
+        android:layout_marginEnd="@dimen/check_word_translations_linear_layout_margin_sides"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/headerTextView">
+
+        <TextView
+            android:id="@+id/wordCheckTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Apple"
+            android:textColor="@color/colorWhite"
+            android:textSize="@dimen/check_word_title_text_size" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="16dp" />
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/checkWordEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@android:color/white"
+            android:ems="10"
+            android:gravity="center"
+            android:hint="@string/checkingWordHint"
+            android:inputType="textPersonName"
+            android:textColor="@color/colorWhite"
+            android:textColorHint="@color/WHITE_TRANSPARENT"
+            android:textColorLink="@color/colorWhite"
+            android:textSize="@dimen/check_word_answer_title_text_size" />
+
+    </LinearLayout>
+
+
+    <TextView
+        android:id="@+id/userAnswerTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/userAnswer"
+        android:textColor="@color/colorWhite"
+        android:textSize="@dimen/check_word_answer_title_text_size"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout5"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/headerTextView"
+        app:layout_constraintVertical_bias="0.9" />
+
+    <TextView
+        android:id="@+id/rightAnswerTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:textColor="@color/colorWhite"
+        android:textSize="@dimen/check_word_title_text_size"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="@+id/linearLayout5"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout4"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout5">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/editImageView"
+                android:layout_width="@dimen/check_word_edit_image_view_size"
+                android:layout_height="@dimen/check_word_edit_image_view_size"
+                android:layout_gravity="center_horizontal"
+                app:srcCompat="@drawable/edit_word" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center"
+                android:text="@string/changeWord"
+                android:textColor="@color/WHITE_TRANSPARENT"
+                android:textSize="@dimen/check_word_secondary_text_text_size" />
+        </LinearLayout>
+
+        <Space
+            android:layout_width="20dp"
+            android:layout_height="wrap_content" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/deleteWordImageView"
+                android:layout_width="@dimen/check_word_edit_image_view_size"
+                android:layout_height="@dimen/check_word_edit_image_view_size"
+                android:layout_gravity="center_horizontal"
+                app:srcCompat="@drawable/delete_word" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center"
+                android:text="@string/deleteWord"
+                android:textColor="@color/WHITE_TRANSPARENT"
+                android:textSize="@dimen/check_word_secondary_text_text_size" />
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/linearLayout4"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/check_word_check_button_margin_sides"
+        android:layout_marginEnd="@dimen/check_word_check_button_margin_sides"
+        android:layout_marginBottom="@dimen/check_word_check_button_margin_bottom"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/linearLayout5"
+        app:layout_constraintStart_toStartOf="@+id/linearLayout5">
+
+        <ImageView
+            android:id="@+id/continueImageView"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/check_word_continue_button_height"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/continue_button_background"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout3"
+            app:srcCompat="@drawable/arrow_small" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="@string/checkWord"
+            android:textColor="@color/WHITE_TRANSPARENT"
+            android:textSize="@dimen/check_word_secondary_text_text_size" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="16dp" />
+
+        <TextView
+            android:id="@+id/forgetTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@drawable/button_background"
+            android:gravity="center"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:text="@string/forgotWord"
+            android:textColor="@color/colorWhite"
+            android:textSize="@dimen/check_word_forget_text_text_size"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/noWordsToCheckTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="На сегодняшний день слова для повторения закончились"
+        android:textColor="@color/colorWhite"
+        android:textSize="28sp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.44" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

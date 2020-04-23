@@ -14,6 +14,7 @@ public class FragmentViewPagerAdapter extends FragmentPagerAdapter {
     private CategoriesFragment wordsUserCheckFragment = new CategoriesFragment();
     private AddNewWordFragment addNewWordFragment = new AddNewWordFragment();
     private WordsArchiveFragment wordsArchiveFragment = new WordsArchiveFragment();
+    private WordCheckFragment wordCheckFragment = new WordCheckFragment();
 
 
     @NonNull
@@ -26,6 +27,8 @@ public class FragmentViewPagerAdapter extends FragmentPagerAdapter {
                 return addNewWordFragment;
             case 2:
                 return wordsArchiveFragment;
+            case 3:
+                return wordCheckFragment;
         }
 
         return null;
@@ -38,6 +41,6 @@ public class FragmentViewPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public int getCount() {
-        return 3;
+        return 4;
     }
 }
