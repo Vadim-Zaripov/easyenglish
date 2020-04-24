@@ -19,6 +19,7 @@ import android.os.Message;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
@@ -155,6 +156,7 @@ public class CategoriesFragment extends Fragment implements UpdateDataListener {
 
                     final int localPosition = position;
                     final int currentWordIndex = wordsInCategoriesCounter;
+                    final Word word = wordsInCategoriesArrayList.get(position).get(currentWordIndex);
                     View view = LayoutInflater.from(getContext()).inflate(R.layout.word_in_category_cell, null, false);
                     final TextView wordInCategoryTextView = view.findViewById(R.id.wordInCategoryTextView);
 
@@ -204,13 +206,16 @@ public class CategoriesFragment extends Fragment implements UpdateDataListener {
                                             .build()
                                             .show();
                                     }
+
                                     break;
                                 case -1:
                                     Toast.makeText(getContext(), "Вы уже изучили это слово", Toast.LENGTH_LONG).show();
+
                                     break;
                                 default:
                                     Log.d("BIB", String.valueOf(wordsInCategoriesArrayList.get(localPosition).get(currentWordIndex).getLevel()));
                                     Toast.makeText(getContext(), "Вы уже изучаете это слово на данный момент", Toast.LENGTH_LONG).show();
+
                                     break;
                             }
 
@@ -220,63 +225,66 @@ public class CategoriesFragment extends Fragment implements UpdateDataListener {
 
                     wordInCategoryTextView.setText(wordsInCategoriesArrayList.get(position).get(wordsInCategoriesCounter).getWordInEnglish());
 
-                    view.setOnClickListener(new View.OnClickListener() {
-                        boolean inEnglish = true;
-
+                    view.setOnTouchListener(new View.OnTouchListener() {
                         @Override
-                        public void onClick(final View view) {
-                            Animation animationFrom = new AlphaAnimation(1f, 0f);
-                            animationFrom.setDuration(300);
-                            animationFrom.setAnimationListener(new Animation.AnimationListener() {
-                                @Override
-                                public void onAnimationStart(Animation animation) {
-                                    view.setClickable(false);
-                                }
+                        public boolean onTouch(View view, MotionEvent motionEvent) {
+                            AlphaAnimation alphaAnimation = new AlphaAnimation(1f, 0f);
+                            alphaAnimation.setDuration(200);
 
-                                @Override
-                                public void onAnimationEnd(Animation animation) {
-                                    if(inEnglish) {
-                                        wordInCategoryTextView.setText(wordsInCategoriesArrayList.get(localPosition).get(currentWordIndex).getWordInRussian());
+                            switch(motionEvent.getAction()) {
+                                case MotionEvent.ACTION_DOWN:
 
-                                        inEnglish = false;
-                                    }
-                                    else {
-                                        wordInCategoryTextView.setText(wordsInCategoriesArrayList.get(localPosition).get(currentWordIndex).getWordInEnglish());
-
-                                        inEnglish = true;
-                                    }
-
-                                    Animation animationTo = new AlphaAnimation(0f, 1f);
-                                    animationTo.setDuration(300);
-
-                                    animationTo.setAnimationListener(new Animation.AnimationListener() {
+                                    alphaAnimation.setAnimationListener(new Animation.AnimationListener() {
                                         @Override
                                         public void onAnimationStart(Animation animation) {
+
                                             view.setClickable(false);
                                         }
 
                                         @Override
                                         public void onAnimationEnd(Animation animation) {
-                                            view.setClickable(true);
+                                            AlphaAnimation appearAlphaAnimation = new AlphaAnimation(0f, 1f);
+                                            appearAlphaAnimation.setDuration(200);
+
+                                            wordInCategoryTextView.setText(word.getWordInRussian());
+                                            wordInCategoryTextView.startAnimation(appearAlphaAnimation);
                                         }
 
                                         @Override
                                         public void onAnimationRepeat(Animation animation) {
+
                                         }
                                     });
 
-                                    wordInCategoryTextView.startAnimation(animationTo);
-                                }
+                                    wordInCategoryTextView.startAnimation(alphaAnimation);
 
-                                @Override
-                                public void onAnimationRepeat(Animation animation) {
-                                }
-                            });
+                                    break;
+                                case MotionEvent.ACTION_CANCEL  :
+                                    alphaAnimation.setAnimationListener(new Animation.AnimationListener() {
+                                        @Override
+                                        public void onAnimationStart(Animation animation) { }
 
-                            wordInCategoryTextView.startAnimation(animationFrom);
+                                        @Override
+                                        public void onAnimationEnd(Animation animation) {
+                                            AlphaAnimation appearAlphaAnimation = new AlphaAnimation(0f, 1f);
+                                            appearAlphaAnimation.setDuration(200);
+
+                                            wordInCategoryTextView.setText(word.getWordInEnglish());
+                                            wordInCategoryTextView.startAnimation(appearAlphaAnimation);
+                                        }
+
+                                        @Override
+                                        public void onAnimationRepeat(Animation animation) { }
+                                    });
+
+                                    wordInCategoryTextView.startAnimation(alphaAnimation);
+
+                                    break;
+                            }
+
+                            return true;
                         }
                     });
-
                     holder.wordInCategoryLinearLayout.addView(view);
                 }
             }

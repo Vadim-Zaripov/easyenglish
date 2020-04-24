@@ -22,13 +22,13 @@ public class FragmentViewPagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                return wordsUserCheckFragment;
-            case 1:
                 return addNewWordFragment;
-            case 2:
-                return wordsArchiveFragment;
-            case 3:
+            case 1:
                 return wordCheckFragment;
+            case 2:
+                return wordsUserCheckFragment;
+            case 3:
+                return wordsArchiveFragment;
         }
 
         return null;

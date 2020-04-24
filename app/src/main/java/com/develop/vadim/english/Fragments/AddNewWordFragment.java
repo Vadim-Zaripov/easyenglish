@@ -126,7 +126,6 @@ public class AddNewWordFragment extends Fragment implements UpdateDataListener {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         reference = MainActivity.reference.child("words");
-        reference.keepSynced(true);
 
         return inflater.inflate(R.layout.add_new_word_layout, container, false);
     }

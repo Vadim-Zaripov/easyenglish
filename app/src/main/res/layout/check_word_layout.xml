@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/progress_bar"
     tools:context=".Basic.WordCheckActivity"
     android:padding="@dimen/check_word_root_view_padding">
 
@@ -177,6 +176,7 @@
             app:srcCompat="@drawable/arrow_small" />
 
         <TextView
+            android:id="@+id/checkAnswerTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"

@@ -85,7 +85,6 @@ public class MainActivity extends AppCompatActivity {
     public final static String BROADCAST_ACTION = "ru.lett.xenous.action.BROADCAST";
     public final static String BROADCAST_UPDATE_HAS_BEEN_DONE_ACTION = "ru.lett.xenous.action.UPDATE";
 
-
     public ArrayList<String> categoryNames = new ArrayList<>();
     public ArrayList<Word> wordArrayList = new ArrayList<>();
     public ArrayList<Word> wordsCheckWordsArrayList = new ArrayList<>();
@@ -95,9 +94,9 @@ public class MainActivity extends AppCompatActivity {
 
     private Handler loadingHandler;
 
-    public static final int CATEGORIES_FRAGMENT_KEY = 0;
-    public static final int ADD_NEW_WORD_FRAGMENT_KEY = 1;
-    public static final int WORDS_ARCHIVE_FRAGMENT_KEY = 2;
+    public static final int CATEGORIES_FRAGMENT_KEY = 2;
+    public static final int ADD_NEW_WORD_FRAGMENT_KEY = 0;
+    public static final int WORDS_ARCHIVE_FRAGMENT_KEY = 3;
 
     public static final int CATEGORIES_LOAD_END = 0;
     public static final int WORDS_LOAD_END = 1;
@@ -207,20 +206,6 @@ public class MainActivity extends AppCompatActivity {
                                     }
                                 });
 
-
-                        if(wordsCheckWordsArrayList.size() != 0) {
-                            Intent intent = new Intent(getApplicationContext(), WordCheckActivity.class);
-                            intent.putParcelableArrayListExtra(getString(R.string.wordsToCheckingKey), wordsCheckWordsArrayList);
-                            Log.d("BIBA", categoryNames.toString());
-                            intent.putStringArrayListExtra(getString(R.string.categoriesKey), categoryNames);
-
-                            ActivityOptions activityOptions = ActivityOptions.makeSceneTransitionAnimation(MainActivity.this);
-                            startActivity(intent, activityOptions.toBundle());
-                        }
-                        else {
-                            Toast.makeText(getApplicationContext(), "Пока что слов для повторений нет", Toast.LENGTH_LONG).show();
-                        }
-
                         break;
                     case CHECKING_WORDS_LOAD_END:
                         Log.d(MAIN_ACTIVITY_TAG, "Words has been sorted");
@@ -264,26 +249,18 @@ public class MainActivity extends AppCompatActivity {
         startActivity(startMain);
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.konfetti), MODE_PRIVATE);
-        if(sharedPreferences.getBoolean(getString(R.string.konfettiKey), false)) {
-            sharedPreferences.edit().putBoolean(getString(R.string.konfettiKey), false).apply();
-
-            KonfettiView konfettiView = findViewById(R.id.viewKonfetti);
-            konfettiView.build()
-                    .addColors(Color.MAGENTA, Color.YELLOW, getResources().getColor(R.color.lightPurple))
-                    .setDirection(0.0, 359.0)
-                    .setSpeed(1f, 5f)
-                    .setFadeOutEnabled(true)
-                    .setTimeToLive(2000L)
-                    .addShapes(Shape.CIRCLE, Shape.RECT)
-                    .addSizes(new Size(10, 5))
-                    .setPosition(-50f, konfettiView.getWidth() + 50f, -50f, -50f)
-                    .streamFor(300,  1500L);
-        }
+    public void callConfetti() {
+        KonfettiView konfettiView = findViewById(R.id.viewKonfetti);
+        konfettiView.build()
+                .addColors(Color.MAGENTA, Color.YELLOW, getResources().getColor(R.color.lightPurple))
+                .setDirection(0.0, 359.0)
+                .setSpeed(1f, 5f)
+                .setFadeOutEnabled(true)
+                .setTimeToLive(2000L)
+                .addShapes(Shape.CIRCLE, Shape.RECT)
+                .addSizes(new Size(10, 5))
+                .setPosition(-50f, konfettiView.getWidth() + 50f, -50f, -50f)
+                .streamFor(300,  1500L);
     }
 
     public void callFragmentContentUpdate(int position) {

@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     android:padding="@dimen/edit_word_root_view_padding">
 
-
     <TextView
         android:id="@+id/headerTextView"
         android:layout_width="wrap_content"
@@ -155,7 +154,8 @@
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/categoryChooseCardView"
         android:layout_width="0dp"
-        android:layout_height="60dp"
+        android:layout_height="wrap_content"
+        android:minHeight="60dp"
         android:tag="animation"
         app:cardBackgroundColor="@color/WHITE_TRANSPARENT"
         app:cardCornerRadius="20dp"

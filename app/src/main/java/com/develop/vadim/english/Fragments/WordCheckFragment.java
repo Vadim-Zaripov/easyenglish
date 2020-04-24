@@ -7,6 +7,7 @@ import android.annotation.SuppressLint;
 import android.app.ActivityOptions;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -35,7 +36,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.varunjohn1990.iosdialogs4android.IOSDialog;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 public class WordCheckFragment extends Fragment {
 
@@ -46,6 +49,7 @@ public class WordCheckFragment extends Fragment {
     private TextView userAnswerTextView;
     private TextView headerTextView;
     private TextView forgetWordTextView;
+    private TextView checkAnswerTextView;
     private ImageView editWordImageView;
     private ImageView deleteWordImageView;
     private ImageView continueImageView;
@@ -74,12 +78,10 @@ public class WordCheckFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         checkingWordsList = ((MainActivity)getActivity()).wordsCheckWordsArrayList;
-        checkingWordsList.add(new Word(1));
-        checkingWordsList.add(new Word(2));
-
         categoriesList = ((MainActivity)getActivity()).categoryNames;
 
         viewLayout = inflater.inflate(R.layout.check_word_layout, container, false);
+
         return viewLayout;
     }
 
@@ -99,6 +101,7 @@ public class WordCheckFragment extends Fragment {
         continueImageView = view.findViewById(R.id.continueImageView);
         helpImageButtonsLinearLayout = view.findViewById(R.id.linearLayout3);
         forgetWordTextView = view.findViewById(R.id.forgetTextView);
+        checkAnswerTextView = view.findViewById(R.id.checkAnswerTextView);
 
         checkingViews = new View[] {
                 rightAnswerTextView,
@@ -110,41 +113,74 @@ public class WordCheckFragment extends Fragment {
                 deleteWordImageView,
                 continueImageView,
                 helpImageButtonsLinearLayout,
-                forgetWordTextView
+                forgetWordTextView,
+                checkAnswerTextView
         };
 
-        setUpLesson();
+        if(checkingWordsList.size() == 0) {
+            endChecking();
+            setUpNoWordsStatus(false);
+        }
+        else {
+            setUpLesson();
+        }
+    }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        if(isGoneToChange) {
+            continueChecking();
+
+            isGoneToChange = false;
+        }
     }
 
     private void setUpLesson() {
         if(stage == checkingWordsList.size()) {
             endChecking();
-            setUpNoWordsStatus();
+            setUpNoWordsStatus(true);
 
             return;
         }
 
         appearAnimation();
 
+        userQuestionTextView.setTextColor(getResources().getColor(R.color.colorWhite));
         helpImageButtonsLinearLayout.setVisibility(View.INVISIBLE);
         userAnswerTextView.setVisibility(View.INVISIBLE);
+
+
+        userAnswerEditText.setTextColor(getResources().getColor(R.color.colorWhite));
+        userAnswerEditText.setText("");
+
+        userQuestionTextView.setText(checkingWordsList.get(stage).getWordInRussian());
 
         continueImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String answer = userAnswerEditText.getText().toString().trim().replace("\n", "");
-                wordCheckingDisappearAnimation();
+                String answer = userAnswerEditText.getText().toString().trim().replace("\n", "").toLowerCase();
 
-                if(answer.equals("")) {
-                    if (answer.equals(checkingWordsList.get(stage).getWordInEnglish())) {
+                if(!answer.equals("")) {
+                    if(answer.equals(checkingWordsList.get(stage).getWordInEnglish().toLowerCase())) {
                         stage += 1;
-                        setUpLesson();
+                        wordCheckingDisappearAnimation(true);
+
+                        //new AnalyzeUserAnswerThread(stage, true);
                     }
                     else {
-                        callMistakeAnalyze();
+                        wordCheckingDisappearAnimation(false);
+
+                        //new AnalyzeUserAnswerThread(stage, false);
                     }
-                } else {
+                }
+                else {
                     Toast.makeText(getContext(), "Заполните поле перевода", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -153,14 +189,84 @@ public class WordCheckFragment extends Fragment {
         forgetWordTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                wordCheckingDisappearAnimation();
-                callMistakeAnalyze();
+                wordCheckingDisappearAnimation(false);
+
+                //new Thread(new AnalyzeUserAnswerThread(stage, false));
             }
         });
     }
 
-    private void wordCheckingDisappearAnimation() {
+    private void wordCheckingDisappearAnimation(boolean isAnswerRight) {
+        if(isAnswerRight) {
+            AlphaAnimation alphaAnimation = new AlphaAnimation(1f, 0f);
+            alphaAnimation.setDuration(200);
+            alphaAnimation.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+                    continueImageView.setClickable(false);
+                    forgetWordTextView.setClickable(false);
+                }
 
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    continueImageView.setClickable(true);
+
+                    userQuestionTextView.setVisibility(View.INVISIBLE);
+                    userAnswerEditText.setVisibility(View.INVISIBLE);
+                    forgetWordTextView.setVisibility(View.INVISIBLE);
+
+                    setUpLesson();
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) { }
+            });
+
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    userAnswerEditText.startAnimation(alphaAnimation);
+                    userQuestionTextView.startAnimation(alphaAnimation);
+                    forgetWordTextView.startAnimation(alphaAnimation);
+                }
+            }, 300);
+
+            userAnswerEditText.setTextColor(getResources().getColor(R.color.rightWordGreen));
+        }
+        else {
+            userAnswerEditText.setTextColor(getResources().getColor(R.color.wrongWordRed));
+            AlphaAnimation alphaAnimation = new AlphaAnimation(1f, 0f);
+            alphaAnimation.setDuration(200);
+            alphaAnimation.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) { }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    userAnswerEditText.setVisibility(View.INVISIBLE);
+                    headerTextView.setVisibility(View.INVISIBLE);
+                    userQuestionTextView.setVisibility(View.INVISIBLE);
+                    forgetWordTextView.setVisibility(View.INVISIBLE);
+                    checkAnswerTextView.setVisibility(View.INVISIBLE);
+
+                    callMistakeAnalyze();
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) { }
+            });
+
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    checkAnswerTextView.startAnimation(alphaAnimation);
+                    userQuestionTextView.startAnimation(alphaAnimation);
+                    headerTextView.startAnimation(alphaAnimation);
+                    userAnswerEditText.startAnimation(alphaAnimation);
+                    forgetWordTextView.startAnimation(alphaAnimation);
+                }
+            }, 300);
+        }
     }
 
     private void appearAnimation() {
@@ -172,20 +278,26 @@ public class WordCheckFragment extends Fragment {
         userAnswerEditText.setVisibility(View.VISIBLE);
         headerTextView.setVisibility(View.VISIBLE);
         forgetWordTextView.setVisibility(View.VISIBLE);
+        checkAnswerTextView.setVisibility(View.VISIBLE);
 
         forgetWordTextView.startAnimation(appearAnimation);
         headerTextView.startAnimation(appearAnimation);
         userAnswerEditText.startAnimation(appearAnimation);
+        checkAnswerTextView.startAnimation(appearAnimation);
     }
 
     private void endChecking() {
-        for(int viewCounter = 0; viewCounter < checkingViews.length; viewCounter++) {
-            checkingViews[viewCounter].setClickable(false);
-            checkingViews[viewCounter].animate()
+        for(View checkingView : checkingViews) {
+            checkingView.setClickable(false);
+            checkingView.animate()
                     .alphaBy(1)
                     .alpha(0)
                     .start();
         }
+    }
+
+    private void callConfetti() {
+        ((MainActivity)getActivity()).callConfetti();
     }
 
     @SuppressLint("HandlerLeak")
@@ -205,11 +317,12 @@ public class WordCheckFragment extends Fragment {
             @Override
             public void onAnimationRepeat(Animation animation) { }
         });
+
+        checkAnswerTextView.startAnimation(appearAnimation);
         userQuestionTextView.startAnimation(appearAnimation);
         helpImageButtonsLinearLayout.startAnimation(appearAnimation);
         rightAnswerTextView.startAnimation(appearAnimation);
         userQuestionTextView.startAnimation(appearAnimation);
-
 
         userQuestionTextView.setTextColor(getResources().getColor(R.color.wrongWordRed));
 
@@ -265,7 +378,13 @@ public class WordCheckFragment extends Fragment {
         valueAnimator.setDuration(animationDuration);
         valueAnimator.start();
 
-        userQuestionTextView.setText(userAnswerEditText.getText());
+        if(userAnswerEditText.getText().toString().trim().replace("\n", "").equals("")) {
+            userQuestionTextView.setText("-");
+        }
+        else {
+            userQuestionTextView.setText(userAnswerEditText.getText());
+        }
+
         rightAnswerTextView.setVisibility(View.VISIBLE);
         userAnswerTextView.setVisibility(View.VISIBLE);
         rightAnswerTextView.setText(checkingWordsList.get(stage).getWordInEnglish());
@@ -281,7 +400,9 @@ public class WordCheckFragment extends Fragment {
                         .positiveClickListener(new IOSDialog.Listener() {
                             @Override
                             public void onClick(IOSDialog iosDialog) {
-                                checkingWordsList.get(stage).removeWordFromService(removingWordHandler);
+                                //checkingWordsList.get(stage).removeWordFromService(removingWordHandler);
+                                continueChecking();
+
                                 iosDialog.dismiss();
                             }
                         })
@@ -300,13 +421,12 @@ public class WordCheckFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 Intent changeWordIntent = new Intent(view.getContext(), ChangeWord.class);
-                changeWordIntent.putStringArrayListExtra(getString(R.string.categoriesToChangeWordActivity), categoriesList);
+                    changeWordIntent.putStringArrayListExtra(getString(R.string.categoriesToChangeWordActivity), getCategoriesArrayListForWordChanging());
                 changeWordIntent.putExtra(getString(R.string.changeWord), checkingWordsList.get(stage));
 
                 isGoneToChange = true;
 
                 ActivityOptions activityOptions = ActivityOptions.makeSceneTransitionAnimation(getActivity());
-
                 startActivity(changeWordIntent, activityOptions.toBundle());
             }
         });
@@ -317,7 +437,6 @@ public class WordCheckFragment extends Fragment {
                 continueChecking();
             }
         });
-
     }
 
     private void continueChecking() {
@@ -355,12 +474,12 @@ public class WordCheckFragment extends Fragment {
 
         userAnswerTextView.startAnimation(disappearAnimation);
         rightAnswerTextView.startAnimation(disappearAnimation);
+        checkAnswerTextView.startAnimation(disappearAnimation);
         helpImageButtonsLinearLayout.startAnimation(disappearAnimation);
+
         disappearAnimation.setAnimationListener(new Animation.AnimationListener() {
             @Override
-            public void onAnimationStart(Animation animation) {
-
-            }
+            public void onAnimationStart(Animation animation) { }
 
             @Override
             public void onAnimationEnd(Animation animation) {
@@ -380,13 +499,73 @@ public class WordCheckFragment extends Fragment {
 
         valueAnimator.setDuration(animationDuration);
         valueAnimator.start();
-
     }
 
-    private void setUpNoWordsStatus() {
+    private ArrayList<String> getCategoriesArrayListForWordChanging() {
+        ArrayList<String> categories = new ArrayList<>();
+        categories.add("Без категории");
+        categories.addAll(categoriesList);
+
+        return categories;
+    }
+
+    private void setUpNoWordsStatus(boolean isCheckingEndedByUser) {
         TextView noWordsToCheckTextView = viewLayout.findViewById(R.id.noWordsToCheckTextView);
 
         noWordsToCheckTextView.animate().alphaBy(0).alpha(1).setDuration(300).start();
         noWordsToCheckTextView.setVisibility(View.VISIBLE);
+
+        if(isCheckingEndedByUser) {
+            callConfetti();
+        }
+        else {
+            //TODO: set text with next date of checking words
+        }
+    }
+
+    private class AnalyzeUserAnswerThread implements Runnable {
+        int index;
+        boolean isAnswerRight;
+        long value;
+
+        Word checkingWord;
+
+        AnalyzeUserAnswerThread(int index, boolean isAnswerRight) {
+            this.index = index;
+            this.isAnswerRight = isAnswerRight;
+            checkingWord = checkingWordsList.get(index);
+
+            if(isAnswerRight) {
+                value = checkingWord.getLevel() + 1L;
+            }
+            else {
+                value = Word.LEVEL_DAY;
+            }
+        }
+
+        @Override
+        public void run() {
+            databaseReference.child(String.valueOf(checkingWord.getIndex())).child(Word.levelDatabaseKey).setValue(value).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    e.printStackTrace();
+
+                    Toast.makeText(getContext(), "Произошла ошибка. Проверьте подключение к сети", Toast.LENGTH_LONG).show();
+                }
+            });
+
+
+            Calendar cal = new GregorianCalendar();
+            cal.set(Calendar.HOUR_OF_DAY, 0);
+            cal.set(Calendar.MINUTE, 0);
+            cal.set(Calendar.SECOND, 0);
+
+            databaseReference
+                    .child(String.valueOf(checkingWord.getIndex()))
+                    .child(Word.dateKey)
+                    .setValue(
+                            cal.getTimeInMillis() + Word.CHECK_INTERVAL.get((int)value)
+                    );
+        }
     }
 }

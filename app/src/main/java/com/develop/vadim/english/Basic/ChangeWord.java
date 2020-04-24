@@ -266,7 +266,7 @@ public class ChangeWord extends AppCompatActivity {
                 MainActivity.reference.child("words").child(changingWord.getInd()).child(Word.categoryDatabaseKey).setValue(categoriesTextView.getText().toString());
             }
             else {
-                MainActivity.reference.child("categories").child(String.valueOf(categories.size() - 2)).setValue(category)
+                MainActivity.reference.child("categories").child(String.valueOf(categories.size() - 1)).setValue(category)
                         .addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
@@ -277,7 +277,6 @@ public class ChangeWord extends AppCompatActivity {
                             @Override
                             public void onSuccess(Void aVoid) {
                                 MainActivity.reference.child("words").child(changingWord.getInd()).child(Word.categoryDatabaseKey).setValue(category);
-
                             }
                         });
 
