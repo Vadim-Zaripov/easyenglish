@@ -331,6 +331,13 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
+                if(databaseError.getCode() == DatabaseError.DISCONNECTED ||
+                        databaseError.getCode() == DatabaseError.NETWORK_ERROR) {
+                    new IOSDialog.Builder(getApplicationContext())
+                            .message(getString(R.string.no_internet_error))
+                            .build()
+                            .show();
+                }
             }
         });
     }

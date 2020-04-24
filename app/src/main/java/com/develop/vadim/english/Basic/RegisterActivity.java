@@ -31,6 +31,8 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DatabaseError;
+import com.varunjohn1990.iosdialogs4android.IOSDialog;
 
 import java.util.Calendar;
 import java.util.Objects;
@@ -160,6 +162,11 @@ public class RegisterActivity extends AppCompatActivity {
                                         })
                         )
                         .addOnFailureListener(e -> {
+                            new IOSDialog.Builder(getApplicationContext())
+                                    .message(getString(R.string.no_internet_error))
+                                    .build()
+                                    .show();
+
                             Toast.makeText(RegisterActivity.this, "Произошла неизвестная ошибка", Toast.LENGTH_SHORT).show();
                             doAfter(false);
                         });

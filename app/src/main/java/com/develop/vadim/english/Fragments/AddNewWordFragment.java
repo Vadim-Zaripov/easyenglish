@@ -41,6 +41,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
+import com.varunjohn1990.iosdialogs4android.IOSDialog;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -241,7 +242,15 @@ public class AddNewWordFragment extends Fragment implements UpdateDataListener {
                         }
 
                         @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) { }
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                            if(databaseError.getCode() == DatabaseError.DISCONNECTED ||
+                                    databaseError.getCode() == DatabaseError.NETWORK_ERROR) {
+                                new IOSDialog.Builder(getContext())
+                                        .message(getString(R.string.no_internet_error))
+                                        .build()
+                                        .show();
+                            }
+                        }
                     });
                 }
                 else {

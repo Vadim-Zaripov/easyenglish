@@ -270,7 +270,10 @@ public class ChangeWord extends AppCompatActivity {
                         .addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
-                                Toast.makeText(ChangeWord.this, "Произошла неизвестная ошибка, проверьте поделючение к сети!", Toast.LENGTH_LONG).show();
+                                new IOSDialog.Builder(getApplicationContext())
+                                            .message(getString(R.string.no_internet_error))
+                                            .build()
+                                            .show();
                             }
                         })
                         .addOnSuccessListener(new OnSuccessListener<Void>() {

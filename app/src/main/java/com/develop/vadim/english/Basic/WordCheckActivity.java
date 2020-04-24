@@ -25,6 +25,7 @@ import android.widget.Toast;
 
 import com.develop.vadim.english.R;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.varunjohn1990.iosdialogs4android.IOSDialog;
 
@@ -461,7 +462,11 @@ public class WordCheckActivity extends AppCompatActivity {
                 public void onFailure(@NonNull Exception e) {
                     e.printStackTrace();
 
-                    Toast.makeText(getApplicationContext(), "Произошла ошибка. Проверьте подключение к сети", Toast.LENGTH_LONG).show();
+                    new IOSDialog.Builder(getApplicationContext())
+                            .message(getString(R.string.no_internet_error))
+                            .build()
+                            .show();
+
 
                     onBackPressed();
                 }

@@ -33,6 +33,8 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DatabaseError;
+import com.varunjohn1990.iosdialogs4android.IOSDialog;
 
 import java.util.Calendar;
 
@@ -160,7 +162,10 @@ public class LoginActivity extends AppCompatActivity {
                 v.setClickable(true);
             }
             else {
-                auth.signInWithEmailAndPassword(email.getText().toString(), password.getText().toString()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                auth
+                        .signInWithEmailAndPassword(
+                                email.getText().toString(), password.getText().toString()
+                        ).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         v.setClickable(true);
@@ -177,7 +182,13 @@ public class LoginActivity extends AppCompatActivity {
                             doAfter(false);
                         }
                     }
-                });
+                })
+                        .addOnFailureListener(e -> {
+                            new IOSDialog.Builder(getApplicationContext())
+                                    .message(getString(R.string.no_internet_error))
+                                    .build()
+                                    .show();
+                        });
             }
         }
     };
