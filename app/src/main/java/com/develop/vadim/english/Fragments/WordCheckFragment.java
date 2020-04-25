@@ -76,7 +76,6 @@ public class WordCheckFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
         checkingWordsList = ((MainActivity)getActivity()).wordsCheckWordsArrayList;
         categoriesList = ((MainActivity)getActivity()).categoryNames;
 

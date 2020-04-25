@@ -24,6 +24,7 @@
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/messageTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textColor="@color/colorWhite"
@@ -39,6 +40,8 @@
                 android:layout_gravity="center"
                 android:textColor="@color/colorWhite"
                 android:backgroundTint="@color/colorWhite"
+                android:singleLine="true"
+                android:visibility="gone"
                 android:hint="Категория"
                 android:textColorHint="@color/WHITE_TRANSPARENT"/>
 
@@ -55,6 +58,7 @@
                     android:layout_weight="1"
                     android:text="@string/cancel"
                     android:textSize="20sp"
+                    android:visibility="gone"
                     android:textColor="@color/colorWhite"
                     android:gravity="center"/>
 

@@ -27,6 +27,7 @@ import com.develop.vadim.english.R;
 import com.develop.vadim.english.Basic.Word;
 import com.google.android.material.card.MaterialCardView;
 import com.google.firebase.database.DatabaseReference;
+import com.varunjohn1990.iosdialogs4android.IOSDialog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +50,6 @@ public class WordsArchiveFragment extends Fragment implements UpdateDataListener
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        reference.keepSynced(true);
 
         return inflater.inflate(R.layout.words_archive_fragment, container, false);
     }

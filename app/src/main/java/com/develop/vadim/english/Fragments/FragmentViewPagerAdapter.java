@@ -20,7 +20,7 @@ public class FragmentViewPagerAdapter extends FragmentPagerAdapter {
     @NonNull
     @Override
     public Fragment getItem(int position) {
-        switch (position) {
+        switch(position) {
             case 0:
                 return addNewWordFragment;
             case 1:

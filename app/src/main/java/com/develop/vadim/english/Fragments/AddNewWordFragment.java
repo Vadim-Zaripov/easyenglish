@@ -31,6 +31,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.develop.vadim.english.Basic.AtheneDialog;
 import com.develop.vadim.english.Basic.MainActivity;
 import com.develop.vadim.english.R;
 import com.develop.vadim.english.Basic.Word;
@@ -444,35 +445,31 @@ public class AddNewWordFragment extends Fragment implements UpdateDataListener {
             }
 
             private void callChooseCategoryDialog() {
-                final Dialog dialog = new Dialog(getContext());
-                dialog.setContentView(R.layout.add_new_category_fragment);
-                dialog.getWindow().getDecorView().setBackgroundColor(Color.TRANSPARENT);
-
-                final EditText editText = dialog.findViewById(R.id.addNewCategoryEditText);
-                final TextView cancelTextView = dialog.findViewById(R.id.cancelTextView);
-                final TextView acceptTextView = dialog.findViewById(R.id.acceptTextView);
-
-                categoryTextView.setText(categories.get(0));
-
-                acceptTextView.setOnClickListener(new ImageView.OnClickListener() {
+                AtheneDialog atheneDialog = new AtheneDialog(getContext(), AtheneDialog.EDIT_TEXT_TWO_OPTIONS_TYPE);
+                atheneDialog.setPositiveClickListener(new TextView.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if(!editText.getText().toString().equals("")) {
-                            categoryTextView.setText(editText.getText());
+                        if(!atheneDialog.getUserAnswerEditText().getText().toString().equals("")) {
+                            String category = atheneDialog.getUserAnswerEditText().getText().toString().trim().toLowerCase();
+                            if(!categories.contains(category)) {
+                                ((MainActivity)getActivity()).categoryNames.add(category);
+                            }
+
+                            categoryTextView.setText(atheneDialog.getUserAnswerEditText().getText());
                         }
 
-                        dialog.dismiss();
+                        atheneDialog.dismiss();
                     }
                 });
 
-                cancelTextView.setOnClickListener(new View.OnClickListener() {
+                atheneDialog.setNegativeClickListener(new TextView.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        dialog.dismiss();
+                        atheneDialog.dismiss();
                     }
                 });
 
-                dialog.show();
+                atheneDialog.show();
             }
         }
     }
