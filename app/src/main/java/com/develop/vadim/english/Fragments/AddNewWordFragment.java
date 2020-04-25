@@ -445,14 +445,16 @@ public class AddNewWordFragment extends Fragment implements UpdateDataListener {
 
             private void callChooseCategoryDialog() {
                 final Dialog dialog = new Dialog(getContext());
-                dialog.setContentView(R.layout.add_new_category_layout);
+                dialog.setContentView(R.layout.add_new_category_fragment);
+                dialog.getWindow().getDecorView().setBackgroundColor(Color.TRANSPARENT);
+
                 final EditText editText = dialog.findViewById(R.id.addNewCategoryEditText);
-                final ImageView continueEditText = dialog.findViewById(R.id.addNewCategoryImageView);
-                dialog.show();
+                final TextView cancelTextView = dialog.findViewById(R.id.cancelTextView);
+                final TextView acceptTextView = dialog.findViewById(R.id.acceptTextView);
 
                 categoryTextView.setText(categories.get(0));
 
-                continueEditText.setOnClickListener(new ImageView.OnClickListener() {
+                acceptTextView.setOnClickListener(new ImageView.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         if(!editText.getText().toString().equals("")) {
@@ -462,6 +464,15 @@ public class AddNewWordFragment extends Fragment implements UpdateDataListener {
                         dialog.dismiss();
                     }
                 });
+
+                cancelTextView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialog.dismiss();
+                    }
+                });
+
+                dialog.show();
             }
         }
     }
