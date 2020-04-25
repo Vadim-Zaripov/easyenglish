@@ -317,6 +317,7 @@ public class CategoriesFragment extends Fragment implements UpdateDataListener {
                         Toast.makeText(getContext(), "В данной категории все слова уже в вашем цикле изучения", Toast.LENGTH_LONG).show();
                     }
                     else {
+                        // ToDo: IOS DIALOG
                         new IOSDialog.Builder(getContext())
                                 .message("В данной категории " + String.valueOf(changingWordsArrayList.size()) + " слов для добавления. Добавить?")
                                 .positiveButtonText(getString(R.string.yes))

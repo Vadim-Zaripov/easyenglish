@@ -111,6 +111,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        findViewById(R.id.logOutImageView).setOnClickListener(view -> {
+            FirebaseAuth.getInstance().signOut();
+            startActivity(new Intent(this, LoginActivity.class));
+        });
+
         initDefaultFiles();
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -333,6 +338,7 @@ public class MainActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 if(databaseError.getCode() == DatabaseError.DISCONNECTED ||
                         databaseError.getCode() == DatabaseError.NETWORK_ERROR) {
+                    // ToDo: IOS DIALOG
                     new IOSDialog.Builder(getApplicationContext())
                             .message(getString(R.string.no_internet_error))
                             .build()
@@ -516,6 +522,7 @@ public class MainActivity extends AppCompatActivity {
                             "Слова будут добавлены в категорию " +
                             category;
 
+                    // ToDo: IOS DIALOG
                     new IOSDialog.Builder(getApplicationContext())
                             .message(message)
                             .negativeButtonText(getString(R.string.no))

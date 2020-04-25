@@ -22,11 +22,14 @@
 
     <dimen name="main_dots_size">18dp</dimen>
     <dimen name="main_dots_spacing">4dp</dimen>
+    <dimen name="main_exit_imageview_margin">4dp</dimen>
+    <dimen name="main_exit_imageview_size">40dp</dimen>
 
     <dimen name="categories_not_open_card_view_height">60dp</dimen>
 
+
     <!-- Add New / Edit Word Layout -->
-    <dimen name="edit_word_root_view_padding">40dp</dimen>
+    <dimen name="edit_word_root_view_padding">48dp</dimen>
     <dimen name="edit_word_title_text_size">40sp</dimen>
     <dimen name="edit_word_title_margin_top">48dp</dimen>
 

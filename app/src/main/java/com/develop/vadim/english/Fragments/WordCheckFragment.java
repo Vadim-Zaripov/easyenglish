@@ -394,6 +394,7 @@ public class WordCheckFragment extends Fragment {
         deleteWordImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // ToDo: IOS DIALOG
                 new IOSDialog.Builder(view.getContext())
                         .message(getString(R.string.deleteWordMessage))
                         .positiveButtonText("Да")
