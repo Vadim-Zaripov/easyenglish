@@ -178,25 +178,24 @@ public class ChangeWord extends AppCompatActivity {
         deleteWordImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new IOSDialog.Builder(v.getContext())
-                        .negativeButtonText("Нет")
-                        .positiveButtonText("Да")
-                        .message(getString(R.string.deleteWordMessage))
-                        .negativeClickListener(new IOSDialog.Listener() {
-                            @Override
-                            public void onClick(IOSDialog iosDialog) {
-                                iosDialog.dismiss();
-                            }
-                        })
-                        .positiveClickListener(new IOSDialog.Listener() {
-                            @Override
-                            public void onClick(IOSDialog iosDialog) {
-                                changingWord.removeWordFromService(removingWordHandler);
-                                iosDialog.dismiss();
-                            }
-                        })
-                        .build()
-                        .show();
+                AtheneDialog atheneDialog = new AtheneDialog(ChangeWord.this, AtheneDialog.TWO_OPTIONS_TYPE);
+                atheneDialog.setMessageText(getString(R.string.deleteWordMessage));
+                atheneDialog.setPositiveText(getString(R.string.yes));
+                atheneDialog.setPositiveClickListener(new TextView.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        changingWord.removeWordFromService(removingWordHandler);
+                        atheneDialog.dismiss();
+                    }
+                });
+                atheneDialog.setNegativeText(getString(R.string.no));
+                atheneDialog.setNegativeClickListener(new TextView.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        atheneDialog.dismiss();
+                    }
+                });
+                atheneDialog.show();
             }
         });
 
@@ -270,11 +269,16 @@ public class ChangeWord extends AppCompatActivity {
                         .addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
-                                // ToDo: IOS DIALOG
-                                new IOSDialog.Builder(getApplicationContext())
-                                            .message(getString(R.string.no_internet_error))
-                                            .build()
-                                            .show();
+                                // ToDo: IOS DIALOG'
+                                AtheneDialog atheneDialog = new AtheneDialog(ChangeWord.this, AtheneDialog.SIMPLE_MESSAGE_TYPE);
+                                atheneDialog.setMessageText(getString(R.string.no_internet_error));
+                                atheneDialog.setPositiveClickListener(new TextView.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        atheneDialog.dismiss();
+                                    }
+                                });
+                                atheneDialog.show();
                             }
                         })
                         .addOnSuccessListener(new OnSuccessListener<Void>() {

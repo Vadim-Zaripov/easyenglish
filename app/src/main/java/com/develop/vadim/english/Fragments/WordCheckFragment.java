@@ -26,6 +26,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.develop.vadim.english.Basic.AtheneDialog;
 import com.develop.vadim.english.Basic.ChangeWord;
 import com.develop.vadim.english.Basic.MainActivity;
 import com.develop.vadim.english.Basic.Word;
@@ -286,14 +287,26 @@ public class WordCheckFragment extends Fragment {
     }
 
     private void endChecking() {
+        continueImageView.setClickable(false);
         for(View checkingView : checkingViews) {
-            checkingView.setClickable(false);
-            checkingView.animate()
-                    .alphaBy(1)
-                    .alpha(0)
-                    .start();
+            AlphaAnimation alphaAnimation = new AlphaAnimation(1f, 0f);
+            alphaAnimation.setDuration(300);
+            alphaAnimation.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+                    checkingView.setClickable(false);
+                }
 
-            checkingView.setClickable(false);
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    checkingView.setVisibility(View.INVISIBLE);
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) { }
+            });
+
+            checkingView.startAnimation(alphaAnimation);
         }
     }
 
@@ -394,28 +407,27 @@ public class WordCheckFragment extends Fragment {
         deleteWordImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // ToDo: IOS DIALOG
-                new IOSDialog.Builder(view.getContext())
-                        .message(getString(R.string.deleteWordMessage))
-                        .positiveButtonText("Да")
-                        .negativeButtonText("Нет")
-                        .positiveClickListener(new IOSDialog.Listener() {
-                            @Override
-                            public void onClick(IOSDialog iosDialog) {
-                                //checkingWordsList.get(stage).removeWordFromService(removingWordHandler);
-                                continueChecking();
+                AtheneDialog atheneDialog = new AtheneDialog(getContext(), AtheneDialog.TWO_OPTIONS_TYPE);
+                atheneDialog.setMessageText(getString(R.string.deleteWordMessage));
+                atheneDialog.setPositiveText(getString(R.string.yes));
+                atheneDialog.setPositiveClickListener(new TextView.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        //TODO: REMOVE COMMENT
+                        //checkingWordsList.get(stage).removeWordFromService(removingWordHandler);
+                        continueChecking();
 
-                                iosDialog.dismiss();
-                            }
-                        })
-                        .negativeClickListener(new IOSDialog.Listener() {
-                            @Override
-                            public void onClick(IOSDialog iosDialog) {
-                                iosDialog.dismiss();
-                            }
-                        })
-                        .build()
-                        .show();
+                        atheneDialog.dismiss();
+                    }
+                });
+                atheneDialog.setNegativeText(getString(R.string.no));
+                atheneDialog.setNegativeClickListener(new TextView.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        atheneDialog.dismiss();
+                    }
+                });
+                atheneDialog.show();
             }
         });
 
@@ -552,7 +564,14 @@ public class WordCheckFragment extends Fragment {
                 public void onFailure(@NonNull Exception e) {
                     e.printStackTrace();
 
-                    Toast.makeText(getContext(), "Произошла ошибка. Проверьте подключение к сети", Toast.LENGTH_LONG).show();
+                    AtheneDialog atheneDialog = new AtheneDialog(getContext(), AtheneDialog.SIMPLE_MESSAGE_TYPE);
+                    atheneDialog.setMessageText(getString(R.string.no_internet_error));
+                    atheneDialog.setPositiveClickListener(new TextView.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            atheneDialog.dismiss();
+                        }
+                    });
                 }
             });
 

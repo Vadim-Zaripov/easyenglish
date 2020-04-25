@@ -28,6 +28,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.develop.vadim.english.Broadcasts.NotificationBroadcastReceiver;
@@ -90,8 +91,6 @@ public class MainActivity extends AppCompatActivity {
     public ArrayList<Word> wordsCheckWordsArrayList = new ArrayList<>();
     private ArrayList<Word> archivedWordsArrayList = new ArrayList<>();
 
-    private boolean isCategoriesLoaded = false;
-
     private Handler loadingHandler;
 
     public static final int CATEGORIES_FRAGMENT_KEY = 2;
@@ -103,8 +102,6 @@ public class MainActivity extends AppCompatActivity {
     public static final int WORDS_ANALYNG_WND = 3;
     public static final int CHECKING_WORDS_LOAD_END = 4;
 
-    private BroadcastReceiver updateDataBroadcastReceiver;
-
     @SuppressLint("HandlerLeak")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,8 +109,28 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         findViewById(R.id.logOutImageView).setOnClickListener(view -> {
-            FirebaseAuth.getInstance().signOut();
-            startActivity(new Intent(this, LoginActivity.class));
+            AtheneDialog atheneDialog = new AtheneDialog(MainActivity.this, AtheneDialog.TWO_OPTIONS_TYPE);
+            atheneDialog.setMessageText(getString(R.string.exit_from_account_message));
+            atheneDialog.setPositiveText(getString(R.string.yes));
+            atheneDialog.setPositiveClickListener(new TextView.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    FirebaseAuth.getInstance().signOut();
+
+                    Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
+                    startActivity(intent);
+                }
+            });
+            atheneDialog.setNegativeText(getString(R.string.no));
+            atheneDialog.setNegativeClickListener(new TextView.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    atheneDialog.dismiss();
+                }
+            });
+            atheneDialog.show();
         });
 
         initDefaultFiles();
@@ -123,19 +140,18 @@ public class MainActivity extends AppCompatActivity {
             startAlarm();
         }
 
-        updateDataBroadcastReceiver = new BroadcastReceiver() {
+        BroadcastReceiver updateDataBroadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 Word word = intent.getParcelableExtra(getString(R.string.changingWord));
 
-                if(intent.getBooleanExtra(getString(R.string.removeWordKey), false)) {
-                    if(intent.getBooleanExtra(getString(R.string.addNewCategory), false)) {
+                if (intent.getBooleanExtra(getString(R.string.removeWordKey), false)) {
+                    if (intent.getBooleanExtra(getString(R.string.addNewCategory), false)) {
                         categoryNames.add(word.getWordCategory());
                     }
 
                     wordArrayList.set((int) word.getIndex(), word);
-                }
-                else {
+                } else {
                     wordArrayList.remove(word.getIndex());
                 }
 
@@ -325,7 +341,6 @@ public class MainActivity extends AppCompatActivity {
     private void initDefaultFiles() {
         user = FirebaseAuth.getInstance().getCurrentUser();
         reference = FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid());
-        reference.keepSynced(true);
 
         reference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -338,11 +353,15 @@ public class MainActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 if(databaseError.getCode() == DatabaseError.DISCONNECTED ||
                         databaseError.getCode() == DatabaseError.NETWORK_ERROR) {
-                    // ToDo: IOS DIALOG
-                    new IOSDialog.Builder(getApplicationContext())
-                            .message(getString(R.string.no_internet_error))
-                            .build()
-                            .show();
+                    AtheneDialog atheneDialog = new AtheneDialog(MainActivity.this, AtheneDialog.SIMPLE_MESSAGE_TYPE);
+                    atheneDialog.setMessageText(getString(R.string.no_internet_error));
+                    atheneDialog.setPositiveClickListener(new TextView.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            atheneDialog.dismiss();
+                        }
+                    });
+                    atheneDialog.show();
                 }
             }
         });
@@ -522,42 +541,38 @@ public class MainActivity extends AppCompatActivity {
                             "Слова будут добавлены в категорию " +
                             category;
 
-                    // ToDo: IOS DIALOG
-                    new IOSDialog.Builder(getApplicationContext())
-                            .message(message)
-                            .negativeButtonText(getString(R.string.no))
-                            .negativeClickListener(new IOSDialog.Listener() {
-                                @Override
-                                public void onClick(IOSDialog iosDialog) {
-                                    iosDialog.dismiss();
-                                }
-                            })
-                            .positiveButtonText("Да")
-                            .positiveClickListener(new IOSDialog.Listener() {
-                                @Override
-                                public void onClick(IOSDialog iosDialog) {
-                                    for(int wordsCounter = 0; wordsCounter < sharingWordList.size(); wordsCounter++) {
-                                        Word word = sharingWordList.get(wordsCounter);
-                                        Log.d("BIBKA", String.valueOf(word.getIndex()));
-                                        word.sentWordToService();
-                                    }
+                    AtheneDialog atheneDialog = new AtheneDialog(MainActivity.this, AtheneDialog.TWO_OPTIONS_TYPE);
+                    atheneDialog.setMessageText(message);
+                    atheneDialog.setPositiveText(getString(R.string.yes));
+                    atheneDialog.setPositiveClickListener(new TextView.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            for(int wordsCounter = 0; wordsCounter < sharingWordList.size(); wordsCounter++) {
+                                Word word = sharingWordList.get(wordsCounter);
+                                word.sentWordToService();
+                            }
 
-                                    if(!isCategoryReal) {
-                                        FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid()).child("categories").child(String.valueOf(categoryNames.size())).setValue(category);
-                                        categoryNames.add(category);
+                            if(!isCategoryReal) {
+                                FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid()).child("categories").child(String.valueOf(categoryNames.size())).setValue(category);
+                                categoryNames.add(category);
 
-                                        Toast.makeText(getApplicationContext(), getString(R.string.newWords), Toast.LENGTH_SHORT).show();
-                                    }
+                                Toast.makeText(getApplicationContext(), getString(R.string.newWords), Toast.LENGTH_SHORT).show();
+                            }
 
-                                    wordArrayList.addAll(sharingWordList);
+                            wordArrayList.addAll(sharingWordList);
 
-                                    callFragmentContentUpdate(CATEGORIES_FRAGMENT_KEY);
+                            callFragmentContentUpdate(CATEGORIES_FRAGMENT_KEY);
 
-                                    iosDialog.dismiss();
-                                }
-                            })
-                            .build()
-                            .show();
+                            atheneDialog.dismiss();
+                        }
+                    });
+                    atheneDialog.setNegativeClickListener(new TextView.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            atheneDialog.dismiss();
+                        }
+                    });
+                    atheneDialog.show();
                 }
 
                 @Override

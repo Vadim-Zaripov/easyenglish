@@ -246,11 +246,15 @@ public class AddNewWordFragment extends Fragment implements UpdateDataListener {
                         public void onCancelled(@NonNull DatabaseError databaseError) {
                             if(databaseError.getCode() == DatabaseError.DISCONNECTED ||
                                     databaseError.getCode() == DatabaseError.NETWORK_ERROR) {
-                                // ToDo: IOS DIALOG
-                                new IOSDialog.Builder(getContext())
-                                        .message(getString(R.string.no_internet_error))
-                                        .build()
-                                        .show();
+                                AtheneDialog atheneDialog = new AtheneDialog(getContext(), AtheneDialog.SIMPLE_MESSAGE_TYPE);
+                                atheneDialog.setMessageText(getString(R.string.no_internet_error));
+                                atheneDialog.setPositiveClickListener(new TextView.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        atheneDialog.dismiss();
+                                    }
+                                });
+                                atheneDialog.show();
                             }
                         }
                     });

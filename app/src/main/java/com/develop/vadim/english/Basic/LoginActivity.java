@@ -184,11 +184,15 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 })
                         .addOnFailureListener(e -> {
-                            // ToDo: IOS DIALOG
-                            new IOSDialog.Builder(getApplicationContext())
-                                    .message(getString(R.string.no_internet_error))
-                                    .build()
-                                    .show();
+                            AtheneDialog atheneDialog = new AtheneDialog(LoginActivity.this, AtheneDialog.SIMPLE_MESSAGE_TYPE);
+                            atheneDialog.setMessageText(getString(R.string.no_internet_error));
+                            atheneDialog.setPositiveClickListener(new TextView.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    atheneDialog.dismiss();
+                                }
+                            });
+                            atheneDialog.show();
                         });
             }
         }

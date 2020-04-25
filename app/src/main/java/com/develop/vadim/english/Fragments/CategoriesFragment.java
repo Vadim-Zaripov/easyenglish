@@ -30,6 +30,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.develop.vadim.english.Basic.AtheneDialog;
 import com.develop.vadim.english.Basic.MainActivity;
 import com.develop.vadim.english.R;
 import com.develop.vadim.english.Basic.Word;
@@ -225,64 +226,53 @@ public class CategoriesFragment extends Fragment implements UpdateDataListener {
 
                     wordInCategoryTextView.setText(wordsInCategoriesArrayList.get(position).get(wordsInCategoriesCounter).getWordInEnglish());
 
-                    view.setOnTouchListener(new View.OnTouchListener() {
+                    view.setOnClickListener(new View.OnClickListener() {
+                        boolean isInEnglish = true;
                         @Override
-                        public boolean onTouch(View view, MotionEvent motionEvent) {
-                            AlphaAnimation alphaAnimation = new AlphaAnimation(1f, 0f);
-                            alphaAnimation.setDuration(200);
+                        public void onClick(View view) {
+                            view.setClickable(false);
 
-                            switch(motionEvent.getAction()) {
-                                case MotionEvent.ACTION_DOWN:
+                            AlphaAnimation disappearAnimation = new AlphaAnimation(1f, 0f);
+                            disappearAnimation.setDuration(200);
+                            disappearAnimation.setAnimationListener(new Animation.AnimationListener() {
+                                @Override
+                                public void onAnimationStart(Animation animation) { }
 
-                                    alphaAnimation.setAnimationListener(new Animation.AnimationListener() {
-                                        @Override
-                                        public void onAnimationStart(Animation animation) {
+                                @Override
+                                public void onAnimationEnd(Animation animation) {
+                                    if(isInEnglish) {
+                                        wordInCategoryTextView.setText(word.getWordInRussian());
 
-                                            view.setClickable(false);
-                                        }
+                                        isInEnglish = false;
+                                    }
+                                    else {
+                                        wordInCategoryTextView.setText(word.getWordInEnglish());
 
-                                        @Override
-                                        public void onAnimationEnd(Animation animation) {
-                                            AlphaAnimation appearAlphaAnimation = new AlphaAnimation(0f, 1f);
-                                            appearAlphaAnimation.setDuration(200);
-
-                                            wordInCategoryTextView.setText(word.getWordInRussian());
-                                            wordInCategoryTextView.startAnimation(appearAlphaAnimation);
-                                        }
-
-                                        @Override
-                                        public void onAnimationRepeat(Animation animation) {
-
-                                        }
-                                    });
-
-                                    wordInCategoryTextView.startAnimation(alphaAnimation);
-
-                                    break;
-                                case MotionEvent.ACTION_CANCEL  :
-                                    alphaAnimation.setAnimationListener(new Animation.AnimationListener() {
+                                        isInEnglish = true;
+                                    }
+                                    AlphaAnimation appearAnimation = new AlphaAnimation(0f, 1f);
+                                    appearAnimation.setDuration(200);
+                                    appearAnimation.setAnimationListener(new Animation.AnimationListener() {
                                         @Override
                                         public void onAnimationStart(Animation animation) { }
 
                                         @Override
                                         public void onAnimationEnd(Animation animation) {
-                                            AlphaAnimation appearAlphaAnimation = new AlphaAnimation(0f, 1f);
-                                            appearAlphaAnimation.setDuration(200);
-
-                                            wordInCategoryTextView.setText(word.getWordInEnglish());
-                                            wordInCategoryTextView.startAnimation(appearAlphaAnimation);
+                                            view.setClickable(true);
                                         }
 
                                         @Override
                                         public void onAnimationRepeat(Animation animation) { }
                                     });
 
-                                    wordInCategoryTextView.startAnimation(alphaAnimation);
+                                    wordInCategoryTextView.startAnimation(appearAnimation);
+                                }
 
-                                    break;
-                            }
+                                @Override
+                                public void onAnimationRepeat(Animation animation) { }
+                            });
 
-                            return true;
+                            wordInCategoryTextView.startAnimation(disappearAnimation);
                         }
                     });
                     holder.wordInCategoryLinearLayout.addView(view);
@@ -317,64 +307,62 @@ public class CategoriesFragment extends Fragment implements UpdateDataListener {
                         Toast.makeText(getContext(), "В данной категории все слова уже в вашем цикле изучения", Toast.LENGTH_LONG).show();
                     }
                     else {
-                        // ToDo: IOS DIALOG
-                        new IOSDialog.Builder(getContext())
-                                .message("В данной категории " + String.valueOf(changingWordsArrayList.size()) + " слов для добавления. Добавить?")
-                                .positiveButtonText(getString(R.string.yes))
-                                .positiveClickListener(new IOSDialog.Listener() {
+                        AtheneDialog atheneDialog = new AtheneDialog(getContext(), AtheneDialog.TWO_OPTIONS_TYPE);
+                        atheneDialog.setMessageText("В данной категории " + changingWordsArrayList.size() + " слов для добавления. Добавить?");
+                        atheneDialog.setPositiveText(getString(R.string.yes));
+                        atheneDialog.setPositiveClickListener(new TextView.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    boolean isSuccessful = true;
+
                                     @Override
-                                    public void onClick(IOSDialog iosDialog) {
-                                        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-                                            boolean isSuccessful = true;
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                                            @Override
-                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        for(final Word word : changingWordsArrayList) {
+                                            word.setLevel(0);
 
-                                                for(final Word word : changingWordsArrayList) {
-                                                    word.setLevel(0);
+                                            if(!isSuccessful) {
+                                                break;
+                                            }
 
-                                                    if(!isSuccessful) {
-                                                        break;
+                                            databaseReference.child(word.getInd()).child(Word.levelDatabaseKey).setValue(0).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<Void> task) {
+                                                    if(task.isSuccessful()) {
+                                                        ((MainActivity)getActivity()).wordArrayList.set((int) word.getIndex(), word);
                                                     }
-
-                                                    databaseReference.child(word.getInd()).child(Word.levelDatabaseKey).setValue(0).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                        @Override
-                                                        public void onComplete(@NonNull Task<Void> task) {
-                                                            if(task.isSuccessful()) {
-                                                                ((MainActivity)getActivity()).wordArrayList.set((int) word.getIndex(), word);
-                                                            }
-                                                            if(task.isCanceled()) {
-                                                                Toast.makeText(getContext(), "Произошла ошибка, проверьте поделючение к сети", Toast.LENGTH_LONG).show();
-                                                                isSuccessful = false;
-                                                            }
-                                                        }
-                                                    });
+                                                    if(task.isCanceled()) {
+                                                        Toast.makeText(getContext(), "Произошла ошибка, проверьте поделючение к сети", Toast.LENGTH_LONG).show();
+                                                        isSuccessful = false;
+                                                    }
                                                 }
+                                            });
+                                        }
 
-                                                if(isSuccessful) {
-                                                    Toast.makeText(getContext(), "Слова добавлены успешно", Toast.LENGTH_LONG).show();
-                                                    initCategoriesHandler.sendMessage(initCategoriesHandler.obtainMessage());
-                                                }
-                                            }
-
-                                            @Override
-                                            public void onCancelled(@NonNull DatabaseError databaseError) {
-                                                Toast.makeText(getContext(), "Произошла ошибка, проверьте поделючение к сети", Toast.LENGTH_LONG).show();
-                                            }
-                                        });
-
-                                        iosDialog.dismiss();
+                                        if(isSuccessful) {
+                                            Toast.makeText(getContext(), "Слова добавлены успешно", Toast.LENGTH_LONG).show();
+                                            initCategoriesHandler.sendMessage(initCategoriesHandler.obtainMessage());
+                                        }
                                     }
-                                })
-                                .negativeButtonText(getString(R.string.no))
-                                .negativeClickListener(new IOSDialog.Listener() {
+
                                     @Override
-                                    public void onClick(IOSDialog iosDialog) {
-                                        iosDialog.dismiss();
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                                        Toast.makeText(getContext(), "Произошла ошибка, проверьте поделючение к сети", Toast.LENGTH_LONG).show();
                                     }
-                                })
-                                .build()
-                                .show();
+                                });
+
+                                atheneDialog.dismiss();
+                            }
+                        });
+                        atheneDialog.setNegativeText(getString(R.string.no));
+                        atheneDialog.setNegativeClickListener(new TextView.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                atheneDialog.dismiss();
+                            }
+                        });
+                        atheneDialog.show();
                     }
                 }
             });

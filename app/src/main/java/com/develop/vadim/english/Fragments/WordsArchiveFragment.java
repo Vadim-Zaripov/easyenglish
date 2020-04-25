@@ -76,7 +76,7 @@ public class WordsArchiveFragment extends Fragment implements UpdateDataListener
                 else {
                     emptyContainerTextView.setVisibility(View.INVISIBLE);
 
-                    archiveFragmentRecyclerViewAdapter = new ArchiveFragmentRecyclerViewAdapter(archivedWordsArrayList); //TODO: Replace to ArchivedWordsArrayList
+                    archiveFragmentRecyclerViewAdapter = new ArchiveFragmentRecyclerViewAdapter(archivedWordsArrayList);
                     archivedWordsRecyclerView.setAdapter(archiveFragmentRecyclerViewAdapter);
                 }
 

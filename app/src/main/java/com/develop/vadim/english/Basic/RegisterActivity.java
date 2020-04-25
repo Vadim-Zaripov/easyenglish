@@ -163,12 +163,10 @@ public class RegisterActivity extends AppCompatActivity {
                         )
                         .addOnFailureListener(e -> {
                             // ToDo: IOS DIALOG
-                            new IOSDialog.Builder(getApplicationContext())
-                                    .message(getString(R.string.no_internet_error))
-                                    .build()
-                                    .show();
+                            AtheneDialog atheneDialog = new AtheneDialog(RegisterActivity.this, AtheneDialog.SIMPLE_MESSAGE_TYPE);
+                            atheneDialog.setMessageText(getString(R.string.no_internet_error));
+                            atheneDialog.show();
 
-                            Toast.makeText(RegisterActivity.this, "Произошла неизвестная ошибка", Toast.LENGTH_SHORT).show();
                             doAfter(false);
                         });
             } else {
