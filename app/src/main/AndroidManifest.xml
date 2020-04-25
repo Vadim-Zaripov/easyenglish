@@ -26,7 +26,6 @@
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustNothing">
             <intent-filter>
-                <category android:name="android.intent.category.DEFAULT" />
                 <data
                     android:host="athene.page.link"
                     android:scheme="https" />
@@ -43,6 +42,7 @@
             android:name=".Basic.LoginActivity"
             android:screenOrientation="portrait" >
             <intent-filter>
+                <category android:name="android.intent.category.DEFAULT" />
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>

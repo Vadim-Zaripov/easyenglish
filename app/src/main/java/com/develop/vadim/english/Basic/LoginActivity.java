@@ -68,6 +68,7 @@ public class LoginActivity extends AppCompatActivity {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         try {
             Log.w(TAG, currentUser.toString());
+            startActivity(new Intent(this, MainActivity.class));
         }
         catch(NullPointerException e) {
             Log.w(TAG, "User is null");
@@ -110,7 +111,7 @@ public class LoginActivity extends AppCompatActivity {
         Log.d(TAG, "--started RegistrationActivity--");
 
         if(sharedPreferences.getBoolean(getPackageName() + ".firstrun", false)) {
-            startActivity(new Intent(this, MainActivity.class));
+            //startActivity(new Intent(this, MainActivity.class));
         }
         else {
             wordsCheckSharedPreferences.edit().putInt(getPackageName()  + ".wordsCheckFlag", Calendar.getInstance().get(Calendar.DAY_OF_YEAR)).apply();
@@ -179,7 +180,6 @@ public class LoginActivity extends AppCompatActivity {
                             }
                         } else {
                             Toast.makeText(LoginActivity.this, "Ошибка авторизации", Toast.LENGTH_SHORT).show();
-                            doAfter(false);
                         }
                     }
                 })
