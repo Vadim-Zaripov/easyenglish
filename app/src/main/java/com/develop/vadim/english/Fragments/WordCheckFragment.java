@@ -293,6 +293,8 @@ public class WordCheckFragment extends Fragment {
                     .alphaBy(1)
                     .alpha(0)
                     .start();
+
+            checkingView.setClickable(false);
         }
     }
 
