@@ -270,6 +270,7 @@ public class ChangeWord extends AppCompatActivity {
                         .addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
+                                // ToDo: IOS DIALOG
                                 new IOSDialog.Builder(getApplicationContext())
                                             .message(getString(R.string.no_internet_error))
                                             .build()

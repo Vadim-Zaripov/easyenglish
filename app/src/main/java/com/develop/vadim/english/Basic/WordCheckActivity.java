@@ -331,6 +331,7 @@ public class WordCheckActivity extends AppCompatActivity {
         deleteWordImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // ToDo: IOS DIALOG
                 new IOSDialog.Builder(v.getContext())
                         .message(getString(R.string.deleteWordMessage))
                         .positiveButtonText("Да")
@@ -462,6 +463,7 @@ public class WordCheckActivity extends AppCompatActivity {
                 public void onFailure(@NonNull Exception e) {
                     e.printStackTrace();
 
+                    // ToDo: IOS DIALOG
                     new IOSDialog.Builder(getApplicationContext())
                             .message(getString(R.string.no_internet_error))
                             .build()

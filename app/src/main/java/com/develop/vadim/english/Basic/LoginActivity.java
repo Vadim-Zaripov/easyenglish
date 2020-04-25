@@ -184,6 +184,7 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 })
                         .addOnFailureListener(e -> {
+                            // ToDo: IOS DIALOG
                             new IOSDialog.Builder(getApplicationContext())
                                     .message(getString(R.string.no_internet_error))
                                     .build()
