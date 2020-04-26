@@ -6,8 +6,6 @@ import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.ActivityOptions;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -30,15 +28,12 @@ import com.develop.vadim.english.Basic.AtheneDialog;
 import com.develop.vadim.english.Basic.ChangeWord;
 import com.develop.vadim.english.Basic.MainActivity;
 import com.develop.vadim.english.Basic.Word;
-import com.develop.vadim.english.Basic.WordCheckActivity;
 import com.develop.vadim.english.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.firebase.database.DatabaseReference;
-import com.varunjohn1990.iosdialogs4android.IOSDialog;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 
 public class WordCheckFragment extends Fragment {
@@ -80,7 +75,7 @@ public class WordCheckFragment extends Fragment {
         checkingWordsList = ((MainActivity)getActivity()).wordsCheckWordsArrayList;
         categoriesList = ((MainActivity)getActivity()).categoryNames;
 
-        viewLayout = inflater.inflate(R.layout.check_word_layout, container, false);
+        viewLayout = inflater.inflate(R.layout.layout_check_word, container, false);
 
         return viewLayout;
     }

@@ -1,14 +1,10 @@
 package com.develop.vadim.english.Broadcasts;
 
 import android.app.AlarmManager;
-import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
-import android.widget.Toast;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
@@ -16,7 +12,6 @@ import androidx.core.app.NotificationManagerCompat;
 import com.develop.vadim.english.Basic.MainActivity;
 import com.develop.vadim.english.Basic.Word;
 import com.develop.vadim.english.R;
-import com.develop.vadim.english.Services.NotificationService;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -34,7 +29,6 @@ public class NotificationBroadcastReceiver extends BroadcastReceiver {
             AlarmManager manager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
             Intent myIntent;
             PendingIntent pendingIntent;
-
 
             Calendar calendar = new GregorianCalendar();
             calendar.set(Calendar.HOUR_OF_DAY, 12);
@@ -60,9 +54,9 @@ public class NotificationBroadcastReceiver extends BroadcastReceiver {
 
         //Вызов уведомления
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, NOTIFICATION_ID_KEY)
-                .setSmallIcon(R.drawable.logolett2)
+                .setSmallIcon(R.drawable.app_icon)
                 .setWhen(System.currentTimeMillis())
-                .setAutoCancel(false)
+                .setAutoCancel(true)
                 .setContentIntent(pendingIntent)
                 .setContentText("Пора повторить слова!")
                 .setPriority(NotificationCompat.PRIORITY_HIGH);

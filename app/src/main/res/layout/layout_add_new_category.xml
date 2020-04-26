@@ -44,7 +44,7 @@
                 android:layout_width="@dimen/add_category_save_image_view_size"
                 android:layout_height="@dimen/add_category_save_image_view_size"
                 android:layout_gravity="center_horizontal"
-                android:src="@drawable/arrow_small"
+                android:src="@drawable/ic_arrow_small_white"
                 android:background="@drawable/continue_button_background"/>
 
             <TextView

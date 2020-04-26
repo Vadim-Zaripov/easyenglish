@@ -1,7 +1,6 @@
 package com.develop.vadim.english.Basic;
 
 import android.annotation.SuppressLint;
-import android.app.ActivityOptions;
 import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -11,19 +10,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
-import androidx.viewpager.widget.ViewPager;
-import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
@@ -31,11 +23,16 @@ import android.view.animation.Animation;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.viewpager.widget.ViewPager;
+
 import com.develop.vadim.english.Broadcasts.NotificationBroadcastReceiver;
 import com.develop.vadim.english.Fragments.AddNewWordFragment;
+import com.develop.vadim.english.Fragments.CategoriesFragment;
 import com.develop.vadim.english.Fragments.FragmentViewPagerAdapter;
 import com.develop.vadim.english.Fragments.WordsArchiveFragment;
-import com.develop.vadim.english.Fragments.CategoriesFragment;
 import com.develop.vadim.english.R;
 import com.github.ybq.android.spinkit.SpinKitView;
 import com.github.ybq.android.spinkit.style.DoubleBounce;
@@ -51,7 +48,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import com.google.firebase.dynamiclinks.PendingDynamicLinkData;
 import com.tbuonomo.viewpagerdotsindicator.DotsIndicator;
-import com.varunjohn1990.iosdialogs4android.IOSDialog;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -184,7 +180,10 @@ public class MainActivity extends AppCompatActivity {
 
                             @Override
                             public void onAnimationEnd(Animation animation) {
+                                findViewById(R.id.logOutImageView)
+                                        .setVisibility(View.VISIBLE);
                                 spinKitView.setVisibility(View.INVISIBLE);
+
                                 viewPager.setAdapter(fragmentViewPagerAdapter);
                                 viewPager.setOffscreenPageLimit(4);
                                 viewPager.setCurrentItem(1);
@@ -329,12 +328,19 @@ public class MainActivity extends AppCompatActivity {
         calendar.set(Calendar.HOUR_OF_DAY, 12);
         calendar.set(Calendar.MINUTE, 0);
 
-        if( new Date().getTime() <= calendar.getTimeInMillis() ) {
-            myIntent = new Intent(MainActivity.this, NotificationBroadcastReceiver.class);
-            pendingIntent = PendingIntent.getBroadcast(this,0, myIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        myIntent = new Intent(MainActivity.this, NotificationBroadcastReceiver.class);
+        pendingIntent = PendingIntent.getBroadcast(this,0, myIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        manager.cancel(pendingIntent);
 
-            manager.cancel(pendingIntent);
+        if( new Date().getTime() <= calendar.getTimeInMillis() ) {
             manager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+        }
+        else {
+            manager.set(
+                    AlarmManager.RTC_WAKEUP,
+                    calendar.getTimeInMillis()+Word.CHECK_INTERVAL.get(Word.LEVEL_DAY),
+                    pendingIntent
+            );
         }
     }
 

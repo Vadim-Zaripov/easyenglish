@@ -1,10 +1,13 @@
 package com.develop.vadim.english.Basic;
 
+import android.annotation.SuppressLint;
 import android.app.ActivityOptions;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -15,7 +18,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.develop.vadim.english.R;
 import com.github.ybq.android.spinkit.SpinKitView;
@@ -33,8 +38,6 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
-import com.google.firebase.database.DatabaseError;
-import com.varunjohn1990.iosdialogs4android.IOSDialog;
 
 import java.util.Calendar;
 
@@ -42,7 +45,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private FirebaseAuth auth;
 
-    private final String TAG = "Authentication";
+    private final String TAG = "LoginActivity";
     private boolean state;
 
     public FirebaseUser user;
@@ -127,6 +130,7 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         loginImageView.setOnClickListener(loginClickListener);
+        loginImageView.setOnTouchListener(loginTouchListener);
         googleSignInButton.setOnClickListener(view -> signInWithGoogle());
 
         Log.d(TAG, "--started RegistrationActivity--");
@@ -151,6 +155,22 @@ public class LoginActivity extends AppCompatActivity {
             }
         }
     }
+
+    private View.OnTouchListener loginTouchListener = new View.OnTouchListener() {
+        @RequiresApi(api = Build.VERSION_CODES.M)
+        @SuppressLint("ClickableViewAccessibility")
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+
+            if(event.getActionMasked() == MotionEvent.ACTION_DOWN) {
+                v.setAlpha(0.5f);
+            }
+            else if(event.getActionMasked() == MotionEvent.ACTION_UP) {
+                v.setAlpha(1f);
+            }
+            return false;
+        }
+    };
 
     private View.OnClickListener loginClickListener = new View.OnClickListener() {
         @Override

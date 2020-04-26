@@ -4,7 +4,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="@dimen/edit_word_root_view_padding">
+    android:padding="@dimen/edit_word_root_view_padding"
+    android:background="@drawable/app_background">
+
 
     <TextView
         android:id="@+id/headerTextView"
@@ -12,7 +14,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/edit_word_title_margin_top"
         android:gravity="center"
-        android:text="@string/addWord"
+        android:text="@string/changeWord"
         android:textColor="@color/colorWhite"
         android:textSize="@dimen/edit_word_title_text_size"
         app:layout_constraintEnd_toEndOf="parent"
@@ -54,7 +56,6 @@
             android:layout_height="wrap_content"
             android:backgroundTint="@android:color/white"
             android:hint="На родном"
-            android:singleLine="true"
             android:textColor="#ffffff"
             android:textColorHighlight="@android:color/white"
             android:textColorHint="@color/WHITE_TRANSPARENT"
@@ -77,37 +78,6 @@
         app:layout_constraintStart_toStartOf="@+id/linearLayout5"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout5" />
 
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/edit_word_save_button_margin_sides"
-        android:layout_marginEnd="@dimen/edit_word_save_button_margin_sides"
-        android:layout_marginBottom="@dimen/edit_word_save_button_margin_bottom"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-
-
-        <ImageView
-            android:id="@+id/addWordToServiceImageView"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/edit_word_save_button_height"
-            android:layout_gravity="center_horizontal"
-            android:background="@drawable/button_background"
-            android:src="@drawable/add_word" />
-
-        <TextView
-            android:id="@+id/addWordToServiceTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:text="Добавить"
-            android:textColor="@color/WHITE_TRANSPARENT"
-            android:textSize="@dimen/edit_word_secondary_text_text_size" />
-    </LinearLayout>
-
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/categoryChooseCardViewHolder"
         android:layout_width="0dp"
@@ -124,16 +94,6 @@
         app:layout_constraintStart_toStartOf="@+id/categoriesTextViewTitle"
         app:layout_constraintTop_toBottomOf="@+id/categoriesTextViewTitle">
 
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:tag="animation4"
-            android:textColor="@color/colorWhite"
-            android:textColorHint="@color/colorWhite" />
-
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -143,6 +103,16 @@
             android:text="xenous"
             android:textColor="@android:color/white"
             android:textSize="@dimen/edit_word_category_title_text_size" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:tag="animation4"
+            android:textColor="@color/colorWhite"
+            android:textColorHint="@color/colorWhite" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:layout_width="match_parent"
@@ -154,8 +124,7 @@
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/categoryChooseCardView"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:minHeight="60dp"
+        android:layout_height="60dp"
         android:tag="animation"
         app:cardBackgroundColor="@color/WHITE_TRANSPARENT"
         app:cardCornerRadius="20dp"
@@ -172,7 +141,6 @@
             android:layout_gravity="center"
             android:gravity="center"
             android:tag="animation3"
-            android:text="xenous"
             android:textColor="@android:color/white"
             android:textSize="@dimen/edit_word_category_title_text_size"
             android:visibility="visible" />
@@ -201,7 +169,6 @@
         android:id="@+id/categoriesMaterialCardView"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginBottom="8dp"
         android:tag="animation"
         android:visibility="invisible"
         app:cardCornerRadius="20dp"
@@ -214,19 +181,19 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:tag="animation3" />
+            android:tag="animation3"
+            android:text="xenous" />
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/add_new_word_recycler"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:tag="animation2" />
 
         <TextView
-            android:id="@+id/add_new_word_create_category_textview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|center_horizontal"
+            android:layout_marginBottom="8dp"
             android:background="@drawable/continue_button_background_purple"
             android:tag="animation4"
             android:text="@string/addNewCategory"
@@ -234,6 +201,64 @@
             android:textSize="18sp" />
 
     </com.google.android.material.card.MaterialCardView>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout6"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/categoryChooseCardViewHolder">
+
+        <ImageView
+            android:id="@+id/deleteWordImageView"
+            android:layout_width="@dimen/edit_word_edit_image_view_size"
+            android:layout_height="@dimen/edit_word_edit_image_view_size"
+            android:layout_gravity="center_horizontal"
+            app:srcCompat="@drawable/ic_delete_word_white" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center"
+            android:text="@string/deleteWord"
+            android:textColor="@color/WHITE_TRANSPARENT"
+            android:textSize="@dimen/check_word_secondary_text_text_size" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout6"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/edit_word_save_button_margin_bottom"
+        android:layout_marginStart="@dimen/edit_word_save_button_margin_sides"
+        android:layout_marginEnd="@dimen/edit_word_save_button_margin_sides"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+
+        <ImageView
+            android:id="@+id/saveChangesImageView"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/edit_word_save_button_height"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/button_background"
+            android:src="@drawable/ic_edit_word_white" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center_horizontal"
+            android:text="@string/saveChanges"
+            android:textColor="@color/WHITE_TRANSPARENT"
+            android:textSize="@dimen/edit_word_secondary_text_text_size" />
+
+    </LinearLayout>
 
     <com.github.ybq.android.spinkit.SpinKitView
         android:id="@+id/spinKit"
@@ -248,19 +273,5 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.36" />
-
-    <com.github.chengang.library.TickView
-        android:id="@+id/tickViewAccent"
-        android:layout_width="148dp"
-        android:layout_height="148dp"
-        android:visibility="invisible"
-        app:check_base_color="@color/rightWordGreen"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.36"
-        app:radius="40dp"
-        app:rate="normal" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

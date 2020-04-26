@@ -4,10 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/progress_bar"
-    tools:context=".Basic.WordCheckActivity"
+    tools:context=".Fragments.WordCheckFragment"
     android:padding="@dimen/check_word_root_view_padding">
-
 
     <TextView
         android:id="@+id/headerTextView"
@@ -111,7 +109,7 @@
                 android:layout_width="@dimen/check_word_edit_image_view_size"
                 android:layout_height="@dimen/check_word_edit_image_view_size"
                 android:layout_gravity="center_horizontal"
-                app:srcCompat="@drawable/edit_word" />
+                app:srcCompat="@drawable/ic_edit_word_white" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -137,7 +135,7 @@
                 android:layout_width="@dimen/check_word_edit_image_view_size"
                 android:layout_height="@dimen/check_word_edit_image_view_size"
                 android:layout_gravity="center_horizontal"
-                app:srcCompat="@drawable/delete_word" />
+                app:srcCompat="@drawable/ic_delete_word_white" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -175,9 +173,10 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/linearLayout3"
-            app:srcCompat="@drawable/arrow_small" />
+            app:srcCompat="@drawable/ic_arrow_small_white" />
 
         <TextView
+            android:id="@+id/checkAnswerTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -207,6 +206,21 @@
             app:layout_constraintStart_toStartOf="parent" />
 
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/noWordsToCheckTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="На сегодняшний день слова для повторения закончились"
+        android:textColor="@color/colorWhite"
+        android:textSize="28sp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.44" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

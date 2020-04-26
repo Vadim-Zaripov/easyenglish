@@ -1,20 +1,8 @@
 package com.develop.vadim.english.Fragments;
 
 import android.annotation.SuppressLint;
-import android.app.AlarmManager;
-import android.app.Dialog;
-import android.app.PendingIntent;
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -27,15 +15,20 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.develop.vadim.english.Basic.AtheneDialog;
 import com.develop.vadim.english.Basic.MainActivity;
-import com.develop.vadim.english.R;
 import com.develop.vadim.english.Basic.Word;
+import com.develop.vadim.english.R;
 import com.github.chengang.library.TickView;
 import com.github.ybq.android.spinkit.style.DoubleBounce;
 import com.google.android.material.card.MaterialCardView;
@@ -43,15 +36,11 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
-import com.varunjohn1990.iosdialogs4android.IOSDialog;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Random;
 
 import bg.devlabs.transitioner.Transitioner;
-
-import static android.content.Context.ALARM_SERVICE;
 
 public class AddNewWordFragment extends Fragment implements UpdateDataListener {
 
@@ -133,7 +122,7 @@ public class AddNewWordFragment extends Fragment implements UpdateDataListener {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         reference = MainActivity.reference.child("words");
-        rootView = inflater.inflate(R.layout.add_new_word_layout, container, false);
+        rootView = inflater.inflate(R.layout.layout_add_new_word, container, false);
 
         return rootView;
     }
@@ -388,7 +377,7 @@ public class AddNewWordFragment extends Fragment implements UpdateDataListener {
         @NonNull
         @Override
         public CategoriesRecyclerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View view = getLayoutInflater().inflate(R.layout.categories_choosing_cell, parent, false);
+            View view = getLayoutInflater().inflate(R.layout.cell_category_choose, parent, false);
 
             return new CategoriesRecyclerViewHolder(view);
         }

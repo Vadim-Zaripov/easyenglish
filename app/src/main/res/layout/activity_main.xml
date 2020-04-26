@@ -5,7 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/progress_bar"
+    android:background="@drawable/app_background"
     tools:context=".Basic.MainActivity">
 
     <nl.dionsegijn.konfetti.KonfettiView
@@ -47,9 +47,8 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#00000000"
-        app:layout_constraintBottom_toBottomOf="@+id/mainViewPagerId"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/dots_indicator"
         app:layout_constraintEnd_toEndOf="@+id/mainViewPagerId"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -74,8 +73,9 @@
         android:layout_marginTop="@dimen/main_exit_imageview_margin"
         android:layout_marginEnd="@dimen/main_exit_imageview_margin"
         android:scaleType="fitCenter"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_exit_to_app_white_24dp" />
+        app:srcCompat="@drawable/ic_exit_white" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

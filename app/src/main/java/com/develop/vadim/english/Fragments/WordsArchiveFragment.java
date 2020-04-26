@@ -1,33 +1,27 @@
 package com.develop.vadim.english.Fragments;
 
 import android.annotation.SuppressLint;
-import android.app.ActivityOptions;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
+import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.os.Message;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.TextView;
-
-import com.develop.vadim.english.Basic.ChangeWord;
 import com.develop.vadim.english.Basic.MainActivity;
-import com.develop.vadim.english.R;
 import com.develop.vadim.english.Basic.Word;
+import com.develop.vadim.english.R;
 import com.google.android.material.card.MaterialCardView;
 import com.google.firebase.database.DatabaseReference;
-import com.varunjohn1990.iosdialogs4android.IOSDialog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,7 +45,7 @@ public class WordsArchiveFragment extends Fragment implements UpdateDataListener
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        return inflater.inflate(R.layout.words_archive_fragment, container, false);
+        return inflater.inflate(R.layout.fragment_words_archive_, container, false);
     }
 
     @SuppressLint("HandlerLeak")
@@ -113,7 +107,7 @@ public class WordsArchiveFragment extends Fragment implements UpdateDataListener
         @NonNull
         @Override
         public ArchiveFragmentViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.arhived_word_cell, parent, false);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.cell_word_arhived, parent, false);
 
             return new ArchiveFragmentViewHolder(view);
         }

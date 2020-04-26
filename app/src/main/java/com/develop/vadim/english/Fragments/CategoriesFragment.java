@@ -8,32 +8,29 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.os.Message;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.develop.vadim.english.Basic.AtheneDialog;
 import com.develop.vadim.english.Basic.MainActivity;
-import com.develop.vadim.english.R;
 import com.develop.vadim.english.Basic.Word;
+import com.develop.vadim.english.R;
 import com.github.florent37.expansionpanel.ExpansionHeader;
 import com.github.florent37.expansionpanel.ExpansionLayout;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -54,8 +51,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 
-import kotlin.jvm.internal.Ref;
-
 public class CategoriesFragment extends Fragment implements UpdateDataListener {
 
     private RecyclerView wordsCategoriesRecyclerView;
@@ -75,7 +70,7 @@ public class CategoriesFragment extends Fragment implements UpdateDataListener {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         databaseReference = MainActivity.reference.child("words");
 
-        viewLayout = inflater.inflate(R.layout.categories_fragment, container, false);
+        viewLayout = inflater.inflate(R.layout.fragment_categories_list, container, false);
         return viewLayout;
     }
 
@@ -142,7 +137,7 @@ public class CategoriesFragment extends Fragment implements UpdateDataListener {
         @NonNull
         @Override
         public WordsCategoriesRecyclerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            return new WordsCategoriesRecyclerViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.category_cell, parent, false));
+            return new WordsCategoriesRecyclerViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.cell_category, parent, false));
         }
 
         @Override
@@ -158,7 +153,7 @@ public class CategoriesFragment extends Fragment implements UpdateDataListener {
                     final int localPosition = position;
                     final int currentWordIndex = wordsInCategoriesCounter;
                     final Word word = wordsInCategoriesArrayList.get(position).get(currentWordIndex);
-                    View view = LayoutInflater.from(getContext()).inflate(R.layout.word_in_category_cell, null, false);
+                    View view = LayoutInflater.from(getContext()).inflate(R.layout.cell_word_in_category, null, false);
                     final TextView wordInCategoryTextView = view.findViewById(R.id.wordInCategoryTextView);
 
                     view.setOnLongClickListener(new View.OnLongClickListener() {

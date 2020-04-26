@@ -1,10 +1,5 @@
 package com.develop.vadim.english.Basic;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
@@ -15,8 +10,6 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,20 +18,19 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.view.animation.AnticipateInterpolator;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.develop.vadim.english.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.card.MaterialCardView;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.ValueEventListener;
-import com.varunjohn1990.iosdialogs4android.IOSDialog;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -71,7 +63,7 @@ public class ChangeWord extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_change_word_new);
+        setContentView(R.layout.activity_change_word);
 
         updateHasBeenDoneBroadcastReceiver = new BroadcastReceiver() {
             @Override
@@ -316,7 +308,7 @@ public class ChangeWord extends AppCompatActivity {
         @NonNull
         @Override
         public CategoriesRecyclerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.categories_choosing_cell, parent, false);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.cell_category_choose, parent, false);
 
             return new CategoriesRecyclerViewHolder(view);
         }
@@ -396,7 +388,7 @@ public class ChangeWord extends AppCompatActivity {
 
         private void callChooseCategoryDialog() {
             final Dialog dialog = new Dialog(ChangeWord.this);
-            dialog.setContentView(R.layout.add_new_category_layout);
+            dialog.setContentView(R.layout.layout_add_new_category);
             final EditText editText = dialog.findViewById(R.id.addNewCategoryEditText);
             final ImageView continueImageView = dialog.findViewById(R.id.addNewCategoryImageView);
 

@@ -35,7 +35,7 @@ public class AtheneDialog extends Dialog {
         super(context);
         this.type = type;
 
-        View v = getLayoutInflater().inflate(R.layout.add_new_category_fragment, null, false);
+        View v = getLayoutInflater().inflate(R.layout.fragment_add_new_category, null, false);
         setContentView(v);
 
         this.getWindow().getDecorView().setBackgroundColor(Color.TRANSPARENT);
