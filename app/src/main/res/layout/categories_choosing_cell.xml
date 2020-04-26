@@ -18,6 +18,7 @@
         android:layout_gravity="center"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
+        android:gravity="center"
         android:tag="animatedTagOne"
         android:textColor="@android:color/white"
         android:textSize="@dimen/categories_choosing_title_text_size" />

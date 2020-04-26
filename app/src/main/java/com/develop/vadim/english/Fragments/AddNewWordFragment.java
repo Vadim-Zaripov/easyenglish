@@ -27,6 +27,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -53,6 +54,10 @@ import bg.devlabs.transitioner.Transitioner;
 import static android.content.Context.ALARM_SERVICE;
 
 public class AddNewWordFragment extends Fragment implements UpdateDataListener {
+
+    private View rootView;
+
+    private boolean isRecyclerAdapted = false;
 
     private EditText englishWordEditText;
     private EditText russianWordEditText;
@@ -128,8 +133,9 @@ public class AddNewWordFragment extends Fragment implements UpdateDataListener {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         reference = MainActivity.reference.child("words");
+        rootView = inflater.inflate(R.layout.add_new_word_layout, container, false);
 
-        return inflater.inflate(R.layout.add_new_word_layout, container, false);
+        return rootView;
     }
 
     @Override
@@ -163,6 +169,11 @@ public class AddNewWordFragment extends Fragment implements UpdateDataListener {
             public void onClick(View v) {
 
                 getView().setClickable(true);
+
+                if(!isRecyclerAdapted) {
+                    isRecyclerAdapted = true;
+                    adaptRecyclerView();
+                }
 
                 transitioner = new Transitioner(categoryMaterialCardView, categoriesChoosingMaterialMaterialCardView);
                 transitioner.animateTo(1f, (long) 400, new AccelerateDecelerateInterpolator());
@@ -301,6 +312,28 @@ public class AddNewWordFragment extends Fragment implements UpdateDataListener {
                 });
             }
         });
+
+
+    }
+
+    private void adaptRecyclerView() {
+
+        int categoriesMaterialCardView = rootView
+                .findViewById(R.id.add_new_word_recycler)
+                .getMeasuredHeight();
+
+        int createCategoryTextViewHeight = rootView
+                .findViewById(R.id.add_new_word_create_category_textview)
+                .getMeasuredHeight();
+
+        ViewGroup.LayoutParams layoutParams = rootView
+                .findViewById(R.id.add_new_word_recycler)
+                .getLayoutParams();
+        layoutParams.height = categoriesMaterialCardView - createCategoryTextViewHeight;
+
+        rootView
+                .findViewById(R.id.add_new_word_recycler)
+                .setLayoutParams(layoutParams);
     }
 
     private ArrayList getCategories() {

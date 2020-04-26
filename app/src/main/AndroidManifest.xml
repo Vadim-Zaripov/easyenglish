@@ -33,12 +33,6 @@
         </activity>
 
         <activity
-            android:name=".Basic.AuthenticationActivity"
-            android:screenOrientation="portrait"
-            android:label="@string/auth">
-        </activity>
-
-        <activity
             android:name=".Basic.LoginActivity"
             android:screenOrientation="portrait" >
             <intent-filter>

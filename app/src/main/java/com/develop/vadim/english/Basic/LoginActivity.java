@@ -237,7 +237,6 @@ public class LoginActivity extends AppCompatActivity {
         if(state)
             super.onBackPressed();
         else{
-            setContentView(R.layout.activity_main_register);
             state = true;
         }
     }

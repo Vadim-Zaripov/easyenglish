@@ -96,7 +96,7 @@ public class RegisterActivity extends AppCompatActivity {
         Log.d(TAG, "--started RegistrationActivity--");
 
         if(sharedPreferences.getBoolean(getPackageName() + ".firstrun", false)) {
-            startActivity(new Intent(this, MainActivity.class));
+            //startActivity(new Intent(this, MainActivity.class));
         }
         else {
             wordsCheckSharedPreferences.edit().putInt(getPackageName()  + ".wordsCheckFlag", Calendar.getInstance().get(Calendar.DAY_OF_YEAR)).apply();
@@ -207,7 +207,6 @@ public class RegisterActivity extends AppCompatActivity {
     //####################################################
     public void doAfter(boolean res){
         if(res) {
-            //startActivity(new Intent(this, Main2Activity.class));
             Log.d(TAG, "--finished RegistrationActivity--");
             startActivity(new Intent(this, MainActivity.class));
             controlFirstRun();
@@ -218,7 +217,6 @@ public class RegisterActivity extends AppCompatActivity {
         if(state)
             super.onBackPressed();
         else{
-            setContentView(R.layout.activity_main_register);
             state = true;
         }
     }

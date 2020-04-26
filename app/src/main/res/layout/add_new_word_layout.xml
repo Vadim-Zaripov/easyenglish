@@ -209,8 +209,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/categoryChooseCardViewHolder"
-        app:layout_constraintVertical_bias="0.49">
+        app:layout_constraintTop_toTopOf="@+id/categoryChooseCardViewHolder">
 
         <TextView
             android:layout_width="match_parent"
@@ -218,15 +217,16 @@
             android:tag="animation3" />
 
         <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/add_new_word_recycler"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:tag="animation2" />
 
         <TextView
+            android:id="@+id/add_new_word_create_category_textview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|center_horizontal"
-            android:layout_marginBottom="8dp"
             android:background="@drawable/continue_button_background_purple"
             android:tag="animation4"
             android:text="@string/addNewCategory"
