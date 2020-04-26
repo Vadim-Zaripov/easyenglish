@@ -145,8 +145,8 @@ public class MainActivity extends AppCompatActivity {
             public void onReceive(Context context, Intent intent) {
                 Word word = intent.getParcelableExtra(getString(R.string.changingWord));
 
-                if (intent.getBooleanExtra(getString(R.string.removeWordKey), false)) {
-                    if (intent.getBooleanExtra(getString(R.string.addNewCategory), false)) {
+                if(intent.getBooleanExtra(getString(R.string.removeWordKey), false)) {
+                    if(intent.getBooleanExtra(getString(R.string.addNewCategory), false)) {
                         categoryNames.add(word.getWordCategory());
                     }
 
@@ -186,7 +186,7 @@ public class MainActivity extends AppCompatActivity {
                             public void onAnimationEnd(Animation animation) {
                                 spinKitView.setVisibility(View.INVISIBLE);
                                 viewPager.setAdapter(fragmentViewPagerAdapter);
-                                viewPager.setOffscreenPageLimit(3);
+                                viewPager.setOffscreenPageLimit(4);
                                 viewPager.setCurrentItem(1);
 
                                 dotsIndicator.setViewPager(viewPager);
@@ -273,7 +273,7 @@ public class MainActivity extends AppCompatActivity {
     public void callConfetti() {
         KonfettiView konfettiView = findViewById(R.id.viewKonfetti);
         konfettiView.build()
-                .addColors(Color.MAGENTA, Color.YELLOW, getResources().getColor(R.color.lightPurple))
+                .addColors(Color.MAGENTA, Color.YELLOW, getResources().getColor(R.color.lightPurple), getResources().getColor(R.color.rightWordGreen))
                 .setDirection(0.0, 359.0)
                 .setSpeed(1f, 5f)
                 .setFadeOutEnabled(true)

@@ -367,6 +367,82 @@ public class CategoriesFragment extends Fragment implements UpdateDataListener {
                 }
             });
 
+            holder.expansionHeader.setOnLongClickListener(new View.OnLongClickListener() {
+                @SuppressLint("HandlerLeak")
+                @Override
+                public boolean onLongClick(View view) {
+                    AtheneDialog atheneDialog = new AtheneDialog(getContext(), AtheneDialog.TWO_OPTIONS_TYPE);
+                    atheneDialog.setMessageText(getString(R.string.deleteCategoryMessage));
+                    atheneDialog.setPositiveText(getString(R.string.yes));
+                    atheneDialog.setPositiveClickListener(new TextView.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            view.setClickable(false);
+
+                            Handler handler = new Handler() {
+                                @Override
+                                public void handleMessage(Message msg) {
+                                    super.handleMessage(msg);
+
+                                    initCategoriesHandler.sendMessage(initCategoriesHandler.obtainMessage());
+                                    notifyDataSetChanged();
+                                    atheneDialog.dismiss();
+                                }
+                            };
+
+                            DatabaseReference reference = MainActivity.reference.child("categories");
+                            reference.child(String.valueOf(position))
+                                    .setValue(categoryNamesList.get(categoryNamesList.size() - 1))
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            reference.child(String.valueOf(categoryNamesList.size() - 1)).removeValue();
+
+                                            for(int wordsCounter = 0; wordsCounter < wordArrayList.size(); wordsCounter++) {
+                                                if(wordArrayList.get(wordsCounter).getWordCategory().equals(categoryNamesList.get(position))) {
+                                                    wordArrayList.get(wordsCounter).setWordCategory("Без категории");
+
+                                                    databaseReference.child(String.valueOf(wordArrayList.get(wordsCounter).getInd())).child(Word.categoryDatabaseKey).setValue("Без категории");
+                                                }
+                                            }
+
+                                            ((MainActivity)getActivity()).categoryNames.remove(position);
+
+
+                                            handler.sendMessage(handler.obtainMessage());
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            atheneDialog.dismiss();
+
+                                            AtheneDialog exceptionDialog = new AtheneDialog(getContext(), AtheneDialog.SIMPLE_MESSAGE_TYPE);
+                                            exceptionDialog.setMessageText(getString(R.string.no_internet_error));
+                                            exceptionDialog.setPositiveClickListener(new TextView.OnClickListener() {
+                                                @Override
+                                                public void onClick(View view) {
+                                                    atheneDialog.dismiss();
+                                                }
+                                            });
+                                        }
+                                    });
+                        }
+                    });
+                    atheneDialog.setNegativeText(getString(R.string.no));
+                    atheneDialog.setNegativeClickListener(new TextView.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            atheneDialog.dismiss();
+                        }
+                    });
+
+                    atheneDialog.show();
+
+                    return true;
+                }
+            });
+
             holder.shareTextView.setOnClickListener(new TextView.OnClickListener() {
                 URI currentUri;
                 @Override
@@ -491,10 +567,6 @@ public class CategoriesFragment extends Fragment implements UpdateDataListener {
             TextView shareTextView;
 
             ArrayList<Word> wordsInThisCategoryArrayList;
-
-            int height;
-
-            boolean catchHeightFlag = true;
 
             WordsCategoriesRecyclerViewHolder(final View itemView) {
                 super(itemView);

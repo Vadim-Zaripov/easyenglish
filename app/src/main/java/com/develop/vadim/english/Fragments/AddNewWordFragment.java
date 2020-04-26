@@ -291,7 +291,6 @@ public class AddNewWordFragment extends Fragment implements UpdateDataListener {
 
                         wordSendingProgressBar.setVisibility(View.VISIBLE);
 
-                        Log.d("BOB", category + "1");
                         new Thread(new StartWordSendingThread(word, category)).start();
 
                     }
@@ -457,7 +456,7 @@ public class AddNewWordFragment extends Fragment implements UpdateDataListener {
                         if(!atheneDialog.getUserAnswerEditText().getText().toString().equals("")) {
                             String category = atheneDialog.getUserAnswerEditText().getText().toString().trim().toLowerCase();
                             if(!categories.contains(category)) {
-                                ((MainActivity)getActivity()).categoryNames.add(category);
+                                //((MainActivity)getActivity()).categoryNames.add(category);
                             }
 
                             categoryTextView.setText(atheneDialog.getUserAnswerEditText().getText());

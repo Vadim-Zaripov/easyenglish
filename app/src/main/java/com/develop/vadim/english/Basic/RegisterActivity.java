@@ -162,7 +162,6 @@ public class RegisterActivity extends AppCompatActivity {
                                         })
                         )
                         .addOnFailureListener(e -> {
-                            // ToDo: IOS DIALOG
                             AtheneDialog atheneDialog = new AtheneDialog(RegisterActivity.this, AtheneDialog.SIMPLE_MESSAGE_TYPE);
                             atheneDialog.setMessageText(getString(R.string.no_internet_error));
                             atheneDialog.show();
