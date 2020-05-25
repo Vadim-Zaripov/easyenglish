@@ -48,10 +48,10 @@ public class Word implements Parcelable {
 
     private long index;
 
-    public final static String WORD_TAG = "WordClass";
+    private final static String WORD_TAG = "WordClass";
 
-    public static final String russianDatabaseKey = "Russian";
-    public static final String englishDatabaseKey = "English";
+    static final String russianDatabaseKey = "Russian";
+    static final String englishDatabaseKey = "English";
     public static final String categoryDatabaseKey = "category";
     public static final String dateKey = "date";
     public static final String levelDatabaseKey = "level";

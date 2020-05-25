@@ -25,7 +25,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.develop.vadim.english.Basic.AtheneDialog;
-import com.develop.vadim.english.Basic.ChangeWord;
+import com.develop.vadim.english.Basic.ChangeWordActivity;
 import com.develop.vadim.english.Basic.MainActivity;
 import com.develop.vadim.english.Basic.Word;
 import com.develop.vadim.english.R;
@@ -429,7 +429,7 @@ public class WordCheckFragment extends Fragment {
         editWordImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent changeWordIntent = new Intent(view.getContext(), ChangeWord.class);
+                Intent changeWordIntent = new Intent(view.getContext(), ChangeWordActivity.class);
                     changeWordIntent.putStringArrayListExtra(getString(R.string.categoriesToChangeWordActivity), getCategoriesArrayListForWordChanging());
                 changeWordIntent.putExtra(getString(R.string.changeWord), checkingWordsList.get(stage));
 

@@ -15,7 +15,7 @@
         tools:ignore="GoogleAppIndexingWarning">
 
         <activity
-            android:name=".Basic.ChangeWord"
+            android:name=".Basic.ChangeWordActivity"
             android:screenOrientation="portrait" />
 
         <activity android:name=".Basic.MainActivity"

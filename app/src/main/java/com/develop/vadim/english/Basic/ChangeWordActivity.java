@@ -31,13 +31,14 @@ import com.develop.vadim.english.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.card.MaterialCardView;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.Random;
 
 import bg.devlabs.transitioner.Transitioner;
 
-public class ChangeWord extends AppCompatActivity {
+public class ChangeWordActivity extends AppCompatActivity {
 
     private EditText originalWordEditText;
     private EditText translatedWordEditText;
@@ -64,6 +65,7 @@ public class ChangeWord extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_change_word);
+        FirebaseDatabase.getInstance().setPersistenceEnabled(false);
 
         updateHasBeenDoneBroadcastReceiver = new BroadcastReceiver() {
             @Override
@@ -161,7 +163,7 @@ public class ChangeWord extends AppCompatActivity {
                     public void run() {
                         categoriesRecyclerView.setVisibility(View.VISIBLE);
                         categoriesRecyclerView.setAdapter(new CategoriesRecyclerViewAdapter(categories));
-                        categoriesRecyclerView.setLayoutManager(new GridLayoutManager(ChangeWord.this, 2));
+                        categoriesRecyclerView.setLayoutManager(new GridLayoutManager(ChangeWordActivity.this, 2));
                     }
                 }, 420);
             }
@@ -170,7 +172,7 @@ public class ChangeWord extends AppCompatActivity {
         deleteWordImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AtheneDialog atheneDialog = new AtheneDialog(ChangeWord.this, AtheneDialog.TWO_OPTIONS_TYPE);
+                AtheneDialog atheneDialog = new AtheneDialog(ChangeWordActivity.this, AtheneDialog.TWO_OPTIONS_TYPE);
                 atheneDialog.setMessageText(getString(R.string.deleteWordMessage));
                 atheneDialog.setPositiveText(getString(R.string.yes));
                 atheneDialog.setPositiveClickListener(new TextView.OnClickListener() {
@@ -262,7 +264,7 @@ public class ChangeWord extends AppCompatActivity {
                             @Override
                             public void onFailure(@NonNull Exception e) {
                                 // ToDo: IOS DIALOG'
-                                AtheneDialog atheneDialog = new AtheneDialog(ChangeWord.this, AtheneDialog.SIMPLE_MESSAGE_TYPE);
+                                AtheneDialog atheneDialog = new AtheneDialog(ChangeWordActivity.this, AtheneDialog.SIMPLE_MESSAGE_TYPE);
                                 atheneDialog.setMessageText(getString(R.string.no_internet_error));
                                 atheneDialog.setPositiveClickListener(new TextView.OnClickListener() {
                                     @Override
@@ -291,7 +293,7 @@ public class ChangeWord extends AppCompatActivity {
 
         ArrayList<String> categories;
 
-        private Animation animation = AnimationUtils.loadAnimation(ChangeWord.this, R.anim.appear);
+        private Animation animation = AnimationUtils.loadAnimation(ChangeWordActivity.this, R.anim.appear);
 
         private int[] materialCardsColors = new int[] {
                 R.color.purple,
@@ -387,7 +389,7 @@ public class ChangeWord extends AppCompatActivity {
         }
 
         private void callChooseCategoryDialog() {
-            final Dialog dialog = new Dialog(ChangeWord.this);
+            final Dialog dialog = new Dialog(ChangeWordActivity.this);
             dialog.setContentView(R.layout.layout_add_new_category);
             final EditText editText = dialog.findViewById(R.id.addNewCategoryEditText);
             final ImageView continueImageView = dialog.findViewById(R.id.addNewCategoryImageView);
