@@ -2,6 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/Athene.iml" filepath="$PROJECT_DIR$/Athene.iml" group="Athene" />
+      <module fileurl="file://$PROJECT_DIR$/app/Athene-app.iml" filepath="$PROJECT_DIR$/app/Athene-app.iml" group="Athene/app" />
       <module fileurl="file://$PROJECT_DIR$/Lett.iml" filepath="$PROJECT_DIR$/Lett.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/easyenglish.iml" filepath="$PROJECT_DIR$/easyenglish.iml" group="easyenglish" />

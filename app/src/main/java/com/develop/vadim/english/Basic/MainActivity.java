@@ -18,6 +18,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.TextView;
@@ -34,6 +36,7 @@ import com.develop.vadim.english.Fragments.CategoriesFragment;
 import com.develop.vadim.english.Fragments.FragmentViewPagerAdapter;
 import com.develop.vadim.english.Fragments.WordsArchiveFragment;
 import com.develop.vadim.english.R;
+import com.develop.vadim.english.utils.Utils;
 import com.github.ybq.android.spinkit.SpinKitView;
 import com.github.ybq.android.spinkit.style.DoubleBounce;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -75,9 +78,9 @@ public class MainActivity extends AppCompatActivity {
 
     public static String NEXT_DATE;
 
-    public static FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-    public static DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid());
-    private DatabaseReference categoryReference = reference.child("categories");
+    public static FirebaseUser user;
+    public static DatabaseReference reference;
+    private DatabaseReference categoryReference;
 
     public final static String BROADCAST_ACTION = "ru.lett.xenous.action.BROADCAST";
     public final static String BROADCAST_UPDATE_HAS_BEEN_DONE_ACTION = "ru.lett.xenous.action.UPDATE";
@@ -104,6 +107,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        reference = FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid());
+        categoryReference = reference.child("categories");
+
+        Utils.makeStatusBarTransparent(this);
+
+        findViewById(R.id.logOutImageView).setOnTouchListener(Utils.loginTouchListener);
         findViewById(R.id.logOutImageView).setOnClickListener(view -> {
             AtheneDialog atheneDialog = new AtheneDialog(MainActivity.this, AtheneDialog.TWO_OPTIONS_TYPE);
             atheneDialog.setMessageText(getString(R.string.exit_from_account_message));

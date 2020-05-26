@@ -17,6 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.develop.vadim.english.R;
+import com.develop.vadim.english.utils.Utils;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -65,6 +66,8 @@ public class RegisterActivity extends AppCompatActivity {
         setContentView(R.layout.activity_register);
         FirebaseDatabase.getInstance().setPersistenceEnabled(false);
 
+        Utils.makeStatusBarTransparent(this);
+
         animation = AnimationUtils.loadAnimation(this, R.anim.click);
 
         wordsCheckSharedPreferences = getSharedPreferences(getPackageName() + ".wordsCheckFlag", MODE_PRIVATE);
@@ -95,13 +98,6 @@ public class RegisterActivity extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
         Log.d(TAG, "--started RegistrationActivity--");
 
-        if(sharedPreferences.getBoolean(getPackageName() + ".firstrun", false)) {
-            //startActivity(new Intent(this, MainActivity.class));
-        }
-        else {
-            wordsCheckSharedPreferences.edit().putInt(getPackageName()  + ".wordsCheckFlag", Calendar.getInstance().get(Calendar.DAY_OF_YEAR)).apply();
-        }
-
         state = true;
 
         loginTextView.setOnClickListener(view -> {
@@ -109,8 +105,10 @@ public class RegisterActivity extends AppCompatActivity {
 
             onBackPressed();
         });
+        loginTextView.setOnTouchListener(Utils.loginTouchListener);
 
         registerImageView.setOnClickListener(registerClickListener);
+        registerImageView.setOnTouchListener(Utils.loginTouchListener);
         googleSignInButton.setOnClickListener(view -> signInWithGoogle());
 
         Log.d(TAG, "--started RegistrationActivity--");

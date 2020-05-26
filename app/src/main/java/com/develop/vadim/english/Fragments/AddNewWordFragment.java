@@ -29,6 +29,7 @@ import com.develop.vadim.english.Basic.AtheneDialog;
 import com.develop.vadim.english.Basic.MainActivity;
 import com.develop.vadim.english.Basic.Word;
 import com.develop.vadim.english.R;
+import com.develop.vadim.english.utils.Utils;
 import com.github.chengang.library.TickView;
 import com.github.ybq.android.spinkit.style.DoubleBounce;
 import com.google.android.material.card.MaterialCardView;
@@ -145,7 +146,6 @@ public class AddNewWordFragment extends Fragment implements UpdateDataListener {
         categoryMaterialCardViewHolder = view.findViewById(R.id.categoryChooseCardViewHolder);
         tickView = view.findViewById(R.id.tickViewAccent);
 
-
         wordSendingProgressBar.setIndeterminateDrawable(new DoubleBounce());
 
         categoryTextView.setText("Без категории");
@@ -171,6 +171,8 @@ public class AddNewWordFragment extends Fragment implements UpdateDataListener {
                 categoryTextView.setVisibility(View.INVISIBLE);
                 addNewCategoryTextView.setVisibility(View.VISIBLE);
                 categoryMaterialCardView.setClickable(false);
+
+                addNewCategoryTextView.setOnTouchListener(Utils.loginTouchListener);
 
                 AlphaAnimation alphaAnimation = new AlphaAnimation(0f, 1f);
                 alphaAnimation.setDuration(600);
@@ -219,6 +221,7 @@ public class AddNewWordFragment extends Fragment implements UpdateDataListener {
             }
         });
 
+        addWordToServiceImageView.setOnTouchListener(Utils.loginTouchListener);
         addWordToServiceImageView.setOnClickListener(new View.OnClickListener() {
             Word newWord;
 

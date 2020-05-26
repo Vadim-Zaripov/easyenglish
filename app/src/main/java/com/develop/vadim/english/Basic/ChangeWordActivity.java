@@ -28,6 +28,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.develop.vadim.english.R;
+import com.develop.vadim.english.utils.Utils;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.card.MaterialCardView;
@@ -66,6 +67,8 @@ public class ChangeWordActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_change_word);
         FirebaseDatabase.getInstance().setPersistenceEnabled(false);
+
+        Utils.makeStatusBarTransparent(this);
 
         updateHasBeenDoneBroadcastReceiver = new BroadcastReceiver() {
             @Override

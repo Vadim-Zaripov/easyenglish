@@ -29,6 +29,7 @@ import com.develop.vadim.english.Basic.ChangeWordActivity;
 import com.develop.vadim.english.Basic.MainActivity;
 import com.develop.vadim.english.Basic.Word;
 import com.develop.vadim.english.R;
+import com.develop.vadim.english.utils.Utils;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.firebase.database.DatabaseReference;
 
@@ -98,6 +99,10 @@ public class WordCheckFragment extends Fragment {
         forgetWordTextView = view.findViewById(R.id.forgetTextView);
         checkAnswerTextView = view.findViewById(R.id.checkAnswerTextView);
 
+        forgetWordTextView.setOnTouchListener(Utils.loginTouchListener);
+        deleteWordImageView.setOnTouchListener(Utils.loginTouchListener);
+        editWordImageView.setOnTouchListener(Utils.loginTouchListener);
+
         checkingViews = new View[] {
                 rightAnswerTextView,
                 userAnswerEditText,
@@ -156,6 +161,7 @@ public class WordCheckFragment extends Fragment {
         userAnswerEditText.setText("");
 
         userQuestionTextView.setText(checkingWordsList.get(stage).getWordInRussian());
+
 
         continueImageView.setOnClickListener(new View.OnClickListener() {
             @Override

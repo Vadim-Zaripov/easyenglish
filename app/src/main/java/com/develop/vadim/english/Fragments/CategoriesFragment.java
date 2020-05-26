@@ -31,6 +31,7 @@ import com.develop.vadim.english.Basic.AtheneDialog;
 import com.develop.vadim.english.Basic.MainActivity;
 import com.develop.vadim.english.Basic.Word;
 import com.develop.vadim.english.R;
+import com.develop.vadim.english.utils.Utils;
 import com.github.florent37.expansionpanel.ExpansionHeader;
 import com.github.florent37.expansionpanel.ExpansionLayout;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -284,6 +285,7 @@ public class CategoriesFragment extends Fragment implements UpdateDataListener {
 
             }
 
+            holder.learnTextView.setOnTouchListener(Utils.loginTouchListener);
             holder.learnTextView.setOnClickListener(new TextView.OnClickListener() {
                 ArrayList<Word> changingWordsArrayList = new ArrayList<>();
 
@@ -438,6 +440,7 @@ public class CategoriesFragment extends Fragment implements UpdateDataListener {
                 }
             });
 
+            holder.shareTextView.setOnTouchListener(Utils.loginTouchListener);
             holder.shareTextView.setOnClickListener(new TextView.OnClickListener() {
                 URI currentUri;
                 @Override

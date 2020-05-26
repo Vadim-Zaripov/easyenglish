@@ -23,6 +23,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import com.develop.vadim.english.R;
+import com.develop.vadim.english.utils.Utils;
 import com.github.ybq.android.spinkit.SpinKitView;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -85,6 +86,8 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         FirebaseDatabase.getInstance().setPersistenceEnabled(false);
 
+        Utils.makeStatusBarTransparent(this);
+
         animation = AnimationUtils.loadAnimation(this, R.anim.click);
 
         wordsCheckSharedPreferences = getSharedPreferences(getPackageName() + ".wordsCheckFlag", MODE_PRIVATE);
@@ -130,9 +133,10 @@ public class LoginActivity extends AppCompatActivity {
             ActivityOptions activityOptions = ActivityOptions.makeSceneTransitionAnimation(LoginActivity.this);
             startActivity(new Intent(view.getContext(), RegisterActivity.class), activityOptions.toBundle());
         });
+        registrationTextView.setOnTouchListener(Utils.loginTouchListener);
 
         loginImageView.setOnClickListener(loginClickListener);
-        loginImageView.setOnTouchListener(loginTouchListener);
+        loginImageView.setOnTouchListener(Utils.loginTouchListener);
         googleSignInButton.setOnClickListener(view -> signInWithGoogle());
 
         Log.d(TAG, "--started RegistrationActivity--");
@@ -157,22 +161,6 @@ public class LoginActivity extends AppCompatActivity {
             }
         }
     }
-
-    private View.OnTouchListener loginTouchListener = new View.OnTouchListener() {
-        @RequiresApi(api = Build.VERSION_CODES.M)
-        @SuppressLint("ClickableViewAccessibility")
-        @Override
-        public boolean onTouch(View v, MotionEvent event) {
-
-            if(event.getActionMasked() == MotionEvent.ACTION_DOWN) {
-                v.setAlpha(0.5f);
-            }
-            else if(event.getActionMasked() == MotionEvent.ACTION_UP) {
-                v.setAlpha(1f);
-            }
-            return false;
-        }
-    };
 
     private View.OnClickListener loginClickListener = new View.OnClickListener() {
         @Override
