@@ -22,6 +22,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -246,7 +247,8 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        fragmentViewPagerAdapter = new FragmentViewPagerAdapter(getSupportFragmentManager());
+        fragmentViewPagerAdapter =
+                new FragmentViewPagerAdapter(getSupportFragmentManager());
 
         viewPager = findViewById(R.id.mainViewPagerId);
         dotsIndicator = findViewById(R.id.dots_indicator);
@@ -298,18 +300,22 @@ public class MainActivity extends AppCompatActivity {
         AddNewWordFragment addNewWordFragment = (AddNewWordFragment) fragmentViewPagerAdapter.getItem(ADD_NEW_WORD_FRAGMENT_KEY);
         WordsArchiveFragment wordsArchiveFragment = (WordsArchiveFragment) fragmentViewPagerAdapter.getItem(WORDS_ARCHIVE_FRAGMENT_KEY);
 
+        Toast
+                .makeText(this, "Tab was changed", Toast.LENGTH_SHORT)
+                .show();
+        View view = this.getCurrentFocus();
+        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+
         switch(position) {
             case CATEGORIES_FRAGMENT_KEY:
                 categoriesFragment.onDataChange();
-
                 break;
             case ADD_NEW_WORD_FRAGMENT_KEY:
                 addNewWordFragment.onDataChange();
-
                 break;
             case WORDS_ARCHIVE_FRAGMENT_KEY:
                 wordsArchiveFragment.onDataChange();
-
                 break;
         }
     }

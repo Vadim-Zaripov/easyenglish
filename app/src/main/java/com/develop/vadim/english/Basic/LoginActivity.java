@@ -81,10 +81,21 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     @Override
+    @SuppressLint("CommitPrefEdits")
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        FirebaseDatabase.getInstance().setPersistenceEnabled(false);
+
+        sharedPreferences =
+                getSharedPreferences(getString(R.string.sp_persistence), MODE_PRIVATE);
+        boolean isPersistenceEnabled =
+                sharedPreferences.getBoolean(getString(R.string.sp_persistence), true);
+        if(isPersistenceEnabled) {
+            FirebaseDatabase.getInstance().setPersistenceEnabled(false);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putBoolean(getString(R.string.sp_persistence), false);
+            editor.apply();
+        }
 
         Utils.makeStatusBarTransparent(this);
 

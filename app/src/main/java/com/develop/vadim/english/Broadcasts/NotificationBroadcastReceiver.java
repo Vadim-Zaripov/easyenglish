@@ -54,7 +54,7 @@ public class NotificationBroadcastReceiver extends BroadcastReceiver {
 
         //Вызов уведомления
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, NOTIFICATION_ID_KEY)
-                .setSmallIcon(R.drawable.app_icon)
+                .setSmallIcon(R.drawable.app_icon_small)
                 .setWhen(System.currentTimeMillis())
                 .setAutoCancel(true)
                 .setContentIntent(pendingIntent)

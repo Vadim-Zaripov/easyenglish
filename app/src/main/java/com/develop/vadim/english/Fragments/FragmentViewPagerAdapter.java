@@ -1,11 +1,19 @@
 package com.develop.vadim.english.Fragments;
 
+import android.content.Context;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
 public class FragmentViewPagerAdapter extends FragmentPagerAdapter {
+
+    private Context context;
+    private View view;
 
     public FragmentViewPagerAdapter(FragmentManager fm) {
         super(fm);
