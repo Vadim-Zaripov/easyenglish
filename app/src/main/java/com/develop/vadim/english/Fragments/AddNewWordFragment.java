@@ -36,9 +36,11 @@ import com.google.android.material.card.MaterialCardView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Random;
 
 import bg.devlabs.transitioner.Transitioner;
@@ -481,7 +483,20 @@ public class AddNewWordFragment extends Fragment implements UpdateDataListener {
                         if(!atheneDialog.getUserAnswerEditText().getText().toString().equals("")) {
                             String category = atheneDialog.getUserAnswerEditText().getText().toString().trim().toLowerCase();
                             if(!categories.contains(category)) {
-                                //((MainActivity)getActivity()).categoryNames.add(category);
+                                Toast.makeText(
+                                        getContext(),
+                                        "Add category",
+                                        Toast.LENGTH_SHORT
+                                ).show();
+                                // ToDo: ADD CATEGORY
+                                MainActivity
+                                        .reference
+                                        .child("categories")
+                                        .child(String.valueOf((
+                                                (MainActivity) Objects.requireNonNull(getActivity())).categoryNames.size()
+                                        ))
+                                        .setValue(category);
+                                ((MainActivity)getActivity()).categoryNames.add(category);
                             }
 
                             categoryTextView.setText(atheneDialog.getUserAnswerEditText().getText());

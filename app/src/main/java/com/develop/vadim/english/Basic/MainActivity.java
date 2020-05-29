@@ -300,13 +300,6 @@ public class MainActivity extends AppCompatActivity {
         AddNewWordFragment addNewWordFragment = (AddNewWordFragment) fragmentViewPagerAdapter.getItem(ADD_NEW_WORD_FRAGMENT_KEY);
         WordsArchiveFragment wordsArchiveFragment = (WordsArchiveFragment) fragmentViewPagerAdapter.getItem(WORDS_ARCHIVE_FRAGMENT_KEY);
 
-        Toast
-                .makeText(this, "Tab was changed", Toast.LENGTH_SHORT)
-                .show();
-        View view = this.getCurrentFocus();
-        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-
         switch(position) {
             case CATEGORIES_FRAGMENT_KEY:
                 categoriesFragment.onDataChange();
@@ -451,14 +444,7 @@ public class MainActivity extends AppCompatActivity {
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             for(int categoryReferenceChildrenCounter = 0; categoryReferenceChildrenCounter < dataSnapshot.getChildrenCount(); categoryReferenceChildrenCounter++) {
                                 String category = String.valueOf(dataSnapshot.child(String.valueOf(categoryReferenceChildrenCounter)).getValue());
-
-                                if(wordsCategories.contains(category)) {
-                                    categoryNames.add(String.valueOf(dataSnapshot.child(String.valueOf(categoryReferenceChildrenCounter)).getValue()));
-                                }
-                                else {
-                                    categoryReference.child(String.valueOf(categoryReferenceChildrenCounter)).setValue(dataSnapshot.child(String.valueOf(dataSnapshot.getChildrenCount() - 1)).getValue());
-                                    categoryReference.child(String.valueOf(dataSnapshot.getChildrenCount() - 1)).removeValue();
-                                }
+                                categoryNames.add(String.valueOf(dataSnapshot.child(String.valueOf(categoryReferenceChildrenCounter)).getValue()));
                             }
 
                             handler.sendEmptyMessage(CATEGORIES_LOAD_END);
