@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Basic.TutorialActivity">
+
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/tutorialViewPager"
+        android:layout_width="360dp"
+        android:layout_height="550dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.3" />
+
+    <com.tbuonomo.viewpagerdotsindicator.DotsIndicator
+        android:id="@+id/tutorialDotsIndicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:dotsColor="@color/lightPurple"
+        app:dotsCornerRadius="10dp"
+        app:dotsSize="@dimen/main_dots_size"
+        app:dotsSpacing="@dimen/main_dots_spacing"
+        app:dotsWidthFactor="2.5"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tutorialViewPager"
+        app:layout_constraintVertical_bias="0.93"
+        app:progressMode="true"
+        app:selectedDotColor="@color/lightPurple">
+
+    </com.tbuonomo.viewpagerdotsindicator.DotsIndicator>
+
+    <TextView
+        android:id="@+id/continueTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/understanding"
+        android:textSize="20sp"
+        android:textColor="@color/lightPurple"
+        android:background="@drawable/continue_button_background_purple"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/tutorialDotsIndicator"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tutorialViewPager"
+        app:layout_constraintVertical_bias="0.19999999" />
+</androidx.constraintlayout.widget.ConstraintLayout>

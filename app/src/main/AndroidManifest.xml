@@ -13,12 +13,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-
+        <activity android:name=".Basic.TutorialActivity"></activity>
         <activity
             android:name=".Basic.ChangeWordActivity"
             android:screenOrientation="portrait" />
-
-        <activity android:name=".Basic.MainActivity"
+        <activity
+            android:name=".Basic.MainActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustNothing">
             <intent-filter>
@@ -27,17 +27,17 @@
                     android:scheme="https" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".Basic.LoginActivity"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="portrait">
             <intent-filter>
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".Basic.RegisterActivity"
             android:screenOrientation="portrait" />
@@ -52,23 +52,25 @@
             android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
+
                 <category android:name="android.intent.category.DEFAULT" />
-                <action android:name="android.intent.action.QUICKBOOT_POWERON"/>
+
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.PACKAGE_REPLACED" />
+
                 <data android:scheme="package" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.PACKAGE_ADDED" />
+
                 <data android:scheme="package" />
             </intent-filter>
-
         </receiver>
-
         <receiver android:name=".Broadcasts.NotificationBroadcastReceiver" />
 
         <service android:name=".Services.NotificationService" />
-
     </application>
+
 </manifest>

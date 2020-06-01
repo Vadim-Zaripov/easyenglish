@@ -11,6 +11,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
@@ -19,8 +20,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.inputmethod.InputMethodManager;
@@ -100,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static final int CATEGORIES_LOAD_END = 0;
     public static final int WORDS_LOAD_END = 1;
-    public static final int WORDS_ANALYNG_WND = 3;
+    public static final int WORDS_ANALYZING_END = 3;
     public static final int CHECKING_WORDS_LOAD_END = 4;
 
     @SuppressLint("HandlerLeak")
@@ -112,6 +111,8 @@ public class MainActivity extends AppCompatActivity {
         user = FirebaseAuth.getInstance().getCurrentUser();
         reference = FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid());
         categoryReference = reference.child("categories");
+
+        callTutorialCheck();
 
         Utils.makeStatusBarTransparent(this);
 
@@ -159,7 +160,8 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     wordArrayList.set((int) word.getIndex(), word);
-                } else {
+                }
+                else {
                     wordArrayList.remove(word.getIndex());
                 }
 
@@ -235,7 +237,7 @@ public class MainActivity extends AppCompatActivity {
                         spinKitView.startAnimation(animation);
 
                         break;
-                    case WORDS_ANALYNG_WND:
+                    case WORDS_ANALYZING_END:
                         Log.d(MAIN_ACTIVITY_TAG, "Words has been analized successfully");
 
                         FirebaseDynamicLinks
@@ -410,6 +412,14 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void callTutorialCheck() {
+        SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.tutorial_key), MODE_PRIVATE);
+
+        if(!sharedPreferences.getBoolean(getString(R.string.tutorial_key), false)) {
+            startActivity(new Intent(this, TutorialActivity.class));
+        }
+    }
+
     public ArrayList<String> getCategoryNamesList() {
         return categoryNames;
     }
@@ -505,7 +515,7 @@ public class MainActivity extends AppCompatActivity {
                                 }
                             }
 
-                            handler.sendEmptyMessage(MainActivity.WORDS_ANALYNG_WND);
+                            handler.sendEmptyMessage(MainActivity.WORDS_ANALYZING_END);
                         }
 
                         @Override
@@ -616,5 +626,4 @@ public class MainActivity extends AppCompatActivity {
             });
         }
     }
-
 }

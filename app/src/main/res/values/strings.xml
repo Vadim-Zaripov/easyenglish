@@ -126,6 +126,8 @@
     <string name="cancel">Отмена</string>
     <string name="exit_from_account_message">Вы уверены, что хотите выйти из аккаунта?</string>
     <string name="deleteCategoryMessage">Вы действительно хотите удалить данную категорию?</string>
+    <string name="understanding">Понятно!</string>
+    <string name="tutorial_key">tutorial</string>
     <string-array name="pref_example_list_titles">
         <item>Always</item>
         <item>When possible</item>
