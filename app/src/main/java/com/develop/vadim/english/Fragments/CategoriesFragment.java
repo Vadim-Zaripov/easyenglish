@@ -456,6 +456,10 @@ public class CategoriesFragment extends Fragment implements UpdateDataListener {
                     try {
                         currentUri = appendQueryParameters("https://athene.page.link", "user", MainActivity.user.getUid());
                         currentUri = appendQueryParameters(currentUri.toString(), "category", categoryNamesList.get(currentPosition));
+
+                        Log.d("URL", MainActivity.user.getUid());
+                        Log.d("URL", categoryNamesList.get(currentPosition));
+                        Log.d("URL", currentUri.toString());
                     }
                     catch (URISyntaxException e) {
                         e.printStackTrace();

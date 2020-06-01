@@ -66,7 +66,7 @@ public class ChangeWordActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_change_word);
-        FirebaseDatabase.getInstance().setPersistenceEnabled(false);
+//        FirebaseDatabase.getInstance().setPersistenceEnabled(false);
 
         Utils.makeStatusBarTransparent(this);
 
@@ -343,7 +343,7 @@ public class ChangeWordActivity extends AppCompatActivity {
             });
         }
 
-        private void closeAnimation(int currentPosition, String c) {
+        public void closeAnimation(int currentPosition, String c) {
 
 
             Transitioner transitioner = new Transitioner(categoriesMaterialCardView, categoriesMaterialCardViewComeBackPlaceHolder);

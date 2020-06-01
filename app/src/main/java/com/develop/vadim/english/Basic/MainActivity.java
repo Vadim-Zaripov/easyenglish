@@ -1,6 +1,7 @@
 package com.develop.vadim.english.Basic;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -199,6 +200,31 @@ public class MainActivity extends AppCompatActivity {
                                 viewPager.setOffscreenPageLimit(4);
                                 viewPager.setCurrentItem(1);
 
+                                viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+                                    @Override
+                                    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+                                        InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
+                                        //Find the currently focused view, so we can grab the correct window token from it.
+                                        View view = getCurrentFocus();
+                                        //If no view currently has focus, create a new one, just so we can grab a window token from it
+                                        if(view == null) {
+                                            view = new View(MainActivity.this);
+                                        }
+                                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                                    }
+
+                                    @Override
+                                    public void onPageSelected(int position) {
+
+                                    }
+
+                                    @Override
+                                    public void onPageScrollStateChanged(int state) {
+
+                                    }
+                                });
+
                                 dotsIndicator.setViewPager(viewPager);
                             }
 
@@ -212,8 +238,6 @@ public class MainActivity extends AppCompatActivity {
                     case WORDS_ANALYNG_WND:
                         Log.d(MAIN_ACTIVITY_TAG, "Words has been analized successfully");
 
-                        Log.d("BIBKA", "BOB");
-
                         FirebaseDynamicLinks
                                 .getInstance()
                                 .getDynamicLink(getIntent())
@@ -223,8 +247,12 @@ public class MainActivity extends AppCompatActivity {
                                         Uri deepLink;
                                         if(pendingDynamicLinkData != null) {
                                             deepLink = pendingDynamicLinkData.getLink();
+                                            Log.d("DynamicLink", deepLink.toString());
                                             String category = deepLink.getQueryParameter("category");
                                             String userUid = deepLink.getQueryParameter("user");
+
+                                            Log.d("DynamicLink", deepLink.getQueryParameter("category"));
+                                            Log.d("DynamicLink", deepLink.getQueryParameter("user"));
 
                                             new Thread(new StartAddingCategoryFromLink(category, userUid)).start();
                                         }
