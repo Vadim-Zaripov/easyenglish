@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.EditText;
@@ -18,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.develop.vadim.english.R;
 import com.develop.vadim.english.utils.Utils;
+import com.github.ybq.android.spinkit.SpinKitView;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -52,6 +54,7 @@ public class RegisterActivity extends AppCompatActivity {
     private TextView loginTextView;
     private ImageView registerImageView;
     private ImageButton googleSignInButton;
+    private SpinKitView spinKitView;
 
     private SharedPreferences sharedPreferences;
     private SharedPreferences wordsCheckSharedPreferences;
@@ -66,9 +69,9 @@ public class RegisterActivity extends AppCompatActivity {
         setContentView(R.layout.activity_register);
         FirebaseDatabase.getInstance().setPersistenceEnabled(false);
 
-        Utils.makeStatusBarTransparent(this);
+        spinKitView = findViewById(R.id.spinKit);
 
-        animation = AnimationUtils.loadAnimation(this, R.anim.click);
+        Utils.makeStatusBarTransparent(this);
 
         wordsCheckSharedPreferences = getSharedPreferences(getPackageName() + ".wordsCheckFlag", MODE_PRIVATE);
 
@@ -101,7 +104,6 @@ public class RegisterActivity extends AppCompatActivity {
         state = true;
 
         loginTextView.setOnClickListener(view -> {
-            view.startAnimation(animation);
 
             onBackPressed();
         });
@@ -119,7 +121,7 @@ public class RegisterActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
-        if (requestCode == 1) {
+        if(requestCode == 1) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             try {
                 // Google Sign In was successful, authenticate with Firebase
@@ -135,6 +137,8 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private View.OnClickListener registerClickListener = v -> {
+        spinKitView.setVisibility(View.VISIBLE);
+        spinKitView.startAnimation(new AlphaAnimation(0f, 1f));
 
         v.startAnimation(animation);
 
@@ -148,6 +152,7 @@ public class RegisterActivity extends AppCompatActivity {
                                         .sendEmailVerification()
                                         .addOnSuccessListener(view -> {
                                             v.setClickable(true);
+                                            spinKitView.setVisibility(View.INVISIBLE);
 
                                             Toast.makeText(RegisterActivity.this, "Письмо поттверждения отправлено на ваш E-mail", Toast.LENGTH_SHORT).show();
                                             state = false;
@@ -160,13 +165,22 @@ public class RegisterActivity extends AppCompatActivity {
                                         })
                         )
                         .addOnFailureListener(e -> {
+                            spinKitView.setVisibility(View.INVISIBLE);
+
                             AtheneDialog atheneDialog = new AtheneDialog(RegisterActivity.this, AtheneDialog.SIMPLE_MESSAGE_TYPE);
                             atheneDialog.setMessageText(getString(R.string.no_internet_error));
+                            atheneDialog.setPositiveClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    atheneDialog.dismiss();
+                                }
+                            });
                             atheneDialog.show();
 
                             doAfter(false);
                         });
-            } else {
+            }
+            else {
                 Toast.makeText(getApplicationContext(), "Пароли не совпадают", Toast.LENGTH_LONG).show();
             }
         }
@@ -185,6 +199,8 @@ public class RegisterActivity extends AppCompatActivity {
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
+                        spinKitView.setVisibility(View.INVISIBLE);
+
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
@@ -223,6 +239,9 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void signInWithGoogle() {
+        spinKitView.setVisibility(View.VISIBLE);
+        spinKitView.startAnimation(new AlphaAnimation(0f, 1f));
+
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
         startActivityForResult(signInIntent, 1);
     }

@@ -80,44 +80,51 @@ public class AddNewWordFragment extends Fragment implements UpdateDataListener {
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
 
-            switch(msg.what) {
-                case NEW_CATEGORY_HAS_BEEN_ADDED:
-                    Log.d("BOB", "not new word");
-                    break;
-                case 12:
-                    Log.d("BOB", "new category");
-                    break;
-            }
-
-            wordSendingProgressBar.setVisibility(View.INVISIBLE);
-            tickView.setVisibility(View.VISIBLE);
-            tickView.toggle();
-            tickView.addAnimatorListener(new TickView.TickAnimatorListener() {
+            AlphaAnimation alphaAnimation = new AlphaAnimation(1f, 0f);
+            alphaAnimation.setDuration(300);
+            alphaAnimation.setAnimationListener(new Animation.AnimationListener() {
                 @Override
-                public void onAnimationStart(TickView tickView) { }
+                public void onAnimationStart(Animation animation) { }
 
                 @Override
-                public void onAnimationEnd(final TickView tickView) {
-                    AlphaAnimation alphaAnimation = new AlphaAnimation(1f, 0f);
-                    alphaAnimation.setDuration(200);
-                    alphaAnimation.setAnimationListener(new Animation.AnimationListener() {
+                public void onAnimationEnd(Animation animation) {
+                    wordSendingProgressBar.setVisibility(View.INVISIBLE);
+
+                    tickView.setVisibility(View.VISIBLE);
+                    tickView.toggle();
+                    tickView.addAnimatorListener(new TickView.TickAnimatorListener() {
                         @Override
-                        public void onAnimationStart(Animation animation) { }
+                        public void onAnimationStart(TickView tickView) { }
 
                         @Override
-                        public void onAnimationEnd(Animation animation) {
-                            tickView.setVisibility(View.INVISIBLE);
-                            tickView.toggle();
-                            startAppearAnimation();
+                        public void onAnimationEnd(final TickView tickView) {
+                            AlphaAnimation alphaAnimation = new AlphaAnimation(1f, 0f);
+                            alphaAnimation.setDuration(200);
+                            alphaAnimation.setAnimationListener(new Animation.AnimationListener() {
+                                @Override
+                                public void onAnimationStart(Animation animation) { }
+
+                                @Override
+                                public void onAnimationEnd(Animation animation) {
+                                    tickView.setVisibility(View.INVISIBLE);
+                                    tickView.toggle();
+                                    startAppearAnimation();
+                                }
+
+                                @Override
+                                public void onAnimationRepeat(Animation animation) { }
+                            });
+
+                            tickView.startAnimation(alphaAnimation);
                         }
-
-                        @Override
-                        public void onAnimationRepeat(Animation animation) { }
                     });
-
-                    tickView.startAnimation(alphaAnimation);
                 }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) { }
             });
+
+            wordSendingProgressBar.startAnimation(alphaAnimation);
         }
     };
 
@@ -241,7 +248,6 @@ public class AddNewWordFragment extends Fragment implements UpdateDataListener {
 
                             startDisappearingAnimation(newWord, categoryTextView.getText().toString().trim().toLowerCase());
 
-
                             englishWordEditText.setText("");
                             russianWordEditText.setText("");
                             categoryTextView.setText("Без категории");
@@ -294,10 +300,23 @@ public class AddNewWordFragment extends Fragment implements UpdateDataListener {
                         categoriesTextView.setVisibility(View.INVISIBLE);
                         addWordToServiceTextView.setVisibility(View.INVISIBLE);
 
+                        AlphaAnimation alphaAnimation = new AlphaAnimation(0f, 1f);
+                        alphaAnimation.setDuration(200);
+                        alphaAnimation.setAnimationListener(new Animation.AnimationListener() {
+                            @Override
+                            public void onAnimationStart(Animation animation) { }
+
+                            @Override
+                            public void onAnimationEnd(Animation animation) {
+                                new Thread(new StartWordSendingThread(word, category)).start();
+                            }
+
+                            @Override
+                            public void onAnimationRepeat(Animation animation) { }
+                        });
+
                         wordSendingProgressBar.setVisibility(View.VISIBLE);
-
-                        new Thread(new StartWordSendingThread(word, category)).start();
-
+                        wordSendingProgressBar.startAnimation(alphaAnimation);
                     }
 
                     @Override
@@ -305,8 +324,6 @@ public class AddNewWordFragment extends Fragment implements UpdateDataListener {
                 });
             }
         });
-
-
     }
 
     private void adaptRecyclerView() {
