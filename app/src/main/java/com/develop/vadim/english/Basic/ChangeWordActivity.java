@@ -392,37 +392,55 @@ public class ChangeWordActivity extends AppCompatActivity {
         }
 
         private void callChooseCategoryDialog() {
-            final Dialog dialog = new Dialog(ChangeWordActivity.this);
-            dialog.setContentView(R.layout.layout_add_new_category);
-            final EditText editText = dialog.findViewById(R.id.addNewCategoryEditText);
-            final ImageView continueImageView = dialog.findViewById(R.id.addNewCategoryImageView);
+            AtheneDialog atheneDialog = new AtheneDialog(ChangeWordActivity.this, AtheneDialog.EDIT_TEXT_TWO_OPTIONS_TYPE);
 
-            dialog.show();
-
-            continueImageView.setOnClickListener(new ImageView.OnClickListener() {
+            atheneDialog.setPositiveClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if(!editText.getText().toString().equals("")) {
-                        categoriesTextView.setText(editText.getText());
-                        category = editText.getText().toString();
-                    }
-
-                    dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                        @Override
-                        public void onDismiss(DialogInterface dialogInterface) { }
-                    });
-
-                    dialog.dismiss();
+                    //TODO: Your code here
                 }
-
             });
 
-            dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            atheneDialog.setNegativeClickListener(new View.OnClickListener() {
                 @Override
-                public void onDismiss(DialogInterface dialogInterface) {
-                    categoriesTextView.setText("Без категории");
+                public void onClick(View view) {
+                    //TODO: Your code here
                 }
             });
+
+            atheneDialog.show();
+
+//            final Dialog dialog = new Dialog(ChangeWordActivity.this);
+//            dialog.setContentView(R.layout.layout_add_new_category);
+//            final EditText editText = dialog.findViewById(R.id.addNewCategoryEditText);
+//            final ImageView continueImageView = dialog.findViewById(R.id.addNewCategoryImageView);
+//
+//            dialog.show();
+//
+//            continueImageView.setOnClickListener(new ImageView.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//                    if(!editText.getText().toString().equals("")) {
+//                        categoriesTextView.setText(editText.getText());
+//                        category = editText.getText().toString();
+//                    }
+//
+//                    dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+//                        @Override
+//                        public void onDismiss(DialogInterface dialogInterface) { }
+//                    });
+//
+//                    dialog.dismiss();
+//                }
+//
+//            });
+//
+//            dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+//                @Override
+//                public void onDismiss(DialogInterface dialogInterface) {
+//                    categoriesTextView.setText("Без категории");
+//                }
+//            });
         }
 
         @Override
