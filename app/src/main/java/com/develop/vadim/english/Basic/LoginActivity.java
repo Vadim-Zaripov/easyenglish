@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.EditText;
@@ -62,7 +63,6 @@ public class LoginActivity extends AppCompatActivity {
     public Animation animation;
 
     private SharedPreferences sharedPreferences;
-    private SharedPreferences wordsCheckSharedPreferences;
 
     private GoogleApiClient googleApiClient;
 
@@ -86,6 +86,8 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        spinKitView = findViewById(R.id.spinKit);
+
         sharedPreferences =
                 getSharedPreferences(getString(R.string.sp_persistence), MODE_PRIVATE);
         boolean isPersistenceEnabled =
@@ -98,10 +100,6 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         Utils.makeStatusBarTransparent(this);
-
-        animation = AnimationUtils.loadAnimation(this, R.anim.click);
-
-        wordsCheckSharedPreferences = getSharedPreferences(getPackageName() + ".wordsCheckFlag", MODE_PRIVATE);
 
         GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
@@ -129,17 +127,9 @@ public class LoginActivity extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
         Log.d(TAG, "--started RegistrationActivity--");
 
-        if(sharedPreferences.getBoolean(getPackageName() + ".firstrun", false)) {
-            //startActivity(new Intent(this, MainActivity.class));
-        }
-        else {
-            wordsCheckSharedPreferences.edit().putInt(getPackageName()  + ".wordsCheckFlag", Calendar.getInstance().get(Calendar.DAY_OF_YEAR)).apply();
-        }
-
         state = true;
 
         registrationTextView.setOnClickListener(view -> {
-            view.startAnimation(animation);
 
             ActivityOptions activityOptions = ActivityOptions.makeSceneTransitionAnimation(LoginActivity.this);
             startActivity(new Intent(view.getContext(), RegisterActivity.class), activityOptions.toBundle());
@@ -176,6 +166,9 @@ public class LoginActivity extends AppCompatActivity {
     private View.OnClickListener loginClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            spinKitView.setVisibility(View.VISIBLE);
+            spinKitView.startAnimation(new AlphaAnimation(0f, 1f));
+
             v.startAnimation(animation);
 
             v.setClickable(false);
@@ -192,14 +185,18 @@ public class LoginActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         v.setClickable(true);
 
-                        if (task.isSuccessful()) {
+                        spinKitView.setVisibility(View.INVISIBLE);
+
+                        if(task.isSuccessful()) {
                             user = auth.getCurrentUser();
-                            if (!user.isEmailVerified()) {
+                            if(!user.isEmailVerified()) {
                                 Toast.makeText(LoginActivity.this, "Email не подтвержден!", Toast.LENGTH_SHORT).show();
-                            } else {
+                            }
+                            else {
                                 doAfter(true);
                             }
-                        } else {
+                        }
+                        else {
                             Toast.makeText(LoginActivity.this, "Ошибка авторизации", Toast.LENGTH_SHORT).show();
                         }
                     }
@@ -222,6 +219,9 @@ public class LoginActivity extends AppCompatActivity {
     //####################################################
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
+        spinKitView.startAnimation(new AlphaAnimation(1f, 0f));
+        spinKitView.setVisibility(View.INVISIBLE);
+
         Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
 
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
@@ -229,13 +229,14 @@ public class LoginActivity extends AppCompatActivity {
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
+                        if(task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
                             user = auth.getCurrentUser();
                             doAfter(true);
 
-                        } else {
+                        }
+                        else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
                             Toast.makeText(getApplicationContext(), "Ошибка решистрации", Toast.LENGTH_LONG).show();
@@ -254,10 +255,10 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    public void onBackPressed(){
+    public void onBackPressed() {
         if(state)
             super.onBackPressed();
-        else{
+        else {
             state = true;
         }
     }
@@ -267,9 +268,10 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void signInWithGoogle() {
+        spinKitView.setVisibility(View.VISIBLE);
+        spinKitView.startAnimation(new AlphaAnimation(0f, 1f));
+
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
         startActivityForResult(signInIntent, 1);
     }
-
-
 }
