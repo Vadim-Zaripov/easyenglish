@@ -1,10 +1,8 @@
 package com.develop.vadim.english.Basic;
 
 import android.annotation.SuppressLint;
-import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
@@ -21,6 +19,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -29,8 +28,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.develop.vadim.english.R;
 import com.develop.vadim.english.utils.Utils;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.card.MaterialCardView;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -89,7 +86,6 @@ public class ChangeWordActivity extends AppCompatActivity {
                 if(isCategoryNew) {
                     intent.putExtra(getString(R.string.addNewCategory), true);
                 }
-
                 sendBroadcast(intent);
             }
         };
@@ -248,7 +244,7 @@ public class ChangeWordActivity extends AppCompatActivity {
 
     private void saveChanges() {
         if(!originalWordEditText.getText().toString().equals(changingWord.getWordInEnglish())) {
-            MainActivity.reference.child("words").child(changingWord.getInd()).child(Word.englishDatabaseKey).setValue(originalWordEditText.getText().toString()) ;
+            MainActivity.reference.child("words").child(changingWord.getInd()).child(Word.englishDatabaseKey).setValue(originalWordEditText.getText().toString());
             changingWord.setWordInEnglish(originalWordEditText.getText().toString());
         }
 
@@ -263,27 +259,14 @@ public class ChangeWordActivity extends AppCompatActivity {
             }
             else {
                 MainActivity.reference.child("categories").child(String.valueOf(categories.size() - 1)).setValue(category)
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                // ToDo: IOS DIALOG'
-                                AtheneDialog atheneDialog = new AtheneDialog(ChangeWordActivity.this, AtheneDialog.SIMPLE_MESSAGE_TYPE);
-                                atheneDialog.setMessageText(getString(R.string.no_internet_error));
-                                atheneDialog.setPositiveClickListener(new TextView.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        atheneDialog.dismiss();
-                                    }
-                                });
-                                atheneDialog.show();
-                            }
+                        .addOnFailureListener(e -> {
+                            // ToDo: IOS DIALOG'
+                            AtheneDialog atheneDialog = new AtheneDialog(ChangeWordActivity.this, AtheneDialog.SIMPLE_MESSAGE_TYPE);
+                            atheneDialog.setMessageText(getString(R.string.no_internet_error));
+                            atheneDialog.setPositiveClickListener(view -> atheneDialog.dismiss());
+                            atheneDialog.show();
                         })
-                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                MainActivity.reference.child("words").child(changingWord.getInd()).child(Word.categoryDatabaseKey).setValue(category);
-                            }
-                        });
+                        .addOnSuccessListener(aVoid -> MainActivity.reference.child("words").child(changingWord.getInd()).child(Word.categoryDatabaseKey).setValue(category));
 
                 isCategoryNew = true;
             }
@@ -325,12 +308,7 @@ public class ChangeWordActivity extends AppCompatActivity {
             holder.categoryTextView.setText(categories.get(position));
             holder.materialCardView.setCardBackgroundColor(getResources().getColor(materialCardsColors[new Random().nextInt(materialCardsColors.length)]));
 
-            holder.materialCardView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    closeAnimation(currentPosition, categories.get(currentPosition));
-                }
-            });
+            holder.materialCardView.setOnClickListener(view -> closeAnimation(categories.get(currentPosition)));
 
             holder.materialCardView.startAnimation(animation);
 
@@ -338,14 +316,12 @@ public class ChangeWordActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     callChooseCategoryDialog();
-                    closeAnimation(currentPosition, "Без категории");
+                    closeAnimation("Без категории");
                 }
             });
         }
 
-        public void closeAnimation(int currentPosition, String c) {
-
-
+        void closeAnimation(String c) {
             Transitioner transitioner = new Transitioner(categoriesMaterialCardView, categoriesMaterialCardViewComeBackPlaceHolder);
             transitioner.animateTo(1f, (long) 400, new AccelerateDecelerateInterpolator());
             categoriesMaterialCardView.setCardBackgroundColor(getResources().getColor(R.color.WHITE_TRANSPARENT));
@@ -388,59 +364,35 @@ public class ChangeWordActivity extends AppCompatActivity {
             categoriesTextView.setText(c);
             categoriesTextView.setVisibility(View.VISIBLE);
 
-            category = categories.get(currentPosition);
+            category = c;
         }
 
         private void callChooseCategoryDialog() {
             AtheneDialog atheneDialog = new AtheneDialog(ChangeWordActivity.this, AtheneDialog.EDIT_TEXT_TWO_OPTIONS_TYPE);
 
-            atheneDialog.setPositiveClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    //TODO: Your code here
-                }
-            });
+            atheneDialog.setPositiveClickListener(view -> {
+                if(!atheneDialog.getUserAnswerEditText().getText().toString().equals("")) {
+                        String category = atheneDialog.getUserAnswerEditText().getText().toString().trim().toLowerCase();
+                        if(!categories.contains(category)) {
+                            MainActivity.reference.child("categories")
+                                    .child(String.valueOf((categories.size() - 1)))
+                                    .setValue(category);
+                            changingWord.setWordCategory(category);
+                            categories.add(category);
 
-            atheneDialog.setNegativeClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    //TODO: Your code here
-                }
+                            //TODO: UPDATE MAIN ACTIVITY CATEGORIES LIST
+                        }
+
+                        closeAnimation(atheneDialog.getUserAnswerEditText().getText().toString());
+                    }
+
+                    atheneDialog.dismiss();
+            });
+            atheneDialog.setNegativeClickListener(view -> {
+                atheneDialog.dismiss();
             });
 
             atheneDialog.show();
-
-//            final Dialog dialog = new Dialog(ChangeWordActivity.this);
-//            dialog.setContentView(R.layout.layout_add_new_category);
-//            final EditText editText = dialog.findViewById(R.id.addNewCategoryEditText);
-//            final ImageView continueImageView = dialog.findViewById(R.id.addNewCategoryImageView);
-//
-//            dialog.show();
-//
-//            continueImageView.setOnClickListener(new ImageView.OnClickListener() {
-//                @Override
-//                public void onClick(View view) {
-//                    if(!editText.getText().toString().equals("")) {
-//                        categoriesTextView.setText(editText.getText());
-//                        category = editText.getText().toString();
-//                    }
-//
-//                    dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-//                        @Override
-//                        public void onDismiss(DialogInterface dialogInterface) { }
-//                    });
-//
-//                    dialog.dismiss();
-//                }
-//
-//            });
-//
-//            dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-//                @Override
-//                public void onDismiss(DialogInterface dialogInterface) {
-//                    categoriesTextView.setText("Без категории");
-//                }
-//            });
         }
 
         @Override

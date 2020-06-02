@@ -477,40 +477,29 @@ public class AddNewWordFragment extends Fragment implements UpdateDataListener {
 
             private void callChooseCategoryDialog() {
                 AtheneDialog atheneDialog = new AtheneDialog(getContext(), AtheneDialog.EDIT_TEXT_TWO_OPTIONS_TYPE);
-                atheneDialog.setPositiveClickListener(new TextView.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        if(!atheneDialog.getUserAnswerEditText().getText().toString().equals("")) {
-                            String category = atheneDialog.getUserAnswerEditText().getText().toString().trim().toLowerCase();
-                            if(!categories.contains(category)) {
-                                Toast.makeText(
-                                        getContext(),
-                                        "Add category",
-                                        Toast.LENGTH_SHORT
-                                ).show();
-                                // ToDo: ADD CATEGORY
-                                MainActivity
-                                        .reference
-                                        .child("categories")
-                                        .child(String.valueOf((
-                                                (MainActivity) Objects.requireNonNull(getActivity())).categoryNames.size()
-                                        ))
-                                        .setValue(category);
-                                ((MainActivity)getActivity()).categoryNames.add(category);
-                            }
-
-                            categoryTextView.setText(atheneDialog.getUserAnswerEditText().getText());
+                atheneDialog.setPositiveClickListener(view -> {
+                    if(!atheneDialog.getUserAnswerEditText().getText().toString().equals("")) {
+                        String category = atheneDialog.getUserAnswerEditText().getText().toString().trim().toLowerCase();
+                        if(!categories.contains(category)) {
+                            MainActivity
+                                    .reference
+                                    .child("categories")
+                                    .child(String.valueOf((
+                                            (MainActivity) Objects.requireNonNull(getActivity())).categoryNames.size()
+                                    ))
+                                    .setValue(category);
+                            ((MainActivity)getActivity()).categoryNames.add(category);
+                            ((MainActivity)getActivity()).callFragmentContentUpdate(MainActivity.CATEGORIES_FRAGMENT_KEY);
+                            ((MainActivity)getActivity()).callFragmentContentUpdate(MainActivity.WORDS_ARCHIVE_FRAGMENT_KEY);
                         }
 
-                        atheneDialog.dismiss();
+                        categoryTextView.setText(atheneDialog.getUserAnswerEditText().getText());
                     }
+                    atheneDialog.dismiss();
                 });
 
-                atheneDialog.setNegativeClickListener(new TextView.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        atheneDialog.dismiss();
-                    }
+                atheneDialog.setNegativeClickListener(view -> {
+                    atheneDialog.dismiss();
                 });
 
                 atheneDialog.show();
