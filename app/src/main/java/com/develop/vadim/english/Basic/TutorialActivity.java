@@ -3,6 +3,7 @@ package com.develop.vadim.english.Basic;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
@@ -16,6 +17,7 @@ import com.tbuonomo.viewpagerdotsindicator.DotsIndicator;
 
 public class TutorialActivity extends AppCompatActivity {
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -23,12 +25,9 @@ public class TutorialActivity extends AppCompatActivity {
 
         TextView continueTextView = findViewById(R.id.continueTextView);
         continueTextView.setOnTouchListener(Utils.loginTouchListener);
-        continueTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-               getSharedPreferences(getString(R.string.tutorial_key), MODE_PRIVATE).edit().putBoolean(getString(R.string.tutorial_key), true).apply();
-               finish();
-            }
+        continueTextView.setOnClickListener(view -> {
+           getSharedPreferences(getString(R.string.tutorial_key), MODE_PRIVATE).edit().putBoolean(getString(R.string.tutorial_key), true).apply();
+           finish();
         });
 
         ViewPager tutorialViewPager = findViewById(R.id.tutorialViewPager);
@@ -76,7 +75,6 @@ public class TutorialActivity extends AppCompatActivity {
         });
 
         DotsIndicator dotsIndicator = findViewById(R.id.tutorialDotsIndicator);
-        dotsIndicator = findViewById(R.id.tutorialDotsIndicator);
         dotsIndicator.setViewPager(tutorialViewPager);
     }
 }

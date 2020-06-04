@@ -18,7 +18,6 @@ public class TutorialViewPagerAdapter extends FragmentPagerAdapter {
         switch(position) {
             // TODO: Add more screenshots and cases for them
             case 0:
-                return new TutorialFragment(R.drawable.app_background);
             case 1:
                 return new TutorialFragment(R.drawable.app_background);
         }

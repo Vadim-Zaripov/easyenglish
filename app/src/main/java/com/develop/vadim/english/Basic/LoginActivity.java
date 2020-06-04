@@ -159,6 +159,14 @@ public class LoginActivity extends AppCompatActivity {
                 // Google Sign In failed, update UI appropriately
                 Log.w(TAG, "Google sign in failed", e);
                 // ...
+                AtheneDialog atheneDialog = new AtheneDialog(LoginActivity.this, AtheneDialog.SIMPLE_MESSAGE_TYPE);
+                atheneDialog.setMessageText(
+                        "Не удалось авторизироваться через Google аккаунт. Попробуйте ещё раз.\nОшибка: " + e.getLocalizedMessage()
+                );
+                atheneDialog.setPositiveClickListener(view -> {
+                    atheneDialog.dismiss();
+                });
+                atheneDialog.show();
             }
         }
     }
@@ -168,9 +176,6 @@ public class LoginActivity extends AppCompatActivity {
         public void onClick(View v) {
             spinKitView.setVisibility(View.VISIBLE);
             spinKitView.startAnimation(new AlphaAnimation(0f, 1f));
-
-//            v.startAnimation(animation);
-
             v.setClickable(false);
             if(email.getText().toString().trim().equals("") || password.getText().toString().trim().equals("")) {
                 Toast.makeText(LoginActivity.this, "Вы заполниил не все поля", Toast.LENGTH_LONG).show();
@@ -180,35 +185,26 @@ public class LoginActivity extends AppCompatActivity {
                 auth
                         .signInWithEmailAndPassword(
                                 email.getText().toString(), password.getText().toString()
-                        ).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        v.setClickable(true);
-
-                        spinKitView.setVisibility(View.INVISIBLE);
-
-                        if(task.isSuccessful()) {
+                        )
+                        .addOnCompleteListener(task -> v.setClickable(true))
+                        .addOnSuccessListener(authResult -> {
                             user = auth.getCurrentUser();
+                            assert user != null;
                             if(!user.isEmailVerified()) {
                                 Toast.makeText(LoginActivity.this, "Email не подтвержден!", Toast.LENGTH_SHORT).show();
                             }
                             else {
                                 doAfter(true);
                             }
-                        }
-                        else {
-                            Toast.makeText(LoginActivity.this, "Ошибка авторизации", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                })
+                        })
                         .addOnFailureListener(e -> {
                             AtheneDialog atheneDialog = new AtheneDialog(LoginActivity.this, AtheneDialog.SIMPLE_MESSAGE_TYPE);
-                            atheneDialog.setMessageText(getString(R.string.no_internet_error));
-                            atheneDialog.setPositiveClickListener(new TextView.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    atheneDialog.dismiss();
-                                }
+                            atheneDialog.setMessageText(
+                                    "Не удалось авторизироваться. Попробуйте позднее.\nОшибка: " + e.getLocalizedMessage()
+                            );
+                            atheneDialog.setPositiveClickListener(view -> {
+                                android.os.Process.killProcess(android.os.Process.myPid());
+                                System.exit(1);
                             });
                             atheneDialog.show();
                         });
@@ -226,23 +222,30 @@ public class LoginActivity extends AppCompatActivity {
 
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
         auth.signInWithCredential(credential)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if(task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.d(TAG, "signInWithCredential:success");
-                            user = auth.getCurrentUser();
-                            doAfter(true);
-
-                        }
-                        else {
-                            // If sign in fails, display a message to the user.
-                            Log.w(TAG, "signInWithCredential:failure", task.getException());
-                            Toast.makeText(getApplicationContext(), "Ошибка решистрации", Toast.LENGTH_LONG).show();
-                        }
+                .addOnCompleteListener(this, task -> {
+                    if(task.isSuccessful()) {
+                        // Sign in success, update UI with the signed-in user's information
+                        Log.d(TAG, "signInWithCredential:success");
+                        user = auth.getCurrentUser();
+                        doAfter(true);
 
                     }
+                    else {
+                        // If sign in fails, display a message to the user.
+                        Log.w(TAG, "signInWithCredential:failure", task.getException());
+                        Toast.makeText(getApplicationContext(), "Ошибка решистрации", Toast.LENGTH_LONG).show();
+
+                        AtheneDialog atheneDialog = new AtheneDialog(LoginActivity.this, AtheneDialog.SIMPLE_MESSAGE_TYPE);
+                        atheneDialog.setMessageText(
+                                "Не удалось авторизироваться. Попробуйте позднее.\nОшибка: " + task.getException().getLocalizedMessage()
+                        );
+                        atheneDialog.setPositiveClickListener(view -> {
+                            android.os.Process.killProcess(android.os.Process.myPid());
+                            System.exit(1);
+                        });
+                        atheneDialog.show();
+                    }
+
                 });
     }
 

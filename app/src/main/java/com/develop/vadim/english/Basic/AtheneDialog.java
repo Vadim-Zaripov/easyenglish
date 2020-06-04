@@ -2,6 +2,7 @@ package com.develop.vadim.english.Basic;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.view.View;
 import android.widget.EditText;
@@ -10,6 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 
 import com.develop.vadim.english.R;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class AtheneDialog extends Dialog {
     private TextView messageTextView;
@@ -47,6 +49,12 @@ public class AtheneDialog extends Dialog {
 
         switch(type) {
             case SIMPLE_MESSAGE_TYPE:
+                accessTextView.setOnClickListener(new TextView.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dismiss();
+                    }
+                });
                 break;
             case TWO_OPTIONS_TYPE:
                 cancelTextView.setVisibility(View.VISIBLE);
