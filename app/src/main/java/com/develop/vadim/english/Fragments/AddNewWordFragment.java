@@ -406,8 +406,14 @@ public class AddNewWordFragment extends Fragment implements UpdateDataListener {
 
         @Override
         public void onBindViewHolder(@NonNull CategoriesRecyclerViewHolder holder, int position) {
+            if(position == 0) {
+                holder.materialCardView.setCardBackgroundColor(getResources().getColor(R.color.grey));
+            }
+            else {
+                holder.materialCardView.setCardBackgroundColor(getResources().getColor(materialCardsColors[new Random().nextInt(materialCardsColors.length)]));
+            }
+
             holder.categoryNameTextView.setText(categories.get(position));
-            holder.materialCardView.setCardBackgroundColor(getResources().getColor(materialCardsColors[new Random().nextInt(materialCardsColors.length)]));
             holder.position = position;
 
             holder.materialCardView.startAnimation(animation);

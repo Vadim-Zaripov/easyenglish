@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -156,12 +157,10 @@ public class WordCheckFragment extends Fragment {
         helpImageButtonsLinearLayout.setVisibility(View.INVISIBLE);
         userAnswerTextView.setVisibility(View.INVISIBLE);
 
-
         userAnswerEditText.setTextColor(getResources().getColor(R.color.colorWhite));
         userAnswerEditText.setText("");
 
         userQuestionTextView.setText(checkingWordsList.get(stage).getWordInRussian());
-
 
         continueImageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -215,6 +214,7 @@ public class WordCheckFragment extends Fragment {
                     userQuestionTextView.setVisibility(View.INVISIBLE);
                     userAnswerEditText.setVisibility(View.INVISIBLE);
                     forgetWordTextView.setVisibility(View.INVISIBLE);
+                    checkAnswerTextView.setVisibility(View.INVISIBLE);
 
                     setUpLesson();
                 }
@@ -229,6 +229,7 @@ public class WordCheckFragment extends Fragment {
                     userAnswerEditText.startAnimation(alphaAnimation);
                     userQuestionTextView.startAnimation(alphaAnimation);
                     forgetWordTextView.startAnimation(alphaAnimation);
+                    checkAnswerTextView.startAnimation(alphaAnimation);
                 }
             }, 300);
 
@@ -265,6 +266,7 @@ public class WordCheckFragment extends Fragment {
                     headerTextView.startAnimation(alphaAnimation);
                     userAnswerEditText.startAnimation(alphaAnimation);
                     forgetWordTextView.startAnimation(alphaAnimation);
+                    checkAnswerTextView.startAnimation(alphaAnimation);
                 }
             }, 300);
         }
@@ -289,6 +291,7 @@ public class WordCheckFragment extends Fragment {
 
     private void endChecking() {
         continueImageView.setClickable(false);
+
         for(View checkingView : checkingViews) {
             AlphaAnimation alphaAnimation = new AlphaAnimation(1f, 0f);
             alphaAnimation.setDuration(300);
@@ -333,7 +336,6 @@ public class WordCheckFragment extends Fragment {
             public void onAnimationRepeat(Animation animation) { }
         });
 
-        checkAnswerTextView.startAnimation(appearAnimation);
         userQuestionTextView.startAnimation(appearAnimation);
         helpImageButtonsLinearLayout.startAnimation(appearAnimation);
         rightAnswerTextView.startAnimation(appearAnimation);
@@ -394,14 +396,18 @@ public class WordCheckFragment extends Fragment {
         valueAnimator.start();
 
         if(userAnswerEditText.getText().toString().trim().replace("\n", "").equals("")) {
-            userQuestionTextView.setText("-");
+            userAnswerTextView.setText(getString(R.string.remember_word));
+            userQuestionTextView.setText("Правильный ответ:");
+            userQuestionTextView.setTextColor(getResources().getColor(R.color.colorWhite));
         }
         else {
+            userAnswerTextView.setText(getString(R.string.userAnswer));
+            userQuestionTextView.setTextColor(getResources().getColor(R.color.wrongWordRed));
             userQuestionTextView.setText(userAnswerEditText.getText());
         }
 
-        rightAnswerTextView.setVisibility(View.VISIBLE);
         userAnswerTextView.setVisibility(View.VISIBLE);
+        rightAnswerTextView.setVisibility(View.VISIBLE);
         rightAnswerTextView.setText(checkingWordsList.get(stage).getWordInEnglish());
         rightAnswerTextView.setTextColor(getResources().getColor(R.color.rightWordGreen));
 
@@ -489,7 +495,6 @@ public class WordCheckFragment extends Fragment {
 
         userAnswerTextView.startAnimation(disappearAnimation);
         rightAnswerTextView.startAnimation(disappearAnimation);
-        checkAnswerTextView.startAnimation(disappearAnimation);
         helpImageButtonsLinearLayout.startAnimation(disappearAnimation);
 
         disappearAnimation.setAnimationListener(new Animation.AnimationListener() {

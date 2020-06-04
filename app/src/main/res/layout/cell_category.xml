@@ -10,7 +10,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="12dp"
-        app:expansion_headerIndicator="@id/expansionHeaderIndicator">
+        app:expansion_headerIndicator="@id/expansionHeaderIndicator"
+        app:expansion_layout="@id/categoryCellExpansionLayout">
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/categoryCellMaterialCardView"
@@ -22,7 +23,7 @@
             app:cardElevation="0dp"
             app:strokeColor="@color/colorWhite"
             app:strokeWidth="3dp">
-            <!--Артем, можещь центрировать контент в этой карточки, пожалуйста -->
+
 
             <LinearLayout
                 android:id="@+id/categoryCellContentLinearLayout"
@@ -101,7 +102,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <LinearLayout
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/expandableRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

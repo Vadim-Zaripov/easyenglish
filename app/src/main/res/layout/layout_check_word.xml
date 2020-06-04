@@ -37,6 +37,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:gravity="center"
             android:text="Apple"
             android:textColor="@color/colorWhite"
             android:textSize="@dimen/check_word_title_text_size" />
@@ -53,7 +54,6 @@
             android:ems="10"
             android:gravity="center"
             android:hint="@string/checkingWordHint"
-            android:inputType="textPersonName"
             android:textColor="@color/colorWhite"
             android:textColorHint="@color/WHITE_TRANSPARENT"
             android:textColorLink="@color/colorWhite"
@@ -67,6 +67,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/userAnswer"
+        android:gravity="center"
         android:textColor="@color/colorWhite"
         android:textSize="@dimen/check_word_answer_title_text_size"
         app:layout_constraintBottom_toTopOf="@+id/linearLayout5"

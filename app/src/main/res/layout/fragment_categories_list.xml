@@ -40,10 +40,18 @@
                 android:textSize="@dimen/categories_list_no_categories_text_size"
                 android:visibility="invisible" />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/userWordsCheckRecyclerView"
+            <ScrollView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"></androidx.recyclerview.widget.RecyclerView>
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:id="@+id/userWordsCheckRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+                </LinearLayout>
+
+            </ScrollView>
 
         </FrameLayout>
 

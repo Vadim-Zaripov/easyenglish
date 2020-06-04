@@ -128,6 +128,7 @@
     <string name="deleteCategoryMessage">Вы действительно хотите удалить данную категорию?</string>
     <string name="understanding">Понятно!</string>
     <string name="tutorial_key">tutorial</string>
+    <string name="remember_word">Вспомнить слово</string>
     <string-array name="pref_example_list_titles">
         <item>Always</item>
         <item>When possible</item>

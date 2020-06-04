@@ -7,6 +7,8 @@
     <color name="colorWhite">#ffffff</color>
     <color name="colorRed">#ff2020</color>
 
+    <color name="grey">#DEDEDE</color>
+
     <color name="TRANSPARENT">#00000000</color>
     <color name="WHITE_TRANSPARENT">#70FFFFFF</color>
     <color name="LIGHT_GREEN_TRANSPARENT">#55efc4</color>

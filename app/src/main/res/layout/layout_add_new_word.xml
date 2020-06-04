@@ -189,7 +189,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/addNewCategory"
-            android:textColor="@color/vinePurple"
+            android:textColor="@color/lightPurple"
             android:layout_gravity="center"
             android:textSize="18sp"
             android:tag="animation4"
@@ -230,7 +230,7 @@
             android:background="@drawable/continue_button_background_purple"
             android:tag="animation4"
             android:text="@string/addNewCategory"
-            android:textColor="@color/vinePurple"
+            android:textColor="@color/lightPurple"
             android:textSize="18sp" />
 
     </com.google.android.material.card.MaterialCardView>

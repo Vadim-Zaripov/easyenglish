@@ -169,7 +169,7 @@ public class LoginActivity extends AppCompatActivity {
             spinKitView.setVisibility(View.VISIBLE);
             spinKitView.startAnimation(new AlphaAnimation(0f, 1f));
 
-            v.startAnimation(animation);
+//            v.startAnimation(animation);
 
             v.setClickable(false);
             if(email.getText().toString().trim().equals("") || password.getText().toString().trim().equals("")) {

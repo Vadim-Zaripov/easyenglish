@@ -238,7 +238,7 @@ public class MainActivity extends AppCompatActivity {
 
                         break;
                     case WORDS_ANALYZING_END:
-                        Log.d(MAIN_ACTIVITY_TAG, "Words has been analized successfully");
+                        Log.d(MAIN_ACTIVITY_TAG, "Words has been analyzed successfully");
 
                         FirebaseDynamicLinks
                                 .getInstance()
