@@ -16,10 +16,18 @@ public class TutorialViewPagerAdapter extends FragmentPagerAdapter {
     @Override
     public Fragment getItem(int position) {
         switch(position) {
-            // TODO: Add more screenshots and cases for them
             case 0:
+                return new TutorialFragment(R.drawable.tutorial_1);
             case 1:
-                return new TutorialFragment(R.drawable.app_background);
+                return new TutorialFragment(R.drawable.tutorial_2);
+            case 2:
+                return new TutorialFragment(R.drawable.tutorial_3);
+            case 3:
+                return new TutorialFragment(R.drawable.tutorial_4);
+            case 4:
+                return new TutorialFragment(R.drawable.tutorial_5);
+            case 5:
+                return new TutorialFragment(R.drawable.tutorial_6);
         }
 
         return null;
@@ -27,6 +35,6 @@ public class TutorialViewPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public int getCount() {
-        return 2;
+        return 6;
     }
 }

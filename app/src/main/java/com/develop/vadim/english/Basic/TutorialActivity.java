@@ -1,14 +1,13 @@
 package com.develop.vadim.english.Basic;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.viewpager.widget.ViewPager;
-
+import android.animation.Animator;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.View;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.viewpager.widget.ViewPager;
 
 import com.develop.vadim.english.Basic.tutorial.TutorialViewPagerAdapter;
 import com.develop.vadim.english.R;
@@ -31,7 +30,8 @@ public class TutorialActivity extends AppCompatActivity {
         });
 
         ViewPager tutorialViewPager = findViewById(R.id.tutorialViewPager);
-        tutorialViewPager.setAdapter(new TutorialViewPagerAdapter(getSupportFragmentManager(), 0));
+        TutorialViewPagerAdapter tutorialViewPagerAdapter = new TutorialViewPagerAdapter(getSupportFragmentManager(), 0);
+        tutorialViewPager.setAdapter(tutorialViewPagerAdapter);
         tutorialViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -40,33 +40,55 @@ public class TutorialActivity extends AppCompatActivity {
 
             @Override
             public void onPageSelected(int position) {
-                if(position == tutorialViewPager.getChildCount() - 1) {
-                    AlphaAnimation alphaAnimation = new AlphaAnimation(0f, 1f);
-                    alphaAnimation.setDuration(200);
+                if(position == tutorialViewPagerAdapter.getCount() - 1) {
+                    continueTextView.animate().alpha(1f).setDuration(200).setListener(new Animator.AnimatorListener() {
+                        @Override
+                        public void onAnimationStart(Animator animator) {
+                            continueTextView.setVisibility(View.VISIBLE);
+                            continueTextView.setClickable(true);
+                            continueTextView.setAlpha(0f);
+                        }
 
-                    continueTextView.setClickable(true);
-                    continueTextView.setVisibility(View.VISIBLE);
-                    continueTextView.startAnimation(alphaAnimation);
+                        @Override
+                        public void onAnimationEnd(Animator animator) {
+                            continueTextView.setAlpha(1f);
+                        }
+
+                        @Override
+                        public void onAnimationCancel(Animator animator) {
+
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animator animator) {
+
+                        }
+                    });
                 }
                 else {
-                    AlphaAnimation alphaAnimation = new AlphaAnimation(1f, 0f);
-                    alphaAnimation.setDuration(200);
-                    alphaAnimation.setAnimationListener(new Animation.AnimationListener() {
+                    continueTextView.animate().alpha(0f).setDuration(200).setListener(new Animator.AnimatorListener() {
                         @Override
-                        public void onAnimationStart(Animation animation) { }
+                        public void onAnimationStart(Animator animator) {
+                            continueTextView.setClickable(false);
+                            continueTextView.setAlpha(1f);
+                        }
 
                         @Override
-                        public void onAnimationEnd(Animation animation) {
+                        public void onAnimationEnd(Animator animator) {
+                            continueTextView.setAlpha(0f);
                             continueTextView.setVisibility(View.INVISIBLE);
                         }
 
                         @Override
-                        public void onAnimationRepeat(Animation animation) { }
-                    });
+                        public void onAnimationCancel(Animator animator) {
 
-                    continueTextView.setClickable(false);
-                    continueTextView.setVisibility(View.VISIBLE);
-                    continueTextView.startAnimation(alphaAnimation);
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animator animator) {
+
+                        }
+                    });
                 }
             }
 

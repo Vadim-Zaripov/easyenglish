@@ -1,10 +1,8 @@
 package com.develop.vadim.english.Basic;
 
 import android.annotation.SuppressLint;
-import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
@@ -32,7 +30,6 @@ import com.develop.vadim.english.utils.Utils;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.card.MaterialCardView;
-import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -267,7 +264,6 @@ public class ChangeWordActivity extends AppCompatActivity {
                         .addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
-                                // ToDo: IOS DIALOG'
                                 AtheneDialog atheneDialog = new AtheneDialog(ChangeWordActivity.this, AtheneDialog.SIMPLE_MESSAGE_TYPE);
                                 atheneDialog.setMessageText(getString(R.string.no_internet_error));
                                 atheneDialog.setPositiveClickListener(new TextView.OnClickListener() {
