@@ -2,8 +2,6 @@ package com.develop.vadim.english.Fragments;
 
 import android.content.Context;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -50,5 +48,11 @@ public class FragmentViewPagerAdapter extends FragmentPagerAdapter {
     @Override
     public int getCount() {
         return 4;
+    }
+
+    public void hideAddWordFragmentInput() {
+//        addNewWordFragment
+//        ToDo: HIDE
+        addNewWordFragment.closeInput();
     }
 }

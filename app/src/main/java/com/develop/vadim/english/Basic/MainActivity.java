@@ -90,8 +90,7 @@ public class MainActivity extends AppCompatActivity {
     public ArrayList<Word> wordArrayList = new ArrayList<>();
     public ArrayList<Word> wordsCheckWordsArrayList = new ArrayList<>();
     private ArrayList<Word> archivedWordsArrayList = new ArrayList<>();
-
-    private Handler loadingHandler;
+    private boolean addNewWordFragmentWasOpened = false;
 
     public static final int CATEGORIES_FRAGMENT_KEY = 2;
     public static final int ADD_NEW_WORD_FRAGMENT_KEY = 0;
@@ -173,11 +172,13 @@ public class MainActivity extends AppCompatActivity {
         };
 
 
-        loadingHandler = new Handler() {
+        //Find the currently focused view, so we can grab the correct window token from it.
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        Handler loadingHandler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
-                Log.d(MAIN_ACTIVITY_TAG, "HandleMessage" );
+                Log.d(MAIN_ACTIVITY_TAG, "HandleMessage");
                 switch(msg.what) {
                     case WORDS_LOAD_END:
                         Log.d(MAIN_ACTIVITY_TAG, "All words has been loaded successfully");
@@ -190,7 +191,8 @@ public class MainActivity extends AppCompatActivity {
                         animation.setDuration(300);
                         animation.setAnimationListener(new Animation.AnimationListener() {
                             @Override
-                            public void onAnimationStart(Animation animation) { }
+                            public void onAnimationStart(Animation animation) {
+                            }
 
                             @Override
                             public void onAnimationEnd(Animation animation) {
@@ -231,7 +233,8 @@ public class MainActivity extends AppCompatActivity {
                             }
 
                             @Override
-                            public void onAnimationRepeat(Animation animation) { }
+                            public void onAnimationRepeat(Animation animation) {
+                            }
                         });
 
                         spinKitView.startAnimation(animation);
@@ -285,6 +288,28 @@ public class MainActivity extends AppCompatActivity {
         spinKitView = findViewById(R.id.spinKit);
         spinKitView.setIndeterminateDrawable(new DoubleBounce());
 
+
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                if(position == 0) {
+                    addNewWordFragmentWasOpened = true;
+                }
+                if(addNewWordFragmentWasOpened && position != 0) {
+                    fragmentViewPagerAdapter.hideAddWordFragmentInput();
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
 
         Log.d(MAIN_ACTIVITY_TAG, "OnCreate");
         updateData(loadingHandler);
