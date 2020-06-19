@@ -59,8 +59,6 @@ public class CategoriesFragment extends Fragment implements UpdateDataListener {
 
     private DatabaseReference databaseReference;
 
-    private WordsCategoriesRecyclerViewAdapter wordsCategoriesRecyclerViewAdapter;
-
     private Handler initCategoriesHandler;
 
     private View viewLayout;
@@ -256,6 +254,7 @@ public class CategoriesFragment extends Fragment implements UpdateDataListener {
                 @Override
                 public void onClick(View view) {
                     //TODO: Fix Animation
+                    
                     expansionLayout.toggle(true);
                     if(expansionLayout.isExpanded()) {
                         LinearLayout categoryActionsLinearLayout =

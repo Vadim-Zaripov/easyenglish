@@ -59,8 +59,6 @@ public class RegisterActivity extends AppCompatActivity {
     private SharedPreferences sharedPreferences;
     private SharedPreferences wordsCheckSharedPreferences;
 
-    private Animation animation;
-
     private GoogleApiClient googleApiClient;
 
     @Override
@@ -139,8 +137,6 @@ public class RegisterActivity extends AppCompatActivity {
     private View.OnClickListener registerClickListener = v -> {
         spinKitView.setVisibility(View.VISIBLE);
         spinKitView.startAnimation(new AlphaAnimation(0f, 1f));
-
-        v.startAnimation(animation);
 
         if(!password.getText().toString().trim().equals("") && !confirmPassword.getText().toString().trim().equals("") &&   !email.getText().toString().trim().equals("")) {
             if(password.getText().toString().equals(confirmPassword.getText().toString())) {
