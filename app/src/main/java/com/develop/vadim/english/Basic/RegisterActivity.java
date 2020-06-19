@@ -118,6 +118,9 @@ public class RegisterActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        spinKitView.startAnimation(new AlphaAnimation(1f, 0f));
+        spinKitView.setVisibility(View.INVISIBLE);
+
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
         if(requestCode == 1) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
@@ -152,7 +155,7 @@ public class RegisterActivity extends AppCompatActivity {
 
                                             Toast.makeText(RegisterActivity.this, "Письмо поттверждения отправлено на ваш E-mail", Toast.LENGTH_SHORT).show();
                                             state = false;
-                                            finish();
+                                            startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
                                         })
                                         .addOnFailureListener(e -> {
 

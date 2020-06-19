@@ -147,6 +147,9 @@ public class LoginActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        spinKitView.startAnimation(new AlphaAnimation(1f, 0f));
+        spinKitView.setVisibility(View.INVISIBLE);
+
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
         if (requestCode == 1) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
@@ -215,8 +218,7 @@ public class LoginActivity extends AppCompatActivity {
     //####################################################
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
-        spinKitView.startAnimation(new AlphaAnimation(1f, 0f));
-        spinKitView.setVisibility(View.INVISIBLE);
+
 
         Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
 
