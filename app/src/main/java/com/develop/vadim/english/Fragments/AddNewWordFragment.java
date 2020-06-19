@@ -323,9 +323,10 @@ public class AddNewWordFragment extends Fragment implements UpdateDataListener {
         });
     }
 
+    @SuppressLint("CutPasteId")
     private void adaptRecyclerView() {
 
-        int categoriesMaterialCardView = rootView
+         int categoriesMaterialCardView = rootView
                 .findViewById(R.id.add_new_word_recycler)
                 .getMeasuredHeight();
 

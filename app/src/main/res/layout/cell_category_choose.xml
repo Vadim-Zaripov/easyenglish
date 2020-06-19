@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:card_view="http://schemas.android.com/tools"
     android:id="@+id/categoriesChoosingCellCardView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginLeft="8dp"
     android:layout_marginRight="8dp"
     android:layout_marginBottom="16dp"
+    card_view:rippleColor="#cfd8dc"
     app:cardCornerRadius="20dp"
     app:cardElevation="0dp"
     app:contentPadding="5dp">
+
 
     <TextView
         android:id="@+id/categoriesChoosingCellTextView"
@@ -22,5 +25,6 @@
         android:tag="animatedTagOne"
         android:textColor="@android:color/white"
         android:textSize="@dimen/categories_choosing_title_text_size" />
+
 
 </com.google.android.material.card.MaterialCardView>
