@@ -22,27 +22,6 @@
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.9" />
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.2" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.5" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline5"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.7" />
-
     <TextView
         android:id="@+id/headerTextView"
         android:layout_width="wrap_content"
@@ -51,9 +30,16 @@
         android:text="@string/checkingWord"
         android:textColor="@color/colorWhite"
         android:textSize="@dimen/check_word_title_text_size"
-        app:layout_constraintBottom_toTopOf="@+id/guideline"
+        app:layout_constraintBottom_toTopOf="@+id/horizontalGuideline"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/horizontalGuideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.2" />
 
     <TextView
         android:id="@+id/userAnswerTextView"
@@ -64,6 +50,7 @@
         android:text="@string/userAnswer"
         android:textColor="@color/colorWhite"
         android:textSize="@dimen/check_word_answer_title_text_size"
+        app:layout_constraintBottom_toTopOf="@+id/translateWordLinearLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/headerTextView" />
@@ -72,11 +59,12 @@
         android:id="@+id/translateWordLinearLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:gravity="center_horizontal"
         android:orientation="vertical"
-        app:layout_constraintBottom_toTopOf="@+id/guideline4"
+        app:layout_constraintBottom_toTopOf="@+id/horizontalGuideline2"
         app:layout_constraintEnd_toStartOf="@+id/verticalGuideline2"
-        app:layout_constraintStart_toStartOf="@+id/verticalGuideline"
-        app:layout_constraintTop_toBottomOf="@+id/userAnswerTextView">
+        app:layout_constraintStart_toStartOf="@+id/verticalGuideline">
 
         <TextView
             android:id="@+id/wordCheckTextView"
@@ -94,12 +82,13 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/checkWordEditText"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:backgroundTint="@android:color/white"
             android:ems="10"
             android:gravity="center"
             android:hint="@string/checkingWordHint"
+            android:minWidth="480dp"
             android:textColor="@color/colorWhite"
             android:textColorHint="@color/WHITE_TRANSPARENT"
             android:textColorLink="@color/colorWhite"
@@ -107,6 +96,12 @@
 
     </LinearLayout>
 
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/horizontalGuideline2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.5" />
 
     <LinearLayout
         android:id="@+id/linearLayout3"
@@ -114,10 +109,10 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:visibility="visible"
-        app:layout_constraintBottom_toTopOf="@+id/guideline5"
+        app:layout_constraintBottom_toTopOf="@+id/horizontalGuideline3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/guideline4">
+        app:layout_constraintTop_toTopOf="@+id/horizontalGuideline2">
 
 
         <LinearLayout
@@ -127,7 +122,7 @@
 
             <ImageView
                 android:id="@+id/editImageView"
-                android:layout_width="@dimen/check_word_edit_image_view_size"
+                android:layout_width="match_parent"
                 android:layout_height="@dimen/check_word_edit_image_view_size"
                 android:layout_gravity="center_horizontal"
                 app:srcCompat="@drawable/ic_edit_word_white" />
@@ -153,7 +148,7 @@
 
             <ImageView
                 android:id="@+id/deleteWordImageView"
-                android:layout_width="@dimen/check_word_edit_image_view_size"
+                android:layout_width="match_parent"
                 android:layout_height="@dimen/check_word_edit_image_view_size"
                 android:layout_gravity="center_horizontal"
                 app:srcCompat="@drawable/ic_delete_word_white" />
@@ -172,23 +167,27 @@
 
     </LinearLayout>
 
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/horizontalGuideline3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.7" />
+
 
     <LinearLayout
         android:id="@+id/linearLayout4"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="64dp"
-        android:layout_marginEnd="64dp"
-        android:layout_marginBottom="64dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/verticalGuideline2"
         app:layout_constraintStart_toStartOf="@+id/verticalGuideline"
-        app:layout_constraintTop_toTopOf="@+id/guideline5">
+        app:layout_constraintTop_toTopOf="@+id/horizontalGuideline3">
 
         <ImageView
             android:id="@+id/continueImageView"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="@dimen/check_word_continue_button_height"
             android:layout_gravity="center_horizontal"
             android:background="@drawable/continue_button_background"
