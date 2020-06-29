@@ -27,7 +27,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.develop.vadim.english.R;
 import com.develop.vadim.english.utils.Utils;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.card.MaterialCardView;
 
@@ -37,6 +36,8 @@ import java.util.Random;
 import bg.devlabs.transitioner.Transitioner;
 
 public class ChangeWordActivity extends AppCompatActivity {
+
+    private boolean isRecyclerAdapted = false;
 
     private EditText originalWordEditText;
     private EditText translatedWordEditText;
@@ -66,6 +67,8 @@ public class ChangeWordActivity extends AppCompatActivity {
 //        FirebaseDatabase.getInstance().setPersistenceEnabled(false);
 
         Utils.makeStatusBarTransparent(this);
+
+        findViewById(R.id.frameLayout).setOnClickListener(v -> {});
 
         updateHasBeenDoneBroadcastReceiver = new BroadcastReceiver() {
             @Override
@@ -122,50 +125,53 @@ public class ChangeWordActivity extends AppCompatActivity {
 
         categoriesTextView.setText(changingWord.getWordCategory());
 
-        categoriesMaterialCardView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                categoriesTextView.setVisibility(View.INVISIBLE);
-                addNewCategoryTextView.setVisibility(View.VISIBLE);
-                addNewCategoryTextView.setClickable(true);
+        categoriesMaterialCardView.setOnClickListener(view -> {
+            categoriesTextView.setVisibility(View.INVISIBLE);
+            addNewCategoryTextView.setVisibility(View.VISIBLE);
+            addNewCategoryTextView.setClickable(true);
 
-                categoriesMaterialCardView.setClickable(false);
+            categoriesMaterialCardView.setClickable(false);
 
-                deleteWordImageView.animate().alphaBy(1).alpha(0).setDuration(200).start();
-                deleteWordImageView.setClickable(false);
+            deleteWordImageView.animate().alphaBy(1).alpha(0).setDuration(200).start();
+            deleteWordImageView.setClickable(false);
 
-                saveChangesImageView.animate().alphaBy(1).alpha(0).setDuration(200).start();
-                saveChangesImageView.setClickable(false);
+            saveChangesImageView.animate().alphaBy(1).alpha(0).setDuration(200).start();
+            saveChangesImageView.setClickable(false);
 
-                Transitioner transitioner = new Transitioner(categoriesMaterialCardView, categoriesMaterialCardViewPlaceHolder);
-                transitioner.animateTo(1f, (long) 400, new AccelerateDecelerateInterpolator());
-                categoriesMaterialCardView.setCardBackgroundColor(getResources().getColor(R.color.colorWhite));
+            Transitioner transitioner = new Transitioner(categoriesMaterialCardView, categoriesMaterialCardViewPlaceHolder);
+            transitioner.animateTo(1f, (long) 400, new AccelerateDecelerateInterpolator());
+            categoriesMaterialCardView.setCardBackgroundColor(getResources().getColor(R.color.colorWhite));
 
-                AlphaAnimation alphaAnimation = new AlphaAnimation(0f, 1f);
-                alphaAnimation.setDuration(600);
-                alphaAnimation.setAnimationListener(new Animation.AnimationListener() {
-                    @Override
-                    public void onAnimationStart(Animation animation) { }
+            AlphaAnimation alphaAnimation = new AlphaAnimation(0f, 1f);
+            alphaAnimation.setDuration(600);
+            alphaAnimation.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+                    findViewById(R.id.frameLayout).setVisibility(View.VISIBLE);
+                }
 
-                    @Override
-                    public void onAnimationEnd(Animation animation) {
-                        addNewCategoryTextView.setClickable(true);
-                    }
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    findViewById(R.id.frameLayout).setVisibility(View.GONE);
+                    addNewCategoryTextView.setClickable(true);
+                    findViewById(R.id.add_new_word_create_category_textview).setClickable(true);
+                }
 
-                    @Override
-                    public void onAnimationRepeat(Animation animation) { }
-                });
+                @Override
+                public void onAnimationRepeat(Animation animation) { }
+            });
 
-                addNewCategoryTextView.startAnimation(alphaAnimation);
+            addNewCategoryTextView.startAnimation(alphaAnimation);
 
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        categoriesRecyclerView.setVisibility(View.VISIBLE);
-                        categoriesRecyclerView.setAdapter(new CategoriesRecyclerViewAdapter(categories));
-                        categoriesRecyclerView.setLayoutManager(new GridLayoutManager(ChangeWordActivity.this, 2));
-                    }
-                }, 420);
+            new Handler().postDelayed(() -> {
+                categoriesRecyclerView.setVisibility(View.VISIBLE);
+                categoriesRecyclerView.setAdapter(new CategoriesRecyclerViewAdapter(categories));
+                categoriesRecyclerView.setLayoutManager(new GridLayoutManager(ChangeWordActivity.this, 2));
+            }, 420);
+
+            if(!isRecyclerAdapted) {
+                isRecyclerAdapted = true;
+                adaptRecyclerView();
             }
         });
 
@@ -194,18 +200,15 @@ public class ChangeWordActivity extends AppCompatActivity {
             }
         });
 
-        saveChangesImageView.setOnClickListener(new ImageView.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Animation animation = AnimationUtils.loadAnimation(view.getContext(), R.anim.click);
-                view.startAnimation(animation);
+        saveChangesImageView.setOnClickListener(view -> {
+            Animation animation = AnimationUtils.loadAnimation(view.getContext(), R.anim.click);
+            view.startAnimation(animation);
 
-                category = categoriesTextView.getText().toString();
+            category = categoriesTextView.getText().toString();
 
-                saveChanges();
-                changingWordHandler.sendMessage(changingWordHandler.obtainMessage());
-                onBackPressed();
-            }
+            saveChanges();
+            changingWordHandler.sendMessage(changingWordHandler.obtainMessage());
+            onBackPressed();
         });
 
         originalWordEditText.setText(changingWord.getWordInEnglish());
@@ -244,6 +247,22 @@ public class ChangeWordActivity extends AppCompatActivity {
         }
     }
 
+    @SuppressLint("CutPasteId")
+    private void adaptRecyclerView() {
+
+        int categoriesMaterialCardView =
+                findViewById(R.id.add_new_word_recycler).getMeasuredHeight();
+
+        int createCategoryTextViewHeight =
+                findViewById(R.id.add_new_word_create_category_textview).getMeasuredHeight();
+
+        ViewGroup.LayoutParams layoutParams =
+                findViewById(R.id.add_new_word_recycler).getLayoutParams();
+        layoutParams.height = categoriesMaterialCardView - createCategoryTextViewHeight;
+
+        findViewById(R.id.add_new_word_recycler).setLayoutParams(layoutParams);
+    }
+
     private void saveChanges() {
         if(!originalWordEditText.getText().toString().equals(changingWord.getWordInEnglish())) {
             MainActivity.reference.child("words").child(changingWord.getInd()).child(Word.englishDatabaseKey).setValue(originalWordEditText.getText().toString()) ;
@@ -261,19 +280,16 @@ public class ChangeWordActivity extends AppCompatActivity {
             }
             else {
                 MainActivity.reference.child("categories").child(String.valueOf(categories.size() - 1)).setValue(category)
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                AtheneDialog atheneDialog = new AtheneDialog(ChangeWordActivity.this, AtheneDialog.SIMPLE_MESSAGE_TYPE);
-                                atheneDialog.setMessageText(getString(R.string.no_internet_error));
-                                atheneDialog.setPositiveClickListener(new TextView.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        atheneDialog.dismiss();
-                                    }
-                                });
-                                atheneDialog.show();
-                            }
+                        .addOnFailureListener(e -> {
+                            AtheneDialog atheneDialog = new AtheneDialog(ChangeWordActivity.this, AtheneDialog.SIMPLE_MESSAGE_TYPE);
+                            atheneDialog.setMessageText(getString(R.string.no_internet_error));
+                            atheneDialog.setPositiveClickListener(new TextView.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    atheneDialog.dismiss();
+                                }
+                            });
+                            atheneDialog.show();
                         })
                         .addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
@@ -336,12 +352,9 @@ public class ChangeWordActivity extends AppCompatActivity {
 
             holder.materialCardView.startAnimation(animation);
 
-            addNewCategoryTextView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    callChooseCategoryDialog();
-                    closeAnimation(currentPosition, "Без категории");
-                }
+            addNewCategoryTextView.setOnClickListener(view -> {
+                callChooseCategoryDialog();
+                closeAnimation(currentPosition, "Без категории");
             });
         }
         @Override
@@ -350,7 +363,6 @@ public class ChangeWordActivity extends AppCompatActivity {
         }
 
         public void closeAnimation(int currentPosition, String c) {
-
 
             Transitioner transitioner = new Transitioner(categoriesMaterialCardView, categoriesMaterialCardViewComeBackPlaceHolder);
             transitioner.animateTo(1f, (long) 400, new AccelerateDecelerateInterpolator());
@@ -367,7 +379,9 @@ public class ChangeWordActivity extends AppCompatActivity {
             alphaAnimation.setAnimationListener(new Animation.AnimationListener() {
                 @Override
                 public void onAnimationStart(Animation animation) {
+                    findViewById(R.id.frameLayout).setVisibility(View.VISIBLE);
                     addNewCategoryTextView.setClickable(false);
+                    findViewById(R.id.add_new_word_create_category_textview).setClickable(false);
                     categoriesRecyclerView.setClickable(false);
                     categoriesMaterialCardView.setClickable(false);
                 }
@@ -375,6 +389,7 @@ public class ChangeWordActivity extends AppCompatActivity {
                 @Override
                 public void onAnimationEnd(Animation animation) {
                     categoriesRecyclerView.setClickable(true);
+                    findViewById(R.id.frameLayout).setVisibility(View.GONE);
 
                     categoriesMaterialCardView.setClickable(true);
                     addNewCategoryTextView.setVisibility(View.INVISIBLE);

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/constraintLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="@dimen/edit_word_root_view_padding"
-    android:background="@drawable/app_background">
+    android:background="@drawable/app_background"
+    android:padding="@dimen/edit_word_root_view_padding">
 
 
     <TextView
@@ -22,11 +22,11 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
-        android:id="@+id/linearLayout5"
+        android:id="@+id/translateWordLinearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/edit_word_translations_linear_layout_margin_top"
         android:layout_marginStart="@dimen/edit_word_translations_linear_layout_margin_sides"
+        android:layout_marginTop="@dimen/edit_word_translations_linear_layout_margin_top"
         android:layout_marginEnd="@dimen/edit_word_translations_linear_layout_margin_sides"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
@@ -74,9 +74,9 @@
         android:text="Выберите категорию:"
         android:textColor="@color/colorWhite"
         android:textSize="@dimen/edit_word_category_title_text_size"
-        app:layout_constraintEnd_toEndOf="@+id/linearLayout5"
-        app:layout_constraintStart_toStartOf="@+id/linearLayout5"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout5" />
+        app:layout_constraintEnd_toEndOf="@+id/translateWordLinearLayout"
+        app:layout_constraintStart_toStartOf="@+id/translateWordLinearLayout"
+        app:layout_constraintTop_toBottomOf="@+id/translateWordLinearLayout" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -211,15 +211,15 @@
 
         <TextView
             android:id="@+id/addNewWordCategoryTextViewButton"
-            android:visibility="invisible"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@drawable/continue_button_background_purple"
+            android:tag="animation4"
             android:text="@string/addNewCategory"
             android:textColor="@color/vinePurple"
-            android:layout_gravity="center"
             android:textSize="18sp"
-            android:tag="animation4"
-            android:background="@drawable/continue_button_background_purple"/>
+            android:visibility="invisible" />
 
     </com.google.android.material.card.MaterialCardView>
 
@@ -227,6 +227,7 @@
         android:id="@+id/categoriesMaterialCardView"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
         android:tag="animation"
         android:visibility="invisible"
         app:cardCornerRadius="20dp"
@@ -243,15 +244,16 @@
             android:text="xenous" />
 
         <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/add_new_word_recycler"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:tag="animation2" />
 
         <TextView
+            android:id="@+id/add_new_word_create_category_textview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|center_horizontal"
-            android:layout_marginBottom="8dp"
             android:background="@drawable/continue_button_background_purple"
             android:tag="animation4"
             android:text="@string/addNewCategory"
@@ -273,5 +275,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.36" />
+
+    <FrameLayout
+        android:id="@+id/frameLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+    </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
